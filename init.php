@@ -12,7 +12,9 @@ if (!file_exists('app/config/application.ini'))
 ini_set('error_log', 'tmp/php_errors.log');
 
 // define the autoloader
+require_once 'lib/mad/util/GlobalFunctions.php';
 require_once 'lib/adianti/core/AdiantiCoreLoader.php';
+
 spl_autoload_register(array('Adianti\Core\AdiantiCoreLoader', 'autoload'));
 Adianti\Core\AdiantiCoreLoader::loadClassMap();
 
@@ -34,8 +36,10 @@ define('OS', strtoupper(substr(PHP_OS, 0, 3)));
 define('PATH', dirname(__FILE__));
 define('LANG', $ini['general']['language']);
 define('MAIN_DATABASE', $ini['general']['main_database'] ?? '');
+define('APPLICATION_VERSION', $ini['general']['application_version'] ?? '');
 
 // custom session name
 session_name('PHPSESSID_'.$ini['general']['application']);
 
 setlocale(LC_ALL, 'C');
+

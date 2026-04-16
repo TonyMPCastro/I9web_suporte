@@ -12,7 +12,9 @@ use Adianti\Validator\TFieldValidator;
 use Adianti\Control\TAction;
 
 /**
- * Checklist
+ * TCheckList
+ *
+ * A checklist component that allows multiple selections in a datagrid.
  *
  * @version    7.5
  * @package    widget
@@ -39,7 +41,11 @@ class TCheckList implements AdiantiWidgetInterface
     use AdiantiDatabaseWidgetTrait;
     
     /**
-     * Construct method
+     * Constructor method
+     *
+     * Initializes the checklist component, creates a datagrid, and adds the check-all button.
+     *
+     * @param string $name The name of the checklist field
      */
     public function __construct($name)
     {
@@ -73,8 +79,11 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the action to be executed when the user selects a row
-     * @param $action TAction object
+     * Define the action to be executed when a row is selected
+     *
+     * @param TAction $action A static action object
+     *
+     * @throws Exception If the action is not static
      */
     public function setSelectAction(TAction $action)
     {
@@ -90,7 +99,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable htmlspecialchars on output
+     * Disables HTML conversion on output
+     * 
+     * Prevents the automatic conversion of special characters into HTML entities.
      */
     public function disableHtmlConversion()
     {
@@ -98,7 +109,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
 
     /**
-     * Set checklist size
+     * Sets the checklist size
+     *
+     * @param string $size The width of the checklist (e.g., '100%', '300px')
      */
     public function setSize($size)
     {
@@ -115,7 +128,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Returns checklist size
+     * Returns the checklist size
+     *
+     * @return array An array containing the width and height of the checklist
      */
     function getSize()
     {
@@ -123,7 +138,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Change Id
+     * Changes the checklist ID
+     *
+     * @param string $id The new ID for the checklist
      */
     public function setId($id)
     {
@@ -133,7 +150,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable check all button
+     * Disables the check-all button
+     *
+     * Removes the label from the check-all column.
      */
     public function disableCheckAll()
     {
@@ -141,8 +160,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's name
-     * @param $name   A string containing the field's name
+     * Defines the field name
+     *
+     * @param string $name The name of the checklist field
      */
     public function setName($name)
     {
@@ -150,7 +170,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
 
     /**
-     * Returns the field's name
+     * Returns the field name
+     *
+     * @return string The name of the checklist field
      */
     public function getName()
     {
@@ -158,8 +180,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the checklist selected ids
-     * @param $value 
+     * Sets the selected values for the checklist
+     *
+     * @param mixed $value An array of selected IDs or a string separated by the defined separator
      */
     public function setValue($value)
     {
@@ -202,7 +225,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Returns the selected ids
+     * Returns the selected values of the checklist
+     *
+     * @return mixed The selected values, either as an array or a string
      */
     public function getValue()
     {
@@ -210,7 +235,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the Identification column
+     * Defines the column that identifies each item
+     *
+     * @param string $name The name of the identification column
      */
     public function setIdColumn($name)
     {
@@ -218,11 +245,14 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Add list column
-     * @param  $name  = Name of the column in the database
-     * @param  $label = Text label that will be shown in the header
-     * @param  $align = Column align (left, center, right)
-     * @param  $width = Column Width (pixels)
+     * Adds a column to the checklist
+     *
+     * @param string $name  The database field name
+     * @param string $label The column header label
+     * @param string $align The alignment of the column ('left', 'center', 'right')
+     * @param string $width The width of the column (e.g., '100px')
+     *
+     * @return TDataGridColumn The created column
      */
     public function addColumn($name, $label, $align, $width)
     {
@@ -235,7 +265,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Add item
+     * Adds an item to the checklist
+     *
+     * @param object $object The object representing a row in the checklist
      */
     public function addItem($object)
     {
@@ -274,7 +306,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * add Items
+     * Adds multiple items to the checklist
+     *
+     * @param array $objects An array of objects to be added as rows
      */
     public function addItems($objects)
     {
@@ -288,9 +322,15 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Fill with model objects
+     * Populates the checklist with model objects from the database
+     *
+     * @param string    $database    The database connection name
+     * @param string    $model       The model class name
+     * @param string    $key         The key column name
+     * @param string    $ordercolumn The column used for ordering (optional)
+     * @param TCriteria $criteria    Additional selection criteria (optional)
      */
-    public function fillWith($database, $model, $key, $ordercolumn = NULL, TCriteria $criteria = NULL)
+    public function fillWith($database, $model, $key, $ordercolumn = NULL, ?TCriteria $criteria = NULL)
     {
         TTransaction::open($database);
         $this->addItems( $this->getObjectsFromModel($database, $model, $key, $ordercolumn, $criteria) );
@@ -298,7 +338,7 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Clear datagrid
+     * Clears all items from the checklist
      */
     public function clear()
     {
@@ -306,7 +346,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Get fields
+     * Returns the checklist fields
+     *
+     * @return array An array of field objects
      */
     public function getFields()
     {
@@ -314,9 +356,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the name of the form to wich the field is attached
-     * @param $name    A string containing the name of the form
-     * @ignore-autocomplete on
+     * Defines the name of the form to which the checklist belongs
+     *
+     * @param string $name The form name
      */
     public function setFormName($name)
     {
@@ -324,7 +366,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the name of the form to wich the field is attached
+     * Returns the name of the form to which the checklist belongs
+     *
+     * @return string The form name
      */
     public function getFormName()
     {
@@ -332,7 +376,12 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Redirect calls to decorated object
+     * Redirects method calls to the decorated datagrid object
+     *
+     * @param string $method     The method being called
+     * @param array  $parameters The method parameters
+     *
+     * @return mixed The return value of the called method
      */
     public function __call($method, $parameters)
     {
@@ -340,8 +389,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's separator
-     * @param $sep A string containing the field's separator
+     * Defines the separator used for storing multiple values as a string
+     *
+     * @param string $sep The separator string
      */
     public function setValueSeparator($sep)
     {
@@ -349,7 +399,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
 
     /**
-     * Get post data
+     * Retrieves the selected values from the checklist after form submission
+     *
+     * @return mixed The selected values, either as an array or a string
      */
     public function getPostData()
     {
@@ -379,10 +431,11 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Add a field validator
-     * @param $label Field name
-     * @param $validator TFieldValidator object
-     * @param $parameters Aditional parameters
+     * Adds a validation rule to the checklist
+     *
+     * @param string          $label      The field label
+     * @param TFieldValidator $validator  The validator object
+     * @param mixed           $parameters Additional parameters for validation (optional)
      */
     public function addValidation($label, TFieldValidator $validator, $parameters = NULL)
     {
@@ -390,7 +443,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Returns field validations
+     * Returns all validation rules applied to the checklist
+     *
+     * @return array An array of validation rules
      */
     public function getValidations()
     {
@@ -398,7 +453,9 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Validate a field
+     * Validates the checklist field
+     *
+     * @throws Exception If validation fails
      */
     public function validate()
     {
@@ -416,19 +473,19 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Enables the checklist field
+     *
+     * @param string $field The field name
      */
     public static function enableField($field)
     {
         TScript::create( " tchecklist_enable_field('{$field}'); " );
     }
-    
+
     /**
-     * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Disables the checklist field
+     *
+     * @param string $field The field name
      */
     public static function disableField($field)
     {
@@ -436,7 +493,10 @@ class TCheckList implements AdiantiWidgetInterface
     }
     
     /**
-     * Show checklist
+     * Displays the checklist component
+     *
+     * Creates the datagrid model if it does not exist, sets the selection action if defined,
+     * and renders the datagrid with JavaScript integration for selection handling.
      */
     public function show()
     {

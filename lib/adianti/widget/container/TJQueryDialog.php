@@ -8,7 +8,8 @@ use Adianti\Core\AdiantiCoreTranslator;
 use Exception;
 
 /**
- * JQuery dialog container
+ * TJQueryDialog is a container for displaying modal dialogs using jQuery UI.
+ * It supports customization of size, position, actions, and various properties such as draggable, resizable, and modal behavior.
  *
  * @version    7.5
  * @package    widget
@@ -34,8 +35,8 @@ class TJQueryDialog extends TElement
     private $dialogClass;
     
     /**
-     * Class Constructor
-     * @param $name Name of the widget
+     * Class constructor.
+     * Initializes a new jQuery dialog container with default properties.
      */
     public function __construct()
     {
@@ -55,7 +56,7 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Disable close on escape
+     * Disables closing the dialog using the Escape key.
      */
     public function disableEscape()
     {
@@ -63,7 +64,7 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Disable scrolling
+     * Disables scrolling within the dialog.
      */
     public function disableScrolling()
     {
@@ -71,8 +72,9 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Set Dialog class
-     * @param $class Class name
+     * Sets the CSS class for the dialog.
+     *
+     * @param string $class The class name to be applied.
      */
     public function setDialogClass($class)
     {
@@ -80,7 +82,11 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Set close action
+     * Sets the action to be executed when the dialog is closed.
+     *
+     * @param TAction $action The action to be executed on close. Must be static.
+     *
+     * @throws Exception If the action is not static.
      */
     public function setCloseAction(TAction $action)
     {
@@ -96,8 +102,9 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Define if will use OK Button
-     * @param $bool boolean
+     * Enables or disables the default OK button in the dialog.
+     *
+     * @param bool $bool Whether to display the OK button (true or false).
      */
     public function setUseOKButton($bool)
     {
@@ -105,8 +112,9 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Define the dialog title
-     * @param $title title
+     * Sets the dialog title.
+     *
+     * @param string $title The title of the dialog.
      */
     public function setTitle($title)
     {
@@ -114,8 +122,9 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Turn on/off modal
-     * @param $modal Boolean
+     * Enables or disables modal mode for the dialog.
+     *
+     * @param bool $bool If true, the dialog will be modal; otherwise, it will not.
      */
     public function setModal($bool)
     {
@@ -123,8 +132,9 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Turn on/off resizeable
-     * @param $bool Boolean
+     * Enables or disables the ability to resize the dialog.
+     *
+     * @param bool $bool If true, the dialog will be resizable; otherwise, it will not.
      */
     public function setResizable($bool)
     {
@@ -132,8 +142,9 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Turn on/off draggable
-     * @param $bool Boolean
+     * Enables or disables the ability to drag the dialog.
+     *
+     * @param bool $bool If true, the dialog will be draggable; otherwise, it will not.
      */
     public function setDraggable($bool)
     {
@@ -141,7 +152,9 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Returns the element ID
+     * Returns the unique ID of the dialog element.
+     *
+     * @return string The ID of the dialog.
      */
     public function getId()
     {
@@ -149,9 +162,10 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Define the dialog size
-     * @param $width width
-     * @param $height height
+     * Sets the dimensions of the dialog.
+     *
+     * @param int|float $width  The width of the dialog. Can be absolute or a percentage of the window width.
+     * @param int|float|null $height The height of the dialog. Can be absolute, a percentage of the window height, or 'auto'.
      */
     public function setSize($width, $height)
     {
@@ -168,9 +182,10 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Define the window's min width between percent and absolute
-     * @param  $percent width
-     * @param  $absolute width
+     * Sets the minimum width of the dialog as a percentage of the window width or an absolute value.
+     *
+     * @param float $percent  The percentage of the window width.
+     * @param int   $absolute The absolute minimum width in pixels.
      */
     public function setMinWidth($percent, $absolute)
     {
@@ -178,9 +193,10 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Define the dialog position
-     * @param $left left
-     * @param $top top
+     * Sets the position of the dialog on the screen.
+     *
+     * @param int|string $left The left position of the dialog.
+     * @param int|string $top  The top position of the dialog.
      */
     public function setPosition($left, $top)
     {
@@ -189,9 +205,10 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Add a JS button to the dialog
-     * @param $label button label
-     * @param $action JS action
+     * Adds a button with a JavaScript action to the dialog.
+     *
+     * @param string $label  The button label.
+     * @param string $action The JavaScript action to be executed when the button is clicked.
      */
     public function addAction($label, $action)
     {
@@ -199,8 +216,9 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Define the stack order (zIndex)
-     * @param $order Stack order
+     * Sets the stack order (z-index) of the dialog.
+     *
+     * @param int $order The z-index value.
      */
     public function setStackOrder($order)
     {
@@ -208,7 +226,7 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Shows the widget at the screen
+     * Displays the dialog on the screen with the configured properties and actions.
      */
     public function show()
     {
@@ -249,7 +267,7 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Closes the dialog
+     * Closes and removes the dialog from the DOM.
      */
     public function close()
     {
@@ -257,7 +275,9 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Close window by id
+     * Closes a dialog by its ID.
+     *
+     * @param string $id The ID of the dialog to be closed.
      */
     public static function closeById($id)
     {
@@ -265,7 +285,7 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Close all TJQueryDialog
+     * Closes all open TJQueryDialog instances.
      */
     public static function closeAll()
     {
@@ -277,7 +297,7 @@ class TJQueryDialog extends TElement
     }
     
     /**
-     * Close all TJQueryDialog
+     * Closes the most recently opened TJQueryDialog instance.
      */
     public static function closeLatest()
     {

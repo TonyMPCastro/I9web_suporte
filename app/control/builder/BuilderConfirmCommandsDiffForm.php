@@ -144,7 +144,11 @@ class BuilderConfirmCommandsDiffForm extends TPage
 
 			new TMessage('error', $e->getMessage());
 			
-			TTransaction::rollback();
+			$pdo = TTransaction::get();
+			if($pdo->inTransaction())
+			{
+				TTransaction::rollback();
+			}
 		}
 	}
 

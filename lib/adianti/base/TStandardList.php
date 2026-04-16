@@ -6,6 +6,9 @@ use Adianti\Control\TPage;
 /**
  * Standard page controller for listings
  *
+ * This class serves as a standard controller for listing records within the Adianti Framework.
+ * It provides a structured way to handle data presentation through forms, datagrids, and pagination.
+ *
  * @version    7.5
  * @package    base
  * @author     Pablo Dall'Oglio

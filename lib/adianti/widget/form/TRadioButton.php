@@ -7,6 +7,8 @@ use Adianti\Widget\Form\TField;
 /**
  * RadioButton Widget
  *
+ * This class extends TField to provide a radio button input element.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form
@@ -20,7 +22,10 @@ class TRadioButton extends TField implements AdiantiWidgetInterface
    
     /**
      * Class Constructor
-     * @param $name Name of the widget
+     *
+     * Initializes a radio button input with a unique identifier.
+     *
+     * @param string $name Widget name
      */
     public function __construct($name)
     {
@@ -30,7 +35,10 @@ class TRadioButton extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Show the widget at the screen
+     * Displays the radio button on the screen.
+     *
+     * This method configures the radio button's properties and applies necessary restrictions
+     * if the field is not editable.
      */
     public function show()
     {

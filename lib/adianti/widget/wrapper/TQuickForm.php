@@ -19,7 +19,8 @@ use Adianti\Validator\TRequiredValidator;
 use Exception;
 
 /**
- * Create quick forms for input data with a standard container for elements
+ * Provides a quick form wrapper for input data with a standard container for elements.
+ * This class extends TForm and simplifies the creation of forms using tables.
  *
  * @version    7.5
  * @package    widget
@@ -46,7 +47,9 @@ class TQuickForm extends TForm
     
     /**
      * Class Constructor
-     * @param $name Form Name
+     * Initializes the form and creates a table as the main container.
+     *
+     * @param string $name Form name (default: 'my_form')
      */
     public function __construct($name = 'my_form')
     {
@@ -66,7 +69,9 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Turn on/off client validation
+     * Enables or disables client-side validation.
+     *
+     * @param bool $bool TRUE to enable validation, FALSE to disable it.
      */
     public function setClientValidation($bool)
     {
@@ -81,7 +86,9 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Returns the actions container
+     * Returns the container that holds the form actions.
+     *
+     * @return THBox|null The actions container or null if not defined.
      */
     public function getActionsContainer()
     {
@@ -89,7 +96,9 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Returns the inner table
+     * Returns the internal table used in the form layout.
+     *
+     * @return TTable The internal table instance.
      */
     public function getTable()
     {
@@ -97,8 +106,11 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Define the field quantity per row
-     * @param $count Field count
+     * Defines the number of fields per row in the form.
+     *
+     * @param int $count The number of fields per row (must be between 1 and 3).
+     *
+     * @throws Exception If the count is outside the allowed range.
      */
     public function setFieldsByRow($count)
     {
@@ -121,7 +133,9 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Return the fields by row count
+     * Returns the current number of fields per row.
+     *
+     * @return int The number of fields per row.
      */
     public function getFieldsByRow()
     {
@@ -129,9 +143,10 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Intercepts whenever someones assign a new property's value
-     * @param $name     Property Name
-     * @param $value    Property Value
+     * Intercepts property assignments and applies special handling.
+     *
+     * @param string $name  Property name.
+     * @param mixed  $value Property value.
      */
     public function __set($name, $value)
     {
@@ -147,7 +162,9 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Returns the form container
+     * Returns the main container of the form.
+     *
+     * @return TTable The container instance.
      */
     public function getContainer()
     {
@@ -155,8 +172,9 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Add a form title
-     * @param $title     Form title
+     * Sets the title of the form.
+     *
+     * @param string $title The title to be displayed.
      */
     public function setFormTitle($title)
     {
@@ -169,7 +187,9 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Returns the input groups
+     * Returns the rows containing form input fields.
+     *
+     * @return array The array of input rows.
      */
     public function getInputRows()
     {
@@ -177,11 +197,15 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Add a form field
-     * @param $label     Field Label
-     * @param $object    Field Object
-     * @param $size      Field Size
-     * @param $validator Field Validator
+     * Adds a form field with a label and optional validation.
+     *
+     * @param string                $label      The field label.
+     * @param AdiantiWidgetInterface $object     The form field object.
+     * @param int|null              $size       The field size (default: 200).
+     * @param TFieldValidator|null  $validator  A validation object (optional).
+     * @param int|null              $label_size The label size (optional).
+     *
+     * @return mixed The row object where the field was added.
      */
     public function addQuickField($label, AdiantiWidgetInterface $object, $size = 200, TFieldValidator $validator = NULL, $label_size = NULL)
     {
@@ -244,10 +268,13 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Add a form field
-     * @param $label     Field Label
-     * @param $objects   Array of Objects
-     * @param $required  Boolean TRUE if required
+     * Adds multiple form fields under a single label.
+     *
+     * @param string $label    The label for the field group.
+     * @param array  $objects  An array of form field objects.
+     * @param bool   $required TRUE if the fields are required.
+     *
+     * @return mixed The row object where the fields were added.
      */
     public function addQuickFields($label, $objects, $required = FALSE)
     {
@@ -297,10 +324,13 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Add a form action
-     * @param $label  Action Label
-     * @param $action TAction Object
-     * @param $icon   Action Icon
+     * Adds an action button to the form.
+     *
+     * @param string  $label  The label for the action.
+     * @param TAction $action The action object.
+     * @param string  $icon   The icon for the button (default: 'fa:save').
+     *
+     * @return TButton The created button instance.
      */
     public function addQuickAction($label, TAction $action, $icon = 'fa:save')
     {
@@ -332,10 +362,13 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Add a form button
-     * @param $label  Action Label
-     * @param $action Javascript action
-     * @param $icon   Action Icon
+     * Adds a button with a JavaScript action to the form.
+     *
+     * @param string $label  The button label.
+     * @param string $action The JavaScript action.
+     * @param string $icon   The button icon (default: 'fa:save').
+     *
+     * @return TButton The created button instance.
      */
     public function addQuickButton($label, $action, $icon = 'fa:save')
     {
@@ -366,7 +399,7 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Clear actions row
+     * Clears all action buttons from the form.
      */
     public function delActions()
     {
@@ -382,7 +415,9 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Return an array with action buttons
+     * Returns an array of action buttons added to the form.
+     *
+     * @return array The array of action buttons.
      */
     public function getActionButtons()
     {
@@ -390,7 +425,9 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Detach action buttons
+     * Detaches all action buttons and clears them from the form.
+     *
+     * @return array The detached action buttons.
      */
     public function detachActionButtons()
     {
@@ -400,7 +437,9 @@ class TQuickForm extends TForm
     }
     
     /**
-     * Add a row
+     * Adds a new row to the form table.
+     *
+     * @return mixed The created row object.
      */
     public function addRow()
     {
@@ -408,7 +447,11 @@ class TQuickForm extends TForm
     }
     
     /**
+     * Displays a form field using JavaScript.
      *
+     * @param string $form  The form name.
+     * @param string $field The field name.
+     * @param int    $speed The speed of the animation effect (default: 0).
      */
     public static function showField($form, $field, $speed = 0)
     {
@@ -416,7 +459,11 @@ class TQuickForm extends TForm
     }
     
     /**
+     * Hides a form field using JavaScript.
      *
+     * @param string $form  The form name.
+     * @param string $field The field name.
+     * @param int    $speed The speed of the animation effect (default: 0).
      */
     public static function hideField($form, $field, $speed = 0)
     {

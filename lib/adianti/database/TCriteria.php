@@ -6,6 +6,9 @@ use Adianti\Database\TExpression;
 /**
  * Provides an interface for filtering criteria definition
  *
+ * This class allows building complex query conditions by adding expressions and logical operators.
+ * It also manages properties such as ordering, offset, and grouping.
+ *
  * @version    7.5
  * @package    database
  * @author     Pablo Dall'Oglio
@@ -20,8 +23,10 @@ class TCriteria extends TExpression
     private $caseInsensitive;
 
     /**
-     * Constructor Method
-     * @author Pablo Dall'Oglio
+     * Constructor method.
+     *
+     * Initializes the internal arrays for expressions and operators, 
+     * and sets default values for criteria properties.
      */
     public function __construct()
     {
@@ -37,7 +42,12 @@ class TCriteria extends TExpression
     }
 
     /**
-     * create criteria from array of filters
+     * Creates a TCriteria instance from an array of filters.
+     *
+     * @param array $simple_filters Associative array where keys are field names and values are their respective filter values.
+     * @param array|null $properties Optional array of properties to set (e.g., order, offset, direction).
+     *
+     * @return TCriteria The created criteria instance.
      */
     public static function create($simple_filters, $properties = null)
     {
@@ -65,7 +75,9 @@ class TCriteria extends TExpression
     }
     
     /**
-     * When clonning criteria
+     * Clones the criteria object.
+     *
+     * Ensures that each expression in the criteria is also cloned to avoid reference issues.
      */
     function __clone()
     {
@@ -78,11 +90,11 @@ class TCriteria extends TExpression
     }
     
     /**
-     * Adds a new Expression to the Criteria
+     * Adds a new expression to the criteria.
      *
-     * @param   $expression  TExpression object
-     * @param   $operator    Logic Operator Constant
-     * @author               Pablo Dall'Oglio
+     * @param TExpression $expression The expression to add.
+     * @param string|null $operator The logical operator (AND, OR) used to concatenate this expression.
+     *                              If it's the first expression, the operator is ignored.
      */
     public function add(TExpression $expression, $operator = self::AND_OPERATOR)
     {
@@ -98,7 +110,9 @@ class TCriteria extends TExpression
     }
     
     /**
-     * Return if criteria is empty
+     * Checks if the criteria is empty.
+     *
+     * @return bool True if no expressions have been added, false otherwise.
      */
     public function isEmpty()
     {
@@ -106,7 +120,11 @@ class TCriteria extends TExpression
     }
     
     /**
-     * Return the prepared vars
+     * Retrieves the prepared variables used in the criteria.
+     *
+     * This method returns an array of all bound variables used in expressions.
+     *
+     * @return array|null An associative array of prepared variables, or null if there are no expressions.
      */
     public function getPreparedVars()
     {
@@ -125,11 +143,11 @@ class TCriteria extends TExpression
     }
     
     /**
-     * Returns the final expression
-     * 
-     * @param   $prepared Return a prepared expression
-     * @return  A string containing the resulting expression
-     * @author  Pablo Dall'Oglio
+     * Returns the SQL representation of the criteria.
+     *
+     * @param bool $prepared Whether to return a prepared statement-compatible expression.
+     *
+     * @return string|null The SQL string representing the criteria, or null if empty.
      */
     public function dump( $prepared = FALSE)
     {
@@ -157,11 +175,12 @@ class TCriteria extends TExpression
     }
     
     /**
-     * Define a Criteria property
-     * 
-     * @param $property Name of the property (limit, offset, order, direction)
-     * @param $value    Value for the property
-     * @author          Pablo Dall'Oglio
+     * Sets a property for the criteria.
+     *
+     * Properties include limit, offset, order, direction, and group.
+     *
+     * @param string $property The property name.
+     * @param mixed $value The value to set for the property.
      */
     public function setProperty($property, $value)
     {
@@ -177,7 +196,9 @@ class TCriteria extends TExpression
     }
     
     /**
-     * reset criteria properties
+     * Resets all criteria properties.
+     *
+     * Clears previously set properties such as limit, offset, order, and group.
      */
     public function resetProperties()
     {
@@ -188,8 +209,9 @@ class TCriteria extends TExpression
     }
     
     /**
-     * Set properties form array
-     * @param $properties array of properties
+     * Sets multiple properties from an associative array.
+     *
+     * @param array $properties Associative array containing properties such as 'order', 'offset', and 'direction'.
      */
     public function setProperties($properties)
     {
@@ -210,11 +232,11 @@ class TCriteria extends TExpression
     }
     
     /**
-     * Return a Criteria property
-     * 
-     * @param $property Name of the property (LIMIT, OFFSET, ORDER)
-     * @return          A String containing the property value
-     * @author          Pablo Dall'Oglio
+     * Retrieves the value of a criteria property.
+     *
+     * @param string $property The property name (e.g., limit, offset, order).
+     *
+     * @return mixed|null The property value if set, or null otherwise.
      */
     public function getProperty($property)
     {
@@ -225,7 +247,9 @@ class TCriteria extends TExpression
     }
 
     /**
-     * Force case insensitive searches
+     * Enables or disables case-insensitive searches in the criteria.
+     *
+     * @param bool $value True to enable case-insensitive search, false otherwise.
      */
     public function setCaseInsensitive(bool $value) : void
     {
@@ -233,7 +257,9 @@ class TCriteria extends TExpression
     }
 
     /**
-     * Return if case insensitive is turned on
+     * Checks if case-insensitive search is enabled.
+     *
+     * @return bool True if case-insensitive search is enabled, false otherwise.
      */
     public function getCaseInsensitive() : bool
     {

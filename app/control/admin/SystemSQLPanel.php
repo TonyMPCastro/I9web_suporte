@@ -27,14 +27,17 @@ class SystemSQLPanel extends TPage
         $database = new TCombo('database');
         $table = new TCombo('table');
         $select = new TText('select');
-        $select->style = 'font-family: Andale mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Lucida Console, Monaco, Consolas, Droid Sans monospace, Monospace; background: #2f2f2f; color: white';
+        $select->style = 'font-family: Andale mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Lucida Console, Monaco, Consolas, Droid Sans monospace, Monospace; background: #2f2f2f; color: #fff !important';
         
-        //$database->enableSearch();
-        //$table->enableSearch();
+        $database->enableSearch();
+        $table->enableSearch();
         
-        $this->form->addFields( [ $ld=new TLabel(_t('Database'))], [ $database], [$lt=new TLabel(_t('Table'))], [$table] );
-        $this->form->addFields( [ $ls=new TLabel('SELECT')], [$select] );
+        $row = $this->form->addFields( [ $ld=new TLabel(_t('Database'), null, null, null, '100%'), $database], [$lt=new TLabel(_t('Table'), null, null, null, '100%'), $table] );
+        $row->layout = ['col-sm-6','col-sm-6'];
         
+        $row = $this->form->addFields( [ $ls=new TLabel('SELECT', null, null, null, '100%'), $select] );
+        $row->layout = ['col-sm-12'];
+
         $btn = $this->form->addAction( _t('Generate'), new TAction(array($this, 'onGenerate')), 'fa:check-circle');
         $btn->class = 'btn btn-sm btn-primary';
         
@@ -52,7 +55,7 @@ class SystemSQLPanel extends TPage
         $table->addValidation(_t('Table'), new TRequiredValidator);
         $database->setSize('100%');
         $table->setSize('100%');
-        $select->setSize('100%', 150);
+        $select->setSize('100%', 200);
         
         $this->container = new TVBox;
         $this->container->style = 'width: 100%';

@@ -15,6 +15,9 @@ use Exception;
 /**
  * MultiSearch backend
  *
+ * This service searches for a given keyword inside a specified model and returns matching results.
+ * It supports different database operators and criteria, allowing for flexible search customization.
+ *
  * @version    7.5
  * @package    service
  * @author     Pablo Dall'Oglio
@@ -25,7 +28,42 @@ use Exception;
 class AdiantiMultiSearchService
 {
     /**
-     * Search by the given word inside a model
+     * Executes a search query based on the given parameters and returns matching results.
+     *
+     * This method retrieves records from a specified model using a combination of filtering criteria.
+     * It supports JSON decoding, dynamic criteria construction, ID-based searching, and different database operators.
+     * The results are returned in a JSON format with key-value pairs.
+     *
+     * @param array|null $param An array of search parameters, including:
+     *   - 'key' (string): The primary key column for the model.
+     *   - 'database' (string): The database connection identifier.
+     *   - 'column' (string): The column(s) to search within, separated by commas.
+     *   - 'model' (string): The model class name to perform the search on.
+     *   - 'hash' (string): A security hash for validation.
+     *   - 'mask' (string): The format used to display search results.
+     *   - 'jsonvalue' (int): Whether to decode the search value as JSON (1 for true, 0 for false).
+     *   - 'operator' (string, optional): The comparison operator (default: 'like' or 'ilike' based on database type).
+     *   - 'criteria' (string, optional): A base64-encoded, serialized `TCriteria` object for additional filtering.
+     *   - 'value' (mixed, optional): The value to search for.
+     *   - 'onlyidsearch' (bool, optional): Whether to search only by ID.
+     *   - 'idsearch' (int, optional): Whether to include ID-based searching (1 for true).
+     *   - 'idtextsearch' (int, optional): Whether to treat the ID as text for searching.
+     *   - 'operator_idsearch' (string, optional): The operator to use when searching by ID.
+     *   - 'orderColumn' (string, optional): The column used for ordering the results.
+     *   - 'minlength' (int, optional): The minimum length of the search query to trigger a search.
+     *
+     * @return void Outputs a JSON response containing the search results in the format:
+     *   ```json
+     *   {
+     *     "result": [
+     *       "1::Record Name",
+     *       "2::Another Record"
+     *     ]
+     *   }
+     *   ```
+     *   If an exception occurs, the response will contain an error message.
+     *
+     * @throws Exception If an error occurs during the database transaction or query execution.
      */
 	public static function onSearch($param = null)
 	{

@@ -7,6 +7,8 @@ use Adianti\Util\AdiantiStringConversion;
 /**
  * SourceCode View
  *
+ * A utility class for displaying source code with syntax highlighting and optional line numbers.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage util
@@ -20,8 +22,11 @@ class TSourceCode
     private $row_numbers;
     
     /**
-     * Load a PHP file
-     * @param $file Path to the PHP file
+     * Loads a PHP file and stores its content.
+     *
+     * @param string $file The path to the PHP file.
+     *
+     * @return bool Returns TRUE if the file was successfully loaded, FALSE otherwise.
      */
     public function loadFile($file)
     {
@@ -36,7 +41,9 @@ class TSourceCode
     }
     
     /**
-     * Load from string
+     * Loads source code from a string.
+     *
+     * @param string $content The source code content to be stored.
      */
     public function loadString($content)
     {
@@ -44,7 +51,7 @@ class TSourceCode
     }
     
     /**
-     * Generate row numbers
+     * Enables the generation of row numbers in the displayed source code.
      */
     public function generateRowNumbers()
     {
@@ -52,7 +59,11 @@ class TSourceCode
     }
     
     /**
-     * Insert row numbers
+     * Inserts row numbers into the highlighted source code.
+     *
+     * @param string $highlighted_string The syntax-highlighted source code.
+     *
+     * @return string The source code with added row numbers.
      */
     public function insertRowNumbers($highlighted_string)
     {
@@ -100,7 +111,7 @@ class TSourceCode
     }
     
     /**
-     * Show the highlighted source code
+     * Displays the highlighted source code with optional row numbers.
      */
     public function show()
     {

@@ -1,6 +1,11 @@
 <?php
 
-
+/**
+ * Class BuilderTopMenuItem
+ *
+ * Represents a menu item for the BuilderTopMenu. This class extends TElement
+ * and provides properties for the menu label, action, image, link, and submenu.
+ */
 class BuilderTopMenuItem extends TElement
 {
     private $label;
@@ -12,10 +17,14 @@ class BuilderTopMenuItem extends TElement
     private $linkClass;
     
     /**
-     * Class constructor
-     * @param $label  The menu label
-     * @param $action The menu action
-     * @param $image  The menu image
+     * BuilderTopMenuItem constructor.
+     *
+     * Initializes a menu item with a label, action, optional image, and menu level.
+     *
+     * @param string      $label  The menu label.
+     * @param string|null $action The action associated with the menu item (URL or application class).
+     * @param string|null $image  The optional image for the menu item.
+     * @param int         $level  The nesting level of the menu item (default is 0).
      */
     public function __construct($label, $action, $image = NULL, $level = 0)
     {
@@ -33,7 +42,9 @@ class BuilderTopMenuItem extends TElement
     }
     
     /**
-     * Returns the action
+     * Retrieves the action associated with the menu item.
+     *
+     * @return string|null The action URL or class name.
      */
     public function getAction()
     {
@@ -41,7 +52,9 @@ class BuilderTopMenuItem extends TElement
     }
     
     /**
-     * Set the action
+     * Sets the action for the menu item.
+     *
+     * @param string $action The action URL or class name.
      */
     public function setAction($action)
     {
@@ -49,7 +62,9 @@ class BuilderTopMenuItem extends TElement
     }
     
     /**
-     * Returns the label
+     * Retrieves the label of the menu item.
+     *
+     * @return string The menu label.
      */
     public function getLabel()
     {
@@ -57,7 +72,9 @@ class BuilderTopMenuItem extends TElement
     }
     
     /**
-     * Set the label
+     * Sets the label of the menu item.
+     *
+     * @param string $label The menu label.
      */
     public function setLabel($label)
     {
@@ -65,7 +82,9 @@ class BuilderTopMenuItem extends TElement
     }
     
     /**
-     * Returns the image
+     * Retrieves the image associated with the menu item.
+     *
+     * @return string|null The image path or URL.
      */
     public function getImage()
     {
@@ -73,7 +92,9 @@ class BuilderTopMenuItem extends TElement
     }
     
     /**
-     * Set the image
+     * Sets the image for the menu item.
+     *
+     * @param string $image The image path or URL.
      */
     public function setImage($image)
     {
@@ -81,7 +102,9 @@ class BuilderTopMenuItem extends TElement
     }
     
     /**
-     * Set link class
+     * Sets the CSS class for the menu item link.
+     *
+     * @param string $class The CSS class name.
      */
     public function setLinkClass($class)
     {
@@ -89,8 +112,9 @@ class BuilderTopMenuItem extends TElement
     }
     
     /**
-     * Define the submenu for the item
-     * @param $menu A BuilderTopMenu object
+     * Defines a submenu for the menu item.
+     *
+     * @param BuilderTopMenu $menu A BuilderTopMenu instance representing the submenu.
      */
     public function setMenu(BuilderTopMenu $menu)
     {
@@ -99,7 +123,10 @@ class BuilderTopMenuItem extends TElement
     }
     
     /**
-     * Shows the widget at the screen
+     * Displays the menu item on the screen.
+     *
+     * Generates the HTML structure for the menu item, including links, images,
+     * submenus, and action handling.
      */
     public function show()
     {

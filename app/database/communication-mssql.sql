@@ -5,7 +5,7 @@ CREATE TABLE system_message
     system_user_to_id INT,
     subject nvarchar(max),
     message nvarchar(max),
-    dt_message nvarchar(max),
+    dt_message datetime2,
     checked char(1)
 );
 
@@ -16,7 +16,7 @@ CREATE TABLE system_notification
     system_user_to_id INT,
     subject nvarchar(max),
     message nvarchar(max),
-    dt_message nvarchar(max),
+    dt_message datetime2,
     action_url nvarchar(max),
     action_label nvarchar(max),
     icon nvarchar(max),
@@ -37,8 +37,8 @@ CREATE TABLE system_document
     title nvarchar(max),
     description nvarchar(max),
     category_id INTEGER references system_document_category(id),
-    submission_date DATE,
-    archive_date DATE,
+    submission_date date,
+    archive_date date,
     filename nvarchar(max)
 );
 

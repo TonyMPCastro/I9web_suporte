@@ -6,8 +6,8 @@ use Adianti\Widget\Base\TStyle;
 use Adianti\Widget\Util\TSourceCode;
 
 /**
- * Scrolled Window: Allows to add another containers inside, creating scrollbars when its content is bigger than its visual area
- * 
+ * Scrolled Window: allows embedding other containers inside, creating scrollbars when the content exceeds the visual area.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage container
@@ -23,7 +23,8 @@ class TScroll extends TElement
     private $transparency;
     
     /**
-     * Class Constructor
+     * Class constructor.
+     * Initializes the TScroll component with a unique ID, default margin, and transparency settings.
      */
     public function __construct()
     {
@@ -34,9 +35,10 @@ class TScroll extends TElement
     }
     
     /**
-     * Set the scroll size
-     * @param  $width   Panel's width
-     * @param  $height  Panel's height
+     * Set the scrollable panel size.
+     *
+     * @param int|string $width  The width of the panel (numeric value in pixels or CSS dimension string).
+     * @param int|string $height The height of the panel (numeric value in pixels or CSS dimension string).
      */
     public function setSize($width, $height)
     {
@@ -45,16 +47,19 @@ class TScroll extends TElement
     }
     
     /**
-     * Set the scrolling margin
-     * @param  $margin Margin
+     * Set the margin for the scrollable panel.
+     *
+     * @param int $margin The margin size in pixels.
      */
     public function setMargin($margin)
     {
         $this->margin = $margin;
     }
     
-    /** 
-     * compability reasons
+    /**
+     * Set the transparency of the scrollable panel.
+     *
+     * @param bool $bool Whether the panel should be transparent.
      */
     public function setTransparency($bool)
     {
@@ -62,7 +67,7 @@ class TScroll extends TElement
     }
     
     /**
-     * Shows the tag
+     * Render the scrollable panel with applied styles and configurations.
      */
     public function show()
     {

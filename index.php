@@ -10,6 +10,8 @@ new TSession;
 ApplicationTranslator::setLanguage( TSession::getValue('user_language'), true );
 BuilderTranslator::setLanguage( TSession::getValue('user_language'), true );
 
+MadLogService::initializeDebugLogging();
+
 $content = BuilderTemplateParser::init('layout');
 $content = ApplicationTranslator::translateTemplate($content);
 
@@ -37,3 +39,5 @@ else
         AdiantiCoreApplication::loadPage('LoginForm', '', $_REQUEST);
     }
 }
+
+MadLogService::finalizeDebugLogging();

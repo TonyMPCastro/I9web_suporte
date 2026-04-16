@@ -7,6 +7,8 @@ use Exception;
 /**
  * Master Detail Trait
  *
+ * Provides functionality for handling master-detail relationships within the Adianti Framework.
+ *
  * @version    7.5
  * @package    base
  * @author     Pablo Dall'Oglio
@@ -16,14 +18,18 @@ use Exception;
 trait AdiantiMasterDetailTrait
 {
     /**
-     * Store an item from details session into database
-     * @param $model Model class name
-     * @param $foreign_key Detail foreign key name
-     * @param $master_object Master object
-     * @param $detail_id Detail key in session
-     * @param $transformer Function to be applied over the objects
+     * Stores items from the detail session into the database.
+     *
+     * @param string $model              The fully qualified class name of the detail model.
+     * @param string $foreign_key        The foreign key column in the detail model that links to the master object.
+     * @param object $master_object      The master object instance.
+     * @param string $detail_id          The session key used to store detail items.
+     * @param callable|null $transformer An optional transformation function applied to each detail object before storing.
+     *
+     * @return array An array of stored detail objects.
+     * @throws Exception If an error occurs during the storage process.
      */
-    public function storeItems($model, $foreign_key, $master_object, $detail_id, Callable $transformer = null)
+    public function storeItems($model, $foreign_key, $master_object, $detail_id, ?Callable $transformer = null)
     {
         $master_pkey    = $master_object->getPrimaryKey();
         $master_id      = $master_object->$master_pkey;
@@ -79,14 +85,18 @@ trait AdiantiMasterDetailTrait
     }
     
     /**
-     * Load items for detail into session
-     * @param $model Model class name
-     * @param $foreign_key Detail foreign key name
-     * @param $master_object Master object
-     * @param $detail_id Detail key in session
-     * @param $transformer Function to be applied over the objects
+     * Loads detail items from the database into the session.
+     *
+     * @param string $model              The fully qualified class name of the detail model.
+     * @param string $foreign_key        The foreign key column in the detail model that links to the master object.
+     * @param object $master_object      The master object instance.
+     * @param string $detail_id          The session key used to store detail items.
+     * @param callable|null $transformer An optional transformation function applied to each detail object before storing in the session.
+     *
+     * @return array An array of loaded detail objects.
+     * @throws Exception If an error occurs while retrieving or processing the data.
      */
-    public function loadItems($model, $foreign_key, $master_object, $detail_id, Callable $transformer = null)
+    public function loadItems($model, $foreign_key, $master_object, $detail_id, ?Callable $transformer = null)
     {
         $master_pkey  = $master_object->getPrimaryKey();
         $master_id    = $master_object->$master_pkey;

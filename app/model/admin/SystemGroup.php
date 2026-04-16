@@ -101,10 +101,16 @@ class SystemGroup extends TRecord
         {
             foreach ($system_group_system_programs as $system_group_system_program)
             {
-                $system_programs[] = new SystemProgram( $system_group_system_program->system_program_id );
+                $systemProgram = new SystemProgram( $system_group_system_program->system_program_id );
+                $systemProgram->allowed_actions = json_encode([]);
+                if($system_group_system_program->actions)
+                {
+                    $systemProgram->allowed_actions = $system_group_system_program->actions;
+                }
+                $system_programs[] = $systemProgram;
             }
         }
-        
+    
         return $system_programs;
     }
 

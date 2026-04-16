@@ -7,6 +7,9 @@ use Adianti\Registry\AdiantiRegistryInterface;
 /**
  * Session Data Handler
  *
+ * This class provides an implementation of the AdiantiRegistryInterface using 
+ * PHP sessions for storing and retrieving values.
+ *
  * @version    7.5
  * @package    registry
  * @author     Pablo Dall'Oglio
@@ -16,9 +19,12 @@ use Adianti\Registry\AdiantiRegistryInterface;
 class TSession implements AdiantiRegistryInterface
 {
     /**
-     * Class Constructor
+     * Initializes a new session.
+     *
+     * @param SessionHandlerInterface|null $handler A custom session handler (optional).
+     * @param string|null $path The session save path (optional).
      */
-    public function __construct(SessionHandlerInterface $handler = NULL, $path = NULL)
+    public function __construct(?SessionHandlerInterface $handler = NULL, $path = NULL)
     {
         if ($path)
         {
@@ -38,7 +44,9 @@ class TSession implements AdiantiRegistryInterface
     }
     
     /**
-     * Returns if the service is active
+     * Checks if the session service is active.
+     *
+     * @return bool Returns TRUE if the session is active, starts the session if necessary.
      */
     public static function enabled()
     {
@@ -50,9 +58,10 @@ class TSession implements AdiantiRegistryInterface
     }
     
     /**
-     * Define the value for a variable
-     * @param $var   Variable Name
-     * @param $value Variable Value
+     * Stores a value in the session.
+     *
+     * @param string $var   The session variable name.
+     * @param mixed  $value The value to be stored.
      */
     public static function setValue($var, $value)
     {
@@ -67,8 +76,10 @@ class TSession implements AdiantiRegistryInterface
     }
     
     /**
-     * Returns the value for a variable
-     * @param $var Variable Name
+     * Retrieves a value from the session.
+     *
+     * @param string $var The session variable name.
+     * @return mixed The stored value or NULL if the variable is not set.
      */
     public static function getValue($var)
     {
@@ -89,8 +100,9 @@ class TSession implements AdiantiRegistryInterface
     }
     
     /**
-     * Clear the value for a variable
-     * @param $var   Variable Name
+     * Deletes a variable from the session.
+     *
+     * @param string $var The session variable name.
      */
     public static function delValue($var)
     {
@@ -105,7 +117,7 @@ class TSession implements AdiantiRegistryInterface
     }
     
     /**
-     * Regenerate id
+     * Regenerates the session ID to prevent session fixation attacks.
      */
     public static function regenerate()
     {
@@ -113,7 +125,7 @@ class TSession implements AdiantiRegistryInterface
     }
     
     /**
-     * Clear session
+     * Clears all session data.
      */
     public static function clear()
     {
@@ -121,8 +133,7 @@ class TSession implements AdiantiRegistryInterface
     }
     
     /**
-     * Destroy the session data
-     * Backward compatibility
+     * Destroys the session data while maintaining session integrity.
      */
     public static function freeSession()
     {

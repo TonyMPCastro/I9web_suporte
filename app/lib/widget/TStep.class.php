@@ -2,7 +2,10 @@
 
 
 /**
- * BreadCrumb
+ * Class TStep
+ *
+ * A step indicator widget for multi-step processes.
+ * It visually represents the progress of a process with steps.
  *
  * @version    3.0
  * @package    widget
@@ -18,8 +21,9 @@ class TStep extends TElement
     protected $items;
     private   $stepNumber = 1;
     /**
-     * Handle paths from a XML file
-     * @param $xml_file path for the file
+     * TStep constructor.
+     *
+     * Initializes the step container and creates an unordered list for steps.
      */
     public function __construct()
     {
@@ -31,9 +35,11 @@ class TStep extends TElement
         parent::add( $this->container );
     }
     /**
-     * Add an item
-     * @param $path Path to be shown
-     * @param $last If the item is the last one
+     * Adds a step item to the step indicator.
+     *
+     * @param string  $title    The title of the step.
+     * @param bool    $active   Whether the step is currently active.
+     * @param bool    $complete Whether the step is marked as completed.
      */
     public function addItem($title, $active = false, $complete = false)
     {

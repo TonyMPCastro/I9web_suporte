@@ -1,0 +1,2 @@
+
+Adianti.registerState = false;

@@ -6,7 +6,10 @@ use Adianti\Control\TAction;
 use Adianti\Widget\Form\TEntry;
 
 /**
- * Representes a DataGrid column
+ * Represents a column in the DataGrid.
+ *
+ * This class allows defining properties for a DataGrid column, such as label, alignment,
+ * width, actions, transformation functions, searchability, and total calculations.
  *
  * @version    7.5
  * @package    widget
@@ -33,13 +36,18 @@ class TDataGridColumn
     private $searchable;
     private $inputSearch;
     private $htmlConversion;
+    protected $totalFormField;
+    private $hide;
     
     /**
-     * Class Constructor
-     * @param  $name  = Name of the column in the database
-     * @param  $label = Text label that will be shown in the header
-     * @param  $align = Column align (left, center, right)
-     * @param  $width = Column Width (pixels)
+     * Class constructor.
+     *
+     * Initializes a new DataGrid column with the specified properties.
+     *
+     * @param string      $name  Name of the column in the database.
+     * @param string      $label Text label that will be shown in the header.
+     * @param string      $align Column alignment (left, center, right).
+     * @param int|null    $width Column width in pixels (optional).
      */
     public function __construct($name, $label, $align, $width = NULL)
     {
@@ -51,10 +59,13 @@ class TDataGridColumn
         $this->properties = array();
         $this->dataProperties = array();
         $this->htmlConversion = true;
+        $this->hide = false;
     }
     
     /**
-     * Define column visibility
+     * Sets the visibility of the column.
+     *
+     * @param bool $bool Whether the column should be visible (true) or hidden (false).
      */
     public function setVisibility($bool)
     {
@@ -71,16 +82,35 @@ class TDataGridColumn
     }
     
     /**
-     * Enable column auto hide
+     * Enables automatic hiding of the column based on width.
+     *
+     * @param int $width The width threshold at which the column will be hidden.
      */
     public function enableAutoHide($width)
     {
         $this->setProperty('hiddable', $width);
         $this->setDataProperty('hiddable', $width);
     }
+
+    public function hide()
+    {
+        $this->hide = true;
+    }
+
+    public function unhide()
+    {
+        $this->hide = false;
+    }
+
+    public function isHidden()
+    {
+        return $this->hide;
+    }
     
     /**
-     * Enable column search
+     * Enables the search functionality for the column.
+     *
+     * This creates an input field that allows searching within the column.
      */
     public function enableSearch()
     {
@@ -95,7 +125,9 @@ class TDataGridColumn
     }
     
     /**
-     * Enable htmlspecialchars on output
+     * Enables HTML conversion on the column output.
+     *
+     * This ensures that HTML special characters are converted properly.
      */
     public function enableHtmlConversion()
     {
@@ -103,7 +135,9 @@ class TDataGridColumn
     }
     
     /**
-     * Disable htmlspecialchars on output
+     * Disables HTML conversion on the column output.
+     *
+     * This prevents the automatic conversion of HTML special characters.
      */
     public function disableHtmlConversion()
     {
@@ -111,7 +145,9 @@ class TDataGridColumn
     }
     
     /**
-     * return if has html conversion
+     * Checks whether HTML conversion is enabled for the column.
+     *
+     * @return bool True if HTML conversion is enabled, false otherwise.
      */
     public function hasHtmlConversionEnabled()
     {
@@ -119,7 +155,9 @@ class TDataGridColumn
     }
     
     /**
-     * Get input search
+     * Retrieves the search input field for the column.
+     *
+     * @return TEntry|null The input field object, or null if search is not enabled.
      */
     public function getInputSearch()
     {
@@ -127,7 +165,9 @@ class TDataGridColumn
     }
     
     /**
-     * Returns if column is searchable
+     * Checks whether the column is searchable.
+     *
+     * @return bool True if the column is searchable, false otherwise.
      */
     public function isSearchable()
     {
@@ -135,9 +175,10 @@ class TDataGridColumn
     }
     
     /**
-     * Define a column header property
-     * @param $name  Property Name
-     * @param $value Property Value
+     * Sets a property for the column header.
+     *
+     * @param string $name  The name of the property.
+     * @param mixed  $value The value to set for the property.
      */
     public function setProperty($name, $value)
     {
@@ -145,9 +186,10 @@ class TDataGridColumn
     }
     
     /**
-     * Define a data property
-     * @param $name  Property Name
-     * @param $value Property Value
+     * Sets a property for the column data.
+     *
+     * @param string $name  The name of the property.
+     * @param mixed  $value The value to set for the property.
      */
     public function setDataProperty($name, $value)
     {
@@ -155,8 +197,11 @@ class TDataGridColumn
     }
     
     /**
-     * Return a column property
-     * @param $name  Property Name
+     * Retrieves a property from the column header.
+     *
+     * @param string $name The name of the property.
+     *
+     * @return mixed|null The value of the property, or null if not set.
      */
     public function getProperty($name)
     {
@@ -167,8 +212,11 @@ class TDataGridColumn
     }
     
     /**
-     * Return a data property
-     * @param $name  Property Name
+     * Retrieves a data property from the column.
+     *
+     * @param string $name The name of the property.
+     *
+     * @return mixed|null The value of the property, or null if not set.
      */
     public function getDataProperty($name)
     {
@@ -179,7 +227,9 @@ class TDataGridColumn
     }
     
     /**
-     * Return column properties
+     * Retrieves all properties of the column header.
+     *
+     * @return array The array of properties.
      */
     public function getProperties()
     {
@@ -187,7 +237,9 @@ class TDataGridColumn
     }
     
     /**
-     * Return data properties
+     * Retrieves all data properties of the column.
+     *
+     * @return array The array of data properties.
      */
     public function getDataProperties()
     {
@@ -195,9 +247,10 @@ class TDataGridColumn
     }
     
     /**
-     * Intercepts whenever someones assign a new property's value
-     * @param $name     Property Name
-     * @param $value    Property Value
+     * Magic method for setting a property dynamically.
+     *
+     * @param string $name  The property name.
+     * @param mixed  $value The property value.
      */
     public function __set($name, $value)
     {
@@ -210,7 +263,9 @@ class TDataGridColumn
     }
     
     /**
-     * Returns the database column's name
+     * Retrieves the name of the database column.
+     *
+     * @return string The column name.
      */
     public function getName()
     {
@@ -218,7 +273,9 @@ class TDataGridColumn
     }
     
     /**
-     * Returns the column's label
+     * Retrieves the label of the column.
+     *
+     * @return string The column label.
      */
     public function getLabel()
     {
@@ -226,8 +283,9 @@ class TDataGridColumn
     }
     
     /**
-     * Set the column's label
-     * @param $label column label
+     * Sets the label of the column.
+     *
+     * @param string $label The column label.
      */
     public function setLabel($label)
     {
@@ -235,7 +293,9 @@ class TDataGridColumn
     }
     
     /**
-     * Returns the column's align
+     * Retrieves the alignment of the column.
+     *
+     * @return string The alignment (left, center, right).
      */
     public function getAlign()
     {
@@ -243,7 +303,9 @@ class TDataGridColumn
     }
     
     /**
-     * Returns the column's width
+     * Retrieves the width of the column.
+     *
+     * @return int|null The column width in pixels, or null if not set.
      */
     public function getWidth()
     {
@@ -251,10 +313,10 @@ class TDataGridColumn
     }
     
     /**
-     * Define the action to be executed when
-     * the user clicks over the column header
-     * @param $action     TAction object
-     * @param $parameters Action parameters
+     * Sets an action to be executed when the column header is clicked.
+     *
+     * @param TAction     $action     The action to execute.
+     * @param array|null  $parameters Optional action parameters.
      */
     public function setAction(TAction $action, $parameters = null)
     {
@@ -267,9 +329,9 @@ class TDataGridColumn
     }
     
     /**
-     * Returns the action defined by set_action() method
-     * @return the action to be executed when the
-     * user clicks over the column header
+     * Retrieves the action assigned to the column header.
+     *
+     * @return TAction|null The action object, or null if not set.
      */
     public function getAction()
     {
@@ -281,7 +343,7 @@ class TDataGridColumn
     }
     
     /**
-     * Remove action
+     * Removes the action associated with the column header.
      */
     public function removeAction()
     {
@@ -289,9 +351,9 @@ class TDataGridColumn
     }
     
     /**
-     * Define the action to be executed when
-     * the user clicks do edit the column
-     * @param $action   A TDataGridAction object
+     * Sets an edit action for the column.
+     *
+     * @param TDataGridAction $editaction The edit action to execute.
      */
     public function setEditAction(TDataGridAction $editaction)
     {
@@ -299,9 +361,9 @@ class TDataGridColumn
     }
     
     /**
-     * Returns the action defined by setEditAction() method
-     * @return the action to be executed when the
-     * user clicks do edit the column
+     * Retrieves the edit action assigned to the column.
+     *
+     * @return TDataGridAction|null The edit action object, or null if not set.
      */
     public function getEditAction()
     {
@@ -313,8 +375,9 @@ class TDataGridColumn
     }
     
     /**
-     * Define a callback function to be applyed over the column's data
-     * @param $callback  A function name of a method of an object
+     * Sets a callback function to transform the column's data.
+     *
+     * @param callable $callback The transformation function.
      */
     public function setTransformer(Callable $callback)
     {
@@ -322,7 +385,9 @@ class TDataGridColumn
     }
 
     /**
-     * Returns the callback defined by the setTransformer()
+     * Retrieves the transformation callback function.
+     *
+     * @return callable|null The transformation function, or null if not set.
      */
     public function getTransformer()
     {
@@ -330,7 +395,13 @@ class TDataGridColumn
     }
     
     /**
-     * Enable total
+     * Enables total calculation for the column.
+     *
+     * @param string      $function           The aggregation function (sum, count, etc.).
+     * @param string|null $prefix             Optional prefix for the total.
+     * @param int         $decimals           Number of decimal places.
+     * @param string      $decimal_separator  Decimal separator character.
+     * @param string      $thousand_separator Thousand separator character.
      */
     public function enableTotal($function, $prefix = null, $decimals = 2, $decimal_separator = ',', $thousand_separator = '.')
     {
@@ -345,12 +416,32 @@ class TDataGridColumn
             
             $this->setTotalFunction( $totalCallback );
         }
+
+        if ($function == 'count')
+        {
+            $totalCallback = function($values) {
+                return count($values);
+            };
+            
+            $this->setTotalFunction( $totalCallback );
+        }
+    }
+
+    public function setTotalFormField($totalFormField)
+    {
+        $this->totalFormField = $totalFormField;
+    }
+
+    public function getTotalFormField()
+    {
+        return $this->totalFormField;
     }
     
     /**
-     * Define a callback function to totalize column
-     * @param $callback  A function name of a method of an object
-     * @param $apply_transformer Apply transform function also in total
+     * Sets a callback function for calculating the total of the column.
+     *
+     * @param callable $callback           The total calculation function.
+     * @param bool     $apply_transformer  Whether to apply the transformation function to the total.
      */
     public function setTotalFunction(Callable $callback, $apply_transformer = true)
     {
@@ -359,7 +450,9 @@ class TDataGridColumn
     }
     
     /**
-     * Returns the callback defined by the setTotalFunction()
+     * Retrieves the total calculation callback function.
+     *
+     * @return callable|null The total function, or null if not set.
      */
     public function getTotalCallback()
     {
@@ -367,7 +460,9 @@ class TDataGridColumn
     }
     
     /**
-     * Returns total function
+     * Retrieves the total function type.
+     *
+     * @return string|null The function type (sum, count, etc.), or null if not set.
      */
     public function getTotalFunction()
     {
@@ -375,7 +470,9 @@ class TDataGridColumn
     }
     
     /**
-     * Returns total mask
+     * Retrieves the format mask for the total value.
+     *
+     * @return string|null The total format mask, or null if not set.
      */
     public function getTotalMask()
     {
@@ -383,7 +480,9 @@ class TDataGridColumn
     }
     
     /**
-     * Is total transformed
+     * Checks whether the total function applies a transformation.
+     *
+     * @return bool True if transformation is applied, false otherwise.
      */
     public function totalTransformed()
     {

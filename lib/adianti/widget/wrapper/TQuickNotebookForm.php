@@ -9,7 +9,8 @@ use Adianti\Widget\Base\TElement;
 use Adianti\Control\TAction;
 
 /**
- * Create quick forms with a notebook wrapper
+ * Provides a quick form with a notebook (tabbed interface) wrapper.
+ * Extends TQuickForm and allows for structured form organization.
  *
  * @version    7.5
  * @package    widget
@@ -25,8 +26,9 @@ class TQuickNotebookForm extends TQuickForm
     protected $vertical_box;
     
     /**
-     * Class Constructor
-     * @param $name Form Name
+     * Constructor method.
+     *
+     * @param string $name Form name (default: 'my_form').
      */
     public function __construct($name = 'my_form')
     {
@@ -41,8 +43,9 @@ class TQuickNotebookForm extends TQuickForm
     }
     
     /**
-     * Set the notebook wrapper
-     * @param $notebook Notebook wrapper
+     * Sets the notebook wrapper.
+     *
+     * @param TNotebook $notebook The notebook component to wrap the form content.
      */
     public function setNotebookWrapper($notebook)
     {
@@ -50,8 +53,9 @@ class TQuickNotebookForm extends TQuickForm
     }
     
     /**
-     * Add a form title
-     * @param $title     Form title
+     * Sets the form title.
+     *
+     * @param string $title The title of the form.
      */
     public function setFormTitle($title)
     {
@@ -60,9 +64,10 @@ class TQuickNotebookForm extends TQuickForm
     }
     
     /**
-     * Append a notebook page
-     * @param $title     Page title
-     * @param $cotnainer Page container
+     * Appends a new page to the notebook.
+     *
+     * @param string    $title     Title of the notebook page.
+     * @param TElement|null $container Optional container for the page content (default: TTable).
      */
     public function appendPage($title, $container = NULL)
     {
@@ -83,10 +88,11 @@ class TQuickNotebookForm extends TQuickForm
     }
     
     /**
-     * Add a form action
-     * @param $label  Action Label
-     * @param $action TAction Object
-     * @param $icon   Action Icon
+     * Adds a quick action to the form.
+     *
+     * @param string  $label  Action label.
+     * @param TAction $action Form action object.
+     * @param string  $icon   Action icon (default: 'fa:save').
      */
     public function addQuickAction($label, TAction $action, $icon = 'fa:save')
     {
@@ -98,7 +104,7 @@ class TQuickNotebookForm extends TQuickForm
     }
     
     /**
-     * Show the component
+     * Displays the component.
      */
     public function show()
     {

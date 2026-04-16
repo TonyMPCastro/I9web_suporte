@@ -7,6 +7,9 @@ use Adianti\Widget\Base\TScript;
 /**
  * Expander Widget
  *
+ * This class represents an expander widget, which is a dropdown component 
+ * that can be used to expand and display additional content.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage container
@@ -23,7 +26,10 @@ class TExpander extends TElement
     
     /**
      * Class Constructor
-     * @param  $value text label
+     *
+     * Initializes the expander widget with a label.
+     *
+     * @param string $label The text label for the expander button.
      */
     public function __construct($label = '')
     {
@@ -49,7 +55,10 @@ class TExpander extends TElement
     
     /**
      * Set caret side
-     * @caret_side Caret side (left, right)
+     *
+     * Defines the position of the caret indicator.
+     *
+     * @param string $caret_side The caret side (options: 'left', 'right').
      */
     public function setCaretSide($caret_side)
     {
@@ -58,7 +67,10 @@ class TExpander extends TElement
     
     /**
      * Define the pull side
-     * @side left/right
+     *
+     * Sets the side where the dropdown will appear.
+     *
+     * @param string $side The side position ('left' or 'right').
      */
     public function setPullSide($side)
     {
@@ -67,8 +79,11 @@ class TExpander extends TElement
     
     /**
      * Define a button property
-     * @param $property Property name (Ex: style)
-     * @param $value    Property value
+     *
+     * Sets a property for the button element.
+     *
+     * @param string $property The property name (e.g., 'style', 'class').
+     * @param mixed  $value    The value to assign to the property.
      */
     public function setButtonProperty($property, $value)
     {
@@ -77,8 +92,11 @@ class TExpander extends TElement
     
     /**
      * Define a container property
-     * @param $property Property name (Ex: style)
-     * @param $value    Property value
+     *
+     * Sets a property for the container element.
+     *
+     * @param string $property The property name (e.g., 'style', 'class').
+     * @param mixed  $value    The value to assign to the property.
      */
     public function setProperty($property, $value)
     {
@@ -87,7 +105,10 @@ class TExpander extends TElement
     
     /**
      * Add content to the expander
-     * @param $content Any Object that implements show() method
+     *
+     * Adds an element to the expander container.
+     *
+     * @param TElement $content An object that implements the show() method.
      */
     public function add($content)
     {
@@ -96,6 +117,8 @@ class TExpander extends TElement
     
     /**
      * Shows the expander
+     *
+     * Renders the expander widget, including its button, container, and caret positioning.
      */
     public function show()
     {

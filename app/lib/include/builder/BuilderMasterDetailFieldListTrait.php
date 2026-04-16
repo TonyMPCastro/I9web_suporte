@@ -18,7 +18,7 @@ trait BuilderMasterDetailFieldListTrait
      * @param $fieldList TFieldList component
      * @param $transformer Function to be applied over the objects
      */
-    public function storeItems($model, $foreign_key, $master_object, $fieldList, Callable $transformer = null, $criteria = null)
+    public function storeItems($model, $foreign_key, $master_object, $fieldList, ?Callable $transformer = null, $criteria = null)
     {
         $master_pkey    = $master_object->getPrimaryKey();
         $master_id      = $master_object->$master_pkey;
@@ -108,7 +108,7 @@ trait BuilderMasterDetailFieldListTrait
      * @param $fieldList TFieldList component
      * @param $transformer Function to be applied over the objects
      */
-    public function loadItems($model, $foreign_key, $master_object, $fieldList, Callable $transformer = null, $criteria = null)
+    public function loadItems($model, $foreign_key, $master_object, $fieldList, ?Callable $transformer = null, $criteria = null)
     {
         $fieldList->addHeader();
         $prefix = $fieldList->getFieldPrefix();

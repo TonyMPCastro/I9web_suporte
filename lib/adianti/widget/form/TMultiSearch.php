@@ -15,6 +15,9 @@ use Exception;
 /**
  * Multi Search Widget
  *
+ * A widget that allows multiple selection and searching capabilities.
+ * It extends TSelect and implements AdiantiWidgetInterface.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form
@@ -41,7 +44,10 @@ class TMultiSearch extends TSelect implements AdiantiWidgetInterface
     
     /**
      * Class Constructor
-     * @param  $name Widget's name
+     *
+     * Initializes the widget with a unique ID and default configurations.
+     *
+     * @param string $name The widget's name
      */
     public function __construct($name)
     {
@@ -62,6 +68,8 @@ class TMultiSearch extends TSelect implements AdiantiWidgetInterface
     
     /**
      * Disable multiple selection
+     *
+     * Removes the "multiple" attribute from the field.
      */
     public function disableMultiple()
     {
@@ -69,7 +77,9 @@ class TMultiSearch extends TSelect implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable clear
+     * Disable the clear button
+     *
+     * Prevents the user from clearing the selected values.
      */
     public function disableClear()
     {
@@ -77,7 +87,9 @@ class TMultiSearch extends TSelect implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable search
+     * Disable the search functionality
+     *
+     * Prevents the user from searching for items in the selection list.
      */
     public function disableSearch()
     {
@@ -86,8 +98,11 @@ class TMultiSearch extends TSelect implements AdiantiWidgetInterface
     
     /**
      * Define the widget's size
-     * @param  $width   Widget's width
-     * @param  $height  Widget's height
+     *
+     * Sets the width and optional height for the widget.
+     *
+     * @param int|string $width  The widget's width in pixels or percentage
+     * @param int|null   $height (Optional) The widget's height in pixels
      */
     public function setSize($width, $height = NULL)
     {
@@ -99,8 +114,11 @@ class TMultiSearch extends TSelect implements AdiantiWidgetInterface
     }
 
     /**
-     * Returns the size
-     * @return array(width, height)
+     * Get the widget's size
+     *
+     * Returns the width and height of the widget.
+     *
+     * @return array An array containing width and height values
      */
     public function getSize()
     {
@@ -109,6 +127,10 @@ class TMultiSearch extends TSelect implements AdiantiWidgetInterface
     
     /**
      * Define the minimum length for search
+     *
+     * Sets the minimum number of characters required before triggering a search.
+     *
+     * @param int $length The minimum length of characters for search
      */
     public function setMinLength($length)
     {
@@ -117,6 +139,10 @@ class TMultiSearch extends TSelect implements AdiantiWidgetInterface
 
     /**
      * Define the maximum number of items that can be selected
+     *
+     * If set to 1, it disables multiple selection and enables the default option.
+     *
+     * @param int $maxsize The maximum number of selectable items
      */
     public function setMaxSize($maxsize)
     {
@@ -130,8 +156,11 @@ class TMultiSearch extends TSelect implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's separator
-     * @param $sep A string containing the field's separator
+     * Define the value separator
+     *
+     * Specifies the character used to separate multiple values when stored.
+     *
+     * @param string $sep The separator character
      */
     public function setValueSeparator($sep)
     {
@@ -139,8 +168,11 @@ class TMultiSearch extends TSelect implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's value
-     * @param $value A string containing the field's value
+     * Set the field's value
+     *
+     * Assigns the selected values to the widget, handling compatibility settings.
+     *
+     * @param string|array $value The value(s) to be set in the field
      */
     public function setValue($value)
     {
@@ -160,7 +192,12 @@ class TMultiSearch extends TSelect implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the post data
+     * Retrieve the post data
+     *
+     * Returns the submitted values from the widget.
+     * If compatibility mode is enabled, it maps values to item labels.
+     *
+     * @return string|array The selected values or an empty string if none selected
      */
     public function getPostData()
     {
@@ -202,8 +239,11 @@ class TMultiSearch extends TSelect implements AdiantiWidgetInterface
     
     /**
      * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     *
+     * Makes the specified field editable in a given form.
+     *
+     * @param string $form_name The form name
+     * @param string $field The field name
      */
     public static function enableField($form_name, $field)
     {
@@ -212,8 +252,11 @@ class TMultiSearch extends TSelect implements AdiantiWidgetInterface
     
     /**
      * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     *
+     * Makes the specified field read-only in a given form.
+     *
+     * @param string $form_name The form name
+     * @param string $field The field name
      */
     public static function disableField($form_name, $field)
     {
@@ -222,8 +265,11 @@ class TMultiSearch extends TSelect implements AdiantiWidgetInterface
 
     /**
      * Clear the field
-     * @param $form_name Form name
-     * @param $field Field name
+     *
+     * Removes all selected values from the specified field in a given form.
+     *
+     * @param string $form_name The form name
+     * @param string $field The field name
      */
     public static function clearField($form_name, $field)
     {
@@ -231,7 +277,12 @@ class TMultiSearch extends TSelect implements AdiantiWidgetInterface
     }
     
     /**
-     * Shows the widget
+     * Render the widget
+     *
+     * Displays the multi-search field with all its properties and functionalities.
+     * Includes JavaScript initialization for handling selection and search.
+     *
+     * @throws Exception If the change action is set without a valid form
      */
     public function show()
     {

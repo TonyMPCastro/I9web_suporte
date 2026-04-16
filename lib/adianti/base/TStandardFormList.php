@@ -6,6 +6,9 @@ use Adianti\Control\TPage;
 /**
  * Standard page controller for form/listings
  *
+ * This class provides a standard implementation for a form-based listing page, 
+ * combining form handling and a data grid for presenting results.
+ *
  * @version    7.5
  * @package    base
  * @author     Pablo Dall'Oglio

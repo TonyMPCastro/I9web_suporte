@@ -9,6 +9,8 @@ use Adianti\Database\TTransaction;
 /**
  * File Save Trait
  *
+ * Provides methods for saving and managing files, including binary files, in various database environments.
+ *
  * @version    7.5
  * @package    base
  * @author     Nataniel Rabaioli
@@ -19,11 +21,15 @@ use Adianti\Database\TTransaction;
 trait AdiantiFileSaveTrait
 {
     /**
-     * Save file
-     * @param $object      Active Record
-     * @param $data        Form data
-     * @param $input_name  Input field name
-     * @param $target_path Target file path
+     * Saves a file associated with an active record.
+     *
+     * @param object $object      Active Record instance
+     * @param object $data        Form data containing file information
+     * @param string $input_name  Name of the input field
+     * @param string $target_path Target file path
+     *
+     * @return object|null Updated active record instance or null if no file is saved
+     * @throws Exception If permission is denied or file cannot be copied
      */
     public function saveFile($object, $data, $input_name, $target_path)
     {
@@ -33,11 +39,11 @@ trait AdiantiFileSaveTrait
         {
             $pk = $object->getPrimaryKey();
             
-            $target_path.= '/' . $object->$pk;
+            $target_path .= '/' . $object->$pk;
             $target_path = str_replace('//', '/', $target_path);
             
             $source_file = $dados_file->fileName;
-            $target_file = strpos($dados_file->fileName, $target_path) === FALSE ? $target_path . '/' . $dados_file->fileName : $dados_file->fileName;
+            $target_file = strpos($dados_file->fileName, $target_path) === false ? $target_path . '/' . $dados_file->fileName : $dados_file->fileName;
             $target_file = str_replace('tmp/', '', $target_file);
             
             $class = get_class($object);
@@ -81,8 +87,7 @@ trait AdiantiFileSaveTrait
                     // if the user uploaded a source file
                     if (file_exists($target_path))
                     {
-                        // move to the target directory
-                        if (! rename($source_file, $target_file))
+                        if (!rename($source_file, $target_file))
                         {
                             throw new Exception(AdiantiCoreTranslator::translate('Error while copying file to ^1', $target_file));
                         }
@@ -116,14 +121,18 @@ trait AdiantiFileSaveTrait
     }
     
     /**
-     * Save files
-     * @param $object      Active Record
-     * @param $data        Form data
-     * @param $input_name  Input field name
-     * @param $target_path Target file path
-     * @param $model_files Files Active Record
-     * @param $file_field  File field in model_files
-     * @param $foreign_key Foreign key to $object
+     * Saves multiple files associated with an active record.
+     *
+     * @param object $object      Active Record instance
+     * @param object $data        Form data containing file information
+     * @param string $input_name  Name of the input field
+     * @param string $target_path Target file path
+     * @param string $model_files Active Record class for file storage
+     * @param string $file_field  Field name in model_files table storing the file reference
+     * @param string $foreign_key Foreign key linking to the main object
+     *
+     * @return array List of stored file objects
+     * @throws Exception If permission is denied or file cannot be copied
      */
     public function saveFiles($object, $data, $input_name, $target_path, $model_files, $file_field, $foreign_key)
     {
@@ -224,11 +233,14 @@ trait AdiantiFileSaveTrait
     }
     
     /**
-     * Save files comma separated
-     * @param $object      Active Record
-     * @param $data        Form data
-     * @param $input_name  Input field name
-     * @param $target_path Target file path
+     * Saves multiple files using a comma-separated format in a single database field.
+     *
+     * @param object $object      Active Record instance.
+     * @param object $data        Form data containing file information.
+     * @param string $input_name  Input field name for the files.
+     * @param string $target_path Target directory where the files will be stored.
+     *
+     * @throws Exception If there are permission issues or errors during file transfer.
      */
     public function saveFilesByComma($object, $data, $input_name, $target_path)
     {
@@ -321,18 +333,21 @@ trait AdiantiFileSaveTrait
     }
 
     /**
-     * Save binary file
+     * Saves a binary file in the database.
      *
-     * Database and column types supporteds:
-     *      ORACLE   => BLOB
-     *      MYSQL    => LONGBLOB
-     *      MSSQL    => VARBINARY(MAX)
-     *      POSTGRES => BYTEA
+     * Supported database column types:
+     * - ORACLE: BLOB
+     * - MYSQL: LONGBLOB
+     * - MSSQL: VARBINARY(MAX)
+     * - POSTGRES: BYTEA
      *
-     * @param $object          Active Record
-     * @param $data            Form data
-     * @param $attr_file       Input field name
-     * @param $attr_file_name  Active field name for name file
+     * @param object $object         Active Record instance.
+     * @param object $data           Form data containing file information.
+     * @param string $attr_file      Database column to store the binary file.
+     * @param string $attr_file_name Database column to store the file name.
+     *
+     * @return object|null Returns the updated Active Record instance or null if no file is provided.
+     * @throws Exception If there are errors during file storage.
      */
     public function saveBinaryFile($object, $data, $attr_file, $attr_file_name)
     {
@@ -447,21 +462,24 @@ trait AdiantiFileSaveTrait
     }
 
     /**
-     * Save binary file
+     * Saves multiple binary files in the database.
      *
-     * Database and column types supporteds:
-     *      ORACLE   => BLOB
-     *      MYSQL    => LONGBLOB
-     *      MSSQL    => VARBINARY(MAX)
-     *      POSTGRES => BYTEA
+     * Supported database column types:
+     * - ORACLE: BLOB
+     * - MYSQL: LONGBLOB
+     * - MSSQL: VARBINARY(MAX)
+     * - POSTGRES: BYTEA
      *
-     * @param $object          Active Record
-     * @param $data            Form data
-     * @param $attr_file_data  Input field name
-     * @param $model_files     Files Active Record
-     * @param $attr_file_name  Active field name for name file
-     * @param $file_field      File field in model_files
-     * @param $foreign_key     Foreign key to $object
+     * @param object $object         Active Record instance.
+     * @param object $data           Form data containing file information.
+     * @param string $attr_file_data Input field name for file data.
+     * @param string $model_files    Model class for storing file records.
+     * @param string $attr_file_name Database column to store the file name.
+     * @param string $file_field     Database column storing the binary file.
+     * @param string $foreign_key    Foreign key linking the files to the parent record.
+     *
+     * @return array Returns an array of saved file objects.
+     * @throws Exception If there are errors during file storage.
      */
     public function saveBinaryFiles($object, $data, $attr_file_data, $model_files, $attr_file_name, $file_field, $foreign_key)
     {
@@ -590,10 +608,14 @@ trait AdiantiFileSaveTrait
     }
 
     /**
-     * Save binary file on tmp and return path
-     * @param $object          Active Record
-     * @param $attr_file       Input field name
-     * @param $attr_file_name  Active field name for name file
+     * Loads a binary file from the database and saves it as a temporary file.
+     *
+     * @param object $object        Active Record instance.
+     * @param string $attr_file     Database column storing the binary file.
+     * @param string $attr_file_name Database column storing the file name.
+     *
+     * @return string|null Returns the path of the extracted file or null if no file exists.
+     * @throws Exception If there are errors during file retrieval.
      */
     public function loadBinaryFile($object, $attr_file, $attr_file_name)
     {
@@ -639,12 +661,16 @@ trait AdiantiFileSaveTrait
     }
 
     /**
-     * Save binary files on tmp and return paths
-     * @param $object          Active Record
-     * @param $model_files     Files Active Record
-     * @param $attr_file_name  Active field name for name file
-     * @param $file_field      File field in model_files
-     * @param $foreign_key     Foreign key to $object
+     * Loads multiple binary files from the database and saves them as temporary files.
+     *
+     * @param object $object        Active Record instance.
+     * @param string $model_files   Model class for storing file records.
+     * @param string $attr_file_name Database column storing the file name.
+     * @param string $file_field    Database column storing the binary file.
+     * @param string $foreign_key   Foreign key linking the files to the parent record.
+     *
+     * @return array Returns an associative array with file IDs as keys and file paths as values.
+     * @throws Exception If there are errors during file retrieval.
      */
     public function loadBinaryFiles($object, $model_files, $attr_file_name, $file_field, $foreign_key)
     {

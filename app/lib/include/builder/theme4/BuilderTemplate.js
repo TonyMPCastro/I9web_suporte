@@ -69,13 +69,64 @@ window.BuilderTemplate = ( function() {
         });
     }
 
+    const initFirebase = function()
+    {
+        if(BuilderTemplate.firebase_config)
+        {
+            window.addEventListener('firebaseLoaded', async function() {
+
+                await FirebaseService.init({
+                    token: BuilderTemplate.firebase_token,
+                    config: BuilderTemplate.firebase_config
+                }, function(){
+                    
+                    setTimeout(function() { if(BuilderTemplate.chat_enabled)
+                        {
+                            ChatApp.init();
+                        }
+                        else
+                        {
+                            ChatApp.disable();
+                        } }, 1000);
+                    
+
+                    $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
+                        const params = new URLSearchParams(ajaxOptions.url.split('?')[1]);
+                        const result = `${params.get('class')}::${params.get('method')}`;
+
+                        FirebaseService.setUserAttribute('last_action', result);
+                    });
+                });
+            });
+        }
+    }
+
     const init = function(options)
     {
+        if(options.mad_debug_console)
+        {
+            initDebugConsole();            
+        }
+        
         if(options.top_menu)
         {
             BuilderTemplate.initTopMenu();
         }
         
+        BuilderTemplate.users = options.users;
+        BuilderTemplate.chat_enabled = options.chat_enabled;
+        BuilderTemplate.firebase_token = options.firebase_token;
+        BuilderTemplate.single_tab_mode = options.single_tab_mode;
+        BuilderTemplate.firebase_config = options.firebase_config;
+        BuilderTemplate.application_name = options.application_name;
+
+        if(BuilderTemplate.single_tab_mode == true)
+        {
+            setTimeout(function() { System.checkMultipleTabs(options.application_name); });
+        }
+
+        initFirebase();
+
         if(options.public_layout == false)
         {
             BuilderTemplate.loadSearchBar();
@@ -112,6 +163,10 @@ window.BuilderTemplate = ( function() {
         $.get('engine.php?class=SearchInputBox', function (data) {
             $('#envelope_search').html(data);
         });
+    }
+
+    const initDebugConsole = function() {
+        System.initDebugConsole();
     }
 
     return {

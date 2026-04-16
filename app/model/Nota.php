@@ -8,9 +8,9 @@ class Nota extends TRecord
 
     const CREATEDAT  = 'dt_nota';
 
-    private $chamado;
-    private $cliente;
-    private $atendente;
+    private Chamado $chamado;
+    private Cliente $cliente;
+    private Atendente $atendente;
 
     
 

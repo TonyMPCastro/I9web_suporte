@@ -6,7 +6,9 @@ use Adianti\Core\AdiantiCoreTranslator;
 use Exception;
 
 /**
- * CPF validation (Valid only in Brazil)
+ * Validator for CPF (Brazilian individual taxpayer identification number).
+ *
+ * This class checks if a given CPF is valid based on official rules.
  *
  * @version    7.5
  * @package    validator
@@ -17,10 +19,13 @@ use Exception;
 class TCPFValidator extends TFieldValidator
 {
     /**
-     * Validate a given value
-     * @param $label Identifies the value to be validated in case of exception
-     * @param $value Value to be validated
-     * @param $parameters aditional parameters for validation
+     * Validates a given CPF.
+     *
+     * @param string $label The field label used for error messages.
+     * @param string $value The CPF value to be validated.
+     * @param mixed|null $parameters Additional parameters for validation (not used).
+     *
+     * @throws Exception If the provided CPF is invalid.
      */
     public function validate($label, $value, $parameters = NULL)
     {

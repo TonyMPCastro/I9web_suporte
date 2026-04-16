@@ -6,6 +6,9 @@ use Adianti\Widget\Base\TElement;
 /**
  * Image Widget
  *
+ * Represents an image widget that can display different types of images, including local files,
+ * remote URLs, and icon fonts such as Font Awesome and Material Icons.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage util
@@ -18,8 +21,10 @@ class TImage extends TElement
     private $source; // image path
     
     /**
-     * Class Constructor
-     * @param $source Image path, of bs:bs-glyphicon, fab:font-awesome
+     * Class Constructor.
+     * Determines the type of image or icon to display based on the provided source.
+     *
+     * @param string $source The image source, which can be a file path, a URL, or an icon identifier (e.g., "fa:icon-name", "mi:icon-name").
      */
     public function __construct($source)
     {

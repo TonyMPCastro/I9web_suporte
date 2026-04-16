@@ -120,7 +120,7 @@ class BuilderPageBatchUpdate extends TPage
                                                                         'file_name' => $page->file_name,
                                                                         'content'   => $page->content ]);
                         
-                        if (!file_exists($full_path) OR base64_decode($page->content) !== file_get_contents( $full_path ))
+                        if ( (!file_exists($full_path) && $page->content) || ( base64_decode($page->content) !== file_get_contents( $full_path )) )
                         {
                             $page->id = $id;
                             // add an regular object to the datagrid

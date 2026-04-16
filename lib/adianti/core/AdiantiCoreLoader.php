@@ -7,6 +7,9 @@ use Adianti\Core\AdiantiClassMap;
 /**
  * Framework class autoloader
  *
+ * This class is responsible for loading class mappings, setting class paths,
+ * and handling the autoloading of classes within the framework.
+ *
  * @version    7.5
  * @package    core
  * @author     Pablo Dall'Oglio
@@ -18,7 +21,12 @@ class AdiantiCoreLoader
     private static $classMap;
     
     /**
-     * Load the class map
+     * Loads the class map from AdiantiClassMap.
+     *
+     * This method retrieves the class mapping and sets up aliases for classes 
+     * that have been renamed, ensuring compatibility with older class names.
+     *
+     * @return void
      */
     public static function loadClassMap()
     {
@@ -38,9 +46,15 @@ class AdiantiCoreLoader
     }
     
     /**
-     * Define the class path
-     * @param $class Class name
-     * @param $path  Class path
+     * Defines a custom path for a specific class.
+     *
+     * This method allows defining a manual mapping between a class name 
+     * and its corresponding file path.
+     *
+     * @param string $class The name of the class.
+     * @param string $path  The file path where the class is located.
+     *
+     * @return void
      */
     public static function setClassPath($class, $path)
     {
@@ -48,8 +62,15 @@ class AdiantiCoreLoader
     }
     
     /**
-     * Core autloader
-     * @param $className Class name
+     * Core autoloader method.
+     *
+     * Attempts to load a class based on its namespace and name. If the class 
+     * is not found using the primary method, it falls back to the legacy 
+     * autoloader and the Adianti application loader.
+     *
+     * @param string $className The fully qualified name of the class.
+     *
+     * @return void
      */
     public static function autoload($className)
     {
@@ -87,8 +108,13 @@ class AdiantiCoreLoader
     }
     
     /**
-     * autoloader
-     * @param $class classname
+     * Legacy autoloader for classes defined in the class map.
+     *
+     * Checks if a class exists in the pre-defined class map and loads it if available.
+     *
+     * @param string $class The name of the class to be loaded.
+     *
+     * @return bool Returns TRUE if the class was successfully loaded, FALSE otherwise.
      */
     public static function legacyAutoload($class)
     {
@@ -106,7 +132,14 @@ class AdiantiCoreLoader
     }
     
     /**
-     * make a class global
+     * Maps a class to the global scope.
+     *
+     * Ensures that a class can be referenced globally by mapping it 
+     * from its fully qualified namespace to a global alias if necessary.
+     *
+     * @param string $class The name of the class.
+     *
+     * @return void
      */
     public static function globalScope($class)
     {

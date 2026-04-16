@@ -11,6 +11,9 @@ use Exception;
 /**
  * Application loader
  *
+ * This class is responsible for managing the autoloading mechanism of application classes,
+ * checking predefined folders, and ensuring that required classes are properly loaded.
+ *
  * @version    7.5
  * @package    core
  * @author     Pablo Dall'Oglio
@@ -22,7 +25,10 @@ class AdiantiApplicationLoader
     static $loadedClasses;
     
     /**
-     * Return application loaded classes
+     * Retrieves the list of classes that have been loaded by the application loader.
+     *
+     * @return array|null An associative array of loaded classes where keys are class names and values are boolean,
+     *                    or null if no classes have been loaded.
      */
     public static function getLoadedClasses()
     {
@@ -30,7 +36,11 @@ class AdiantiApplicationLoader
     }
     
     /**
-     * Return if the class was already loaded by this loader
+     * Checks if a given class has already been loaded by the application loader.
+     *
+     * @param string $class The fully qualified class name to check.
+     *
+     * @return bool True if the class has been loaded, false otherwise.
      */
     public static function isLoadedClass($class)
     {
@@ -38,7 +48,15 @@ class AdiantiApplicationLoader
     }
     
     /**
-     * Application autoloder
+     * Automatically loads the specified class by searching for it in predefined application directories.
+     *
+     * The method searches for class files within a predefined set of folders (`app/model`, `app/control`,
+     * `app/view`, `app/lib`, `app/helpers`, `app/service`). If a matching class file is found, it is included.
+     * Additionally, it performs recursive directory traversal when necessary.
+     *
+     * @param string $class The fully qualified class name to be autoloaded.
+     *
+     * @return bool True if the class was successfully loaded, false otherwise.
      */
     public static function autoload($class)
     {
@@ -46,6 +64,8 @@ class AdiantiApplicationLoader
         $folders = array();
         $folders[] = 'app/model';
         $folders[] = 'app/control';
+        $folders[] = 'app/controller';
+        $folders[] = 'app/middleware';
         $folders[] = 'app/view';
         $folders[] = 'app/lib';
         $folders[] = 'app/helpers';

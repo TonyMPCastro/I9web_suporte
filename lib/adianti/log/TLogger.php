@@ -2,7 +2,8 @@
 namespace Adianti\Log;
 
 /**
- * Provides an abstract interface to register LOG files
+ * Abstract class for logging messages into various formats.
+ * Provides an interface to register log messages in different storage formats.
  *
  * @version    7.5
  * @package    log
@@ -15,8 +16,10 @@ abstract class TLogger implements AdiantiLoggerInterface
     protected $filename; // path for LOG file
     
     /**
-     * Class Constructor
-     * @param  $filename path for LOG file
+     * Constructor method.
+     * Initializes the logger and optionally clears the log file.
+     *
+     * @param string|null $filename Path to the log file. If provided, the file contents will be cleared upon initialization.
      */
     public function __construct($filename = NULL)
     {
@@ -29,8 +32,10 @@ abstract class TLogger implements AdiantiLoggerInterface
     }
     
     /**
-     * Write abstract method
-     * Must be declared in child classes
+     * Abstract method to write a log message.
+     * This method must be implemented in child classes to define the specific log format.
+     *
+     * @param string $message The log message to be recorded.
      */
     abstract function write($message);
 }

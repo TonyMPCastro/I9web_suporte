@@ -1,4 +1,8 @@
 <?php
+
+use Adianti\Database\TTransaction;
+use Adianti\Registry\TSession;
+
 class BuilderService
 {
     public static function setTheme($userid, $themename)
@@ -126,5 +130,21 @@ class BuilderService
         }
 
         throw new Exception('Error');
+    }
+
+    public static function enableDebugConsole($param = [])
+    {
+        BuilderPermissionService::checkPermission();
+
+        if(!TSession::getValue('mad_debug_console'))
+        {
+            TSession::setValue('mad_debug_console', true);
+        }
+        else
+        {
+            TSession::setValue('mad_debug_console', false);
+        }
+
+        TScript::create('location.href = "index.php" ');
     }
 }

@@ -3,7 +3,10 @@
 namespace Math;
 
 /**
- * Evaluate mathematical expression.
+ * Parses and evaluates mathematical expressions using tokenization and translation strategies.
+ *
+ * Converts expressions into tokens, translates them into RPN, and evaluates the result.
+ * Uses a lexer for tokenization and a translation strategy to convert infix notation into RPN.
  *
  * @author Adrean Boyadzhiev (netforce) <adrean.boyadzhiev@gmail.com>
  */
@@ -35,20 +38,23 @@ class Parser
     );
 
     /**
-     * Create new Lexer wich can evaluate mathematical expression.
+     * Initializes the Parser with an optional configuration for the translation strategy.
+     *
      * Accept array of configuration options, currently supports only 
      * one option "translationStrategy" => "Fully\Qualified\Classname".
+     *
      * Class represent by this options is responsible for translation
      * from infix mathematical expression notation to reverse-polish
      * mathematical expression notation.
-     * 
+     *
      * <code>
      *  $options = array(
      *      'translationStrategy' => '\Math\TranslationStrategy\ShuntingYard'
      *  );
      * </code>
-     * 
-     * @param array $options
+     *
+     * @param array $options Configuration options. Supported option:
+     *                       - 'translationStrategy' (string): Fully qualified class name of the translation strategy.
      */
     public function __construct(array $options = array())
     {
@@ -58,10 +64,11 @@ class Parser
     }
 
     /**
-     * Evaluate string representing mathematical expression.
-     * 
-     * @param string $expression
-     * @return float
+     * Evaluates a mathematical expression provided as a string.
+     *
+     * @param string $expression The mathematical expression to evaluate.
+     *
+     * @return float The computed result of the expression.
      */
     public function evaluate($expression)
     {
@@ -74,12 +81,12 @@ class Parser
     }
 
     /**
-     * Evaluate array sequence of tokens in Reverse Polish notation (RPN)
-     * representing mathematical expression.
-     * 
-     * @param array $expressionTokens
-     * @return float
-     * @throws \InvalidArgumentException
+     * Evaluates a mathematical expression represented in Reverse Polish Notation (RPN).
+     *
+     * @param Token[] $expressionTokens Array of Token instances in RPN order.
+     *
+     * @return float The computed result of the expression.
+     * @throws \InvalidArgumentException If an invalid operator is encountered.
      */
     private function evaluateRPN(array $expressionTokens)
     {
@@ -121,9 +128,9 @@ class Parser
     }
 
     /**
-     * Return lexer.
-     * 
-     * @return Lexer
+     * Retrieves the Lexer instance used for tokenization.
+     *
+     * @return Lexer The Lexer instance.
      */
     public function getLexer()
     {

@@ -5,7 +5,10 @@ use Adianti\Widget\Base\TElement;
 use Adianti\Widget\Base\TStyle;
 
 /**
- * Panel Container: Allows to organize the widgets using fixed (absolute) positions
+  * Panel Container: Allows organizing widgets using fixed (absolute) positions.
+ *
+ * This class provides a container with a relative positioning style, allowing elements to be placed 
+ * at absolute positions inside it.
  *
  * @version    7.5
  * @package    widget
@@ -21,9 +24,12 @@ class TPanel extends TElement
     private $height;
     
     /**
-     * Class Constructor
-     * @param  $width   Panel's width
-     * @param  $height  Panel's height
+     * Class Constructor.
+     *
+     * Initializes a panel with a given width and height, setting up its styles and unique ID.
+     *
+     * @param int $width  The width of the panel in pixels.
+     * @param int $height The height of the panel in pixels.
      */
     public function __construct($width, $height)
     {
@@ -41,9 +47,10 @@ class TPanel extends TElement
     }
     
     /**
-     * Set the panel's size
-     * @param $width Panel width
-     * @param $height Panel height
+     * Set the panel's dimensions.
+     *
+     * @param int $width  The new width of the panel in pixels.
+     * @param int $height The new height of the panel in pixels.
      */
     public function setSize($width, $height)
     {
@@ -52,8 +59,9 @@ class TPanel extends TElement
     }
     
     /**
-     * Returns the frame size
-     * @return array(width, height)
+     * Get the panel's dimensions.
+     *
+     * @return array An array containing the panel's width and height in pixels.
      */
     public function getSize()
     {
@@ -61,10 +69,11 @@ class TPanel extends TElement
     }
     
     /**
-     * Put a widget inside the panel
-     * @param  $widget = widget to be shown
-     * @param  $col    = column in pixels.
-     * @param  $row    = row in pixels.
+     * Insert a widget into the panel at a specific position.
+     *
+     * @param TElement $widget The widget to be placed inside the panel.
+     * @param int      $col    The horizontal position (left offset) in pixels.
+     * @param int      $row    The vertical position (top offset) in pixels.
      */
     public function put($widget, $col, $row)
     {
@@ -80,7 +89,9 @@ class TPanel extends TElement
     }
     
     /**
-     * Show the widget
+     * Render the panel and display its contents.
+     *
+     * This method sets the panel's final dimensions and applies its style before rendering.
      */
     public function show()
     {

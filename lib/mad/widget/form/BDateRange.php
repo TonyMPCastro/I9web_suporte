@@ -14,6 +14,13 @@ use Adianti\Widget\Util\TImage;
 use DateTime;
 use Exception;
 
+/**
+ * @version    4.0
+ * @package    widget
+ * @author     Matheus Agnes Dias
+ * @copyright  Copyright (c) 2025 Mad Solutions Ltd. (http://www.madbuilder.com.br)
+ */
+
 class BDateRange extends TField implements AdiantiWidgetInterface
 {
     protected $mask;
@@ -39,8 +46,12 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     private $parent;
 
     /**
-     * Class Constructor
-     * @param $name Name of the widget
+     * Constructor
+     *
+     * Initializes the BDateRange widget with default values and options.
+     *
+     * @param string $name Name of the widget.
+     * @param string|null $name_end Name of the end date field (optional).
      */
     public function __construct($name, $name_end = null)
     {
@@ -72,6 +83,13 @@ class BDateRange extends TField implements AdiantiWidgetInterface
         $this->tag->{'autocomplete'} = 'off';
     }
     
+    /**
+     * Set the form name
+     *
+     * Associates the widget with a form and handles the configuration of the end date field if applicable.
+     *
+     * @param string $name Form name.
+     */
     public function setFormName($name)
     {
         parent::setFormName($name);
@@ -88,6 +106,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     
     /**
      * Set enable dates
+     *
+     * Specifies which dates should be enabled in the date picker.
+     *
+     * @param array $dates List of dates to be enabled.
      */
     public function setEnableDates(array $dates)
     {
@@ -96,6 +118,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     
     /**
      * Get disable dates
+     *
+     * Returns the list of dates that are disabled.
+     *
+     * @return array|false List of disabled dates or false if none.
      */
     public function getDisableDates()
     {
@@ -104,6 +130,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     
     /**
      * Set disable dates
+     *
+     * Specifies which dates should be disabled in the date picker.
+     *
+     * @param array $dates List of dates to be disabled.
      */
     public function setDisableDates(array $dates)
     {
@@ -112,6 +142,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     
     /**
      * Get enable dates
+     *
+     * Returns the list of enabled dates.
+     *
+     * @return array|false List of enabled dates or false if none.
      */
     public function getEnableDates()
     {
@@ -120,6 +154,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     
     /**
      * Set separator
+     *
+     * Defines the separator character used between start and end dates.
+     *
+     * @param string $separator Separator character.
      */
     public function setSeparator(string $separator)
     {
@@ -128,6 +166,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     
     /**
      * Get separator
+     *
+     * Returns the separator character used between start and end dates.
+     *
+     * @return string Separator character.
      */
     public function getSeparator()
     {
@@ -136,6 +178,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     
     /**
      * Set calendars popover
+     *
+     * Defines the number of calendars displayed in the date picker popover.
+     *
+     * @param int $calendars Number of calendars.
      */
     public function setCalendars(int $calendars)
     {
@@ -144,6 +190,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     
     /**
      * Get calendars popover
+     *
+     * Returns the number of calendars displayed in the date picker popover.
+     *
+     * @return int Number of calendars.
      */
     public function getCalendars()
     {
@@ -152,6 +202,12 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     
     /**
      * Set steps
+     *
+     * Defines the step intervals for hours, minutes, and seconds.
+     *
+     * @param int $stepHours Step interval for hours.
+     * @param int $stepMinutes Step interval for minutes.
+     * @param int $stepSeconds Step interval for seconds.
      */
     public function setSteps($stepHours = 1, $stepMinutes = 5, $stepSeconds = 10)
     {
@@ -162,6 +218,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     
     /**
      * Set grid popover
+     *
+     * Defines the grid size for the calendar popover.
+     *
+     * @param int $grid Grid size.
      */
     public function setGrid(int $grid)
     {
@@ -169,7 +229,9 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Set show confirm buttons
+     * Show confirm buttons
+     *
+     * Disables the auto-apply feature, requiring the user to confirm selections.
      */
     public function showConfirmButtons()
     {
@@ -177,7 +239,9 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Set show confirm buttons
+     * Hide confirm buttons
+     *
+     * Enables the auto-apply feature, applying selections automatically.
      */
     public function hideConfirmButtons()
     {
@@ -186,6 +250,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     
     /**
      * Get grid popover
+     *
+     * Returns the grid size for the calendar popover.
+     *
+     * @return int Grid size.
      */
     public function getGrid()
     {
@@ -194,6 +262,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     
     /**
      * Set title popover
+     *
+     * Defines the title displayed on the calendar popover.
+     *
+     * @param string $title Title text.
      */
     public function setTitle(string $title)
     {
@@ -202,6 +274,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     
     /**
      * Get title popover
+     *
+     * Returns the title displayed on the calendar popover.
+     *
+     * @return string|null Title text or null if not set.
      */
     public function getTitle()
     {
@@ -210,6 +286,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     
     /**
      * Store the value inside the object
+     *
+     * Converts and stores the date range value based on the configured mask.
+     *
+     * @param string $value Date range value.
      */
     public function setValue($value)
     {
@@ -236,6 +316,25 @@ class BDateRange extends TField implements AdiantiWidgetInterface
         }
     }
 
+    /**
+     * Get the start date value
+     *
+     * Returns the stored start date value.
+     *
+     * @return string|null Start date value.
+     */
+    public function getValue()
+    {
+        return $this->startValue;
+    }
+
+    /**
+     * Set the end date value
+     *
+     * Stores the end date value after applying the necessary transformations.
+     *
+     * @param string $value End date value.
+     */
     public function setEndValue($value)
     {
         $v = $value;
@@ -247,6 +346,25 @@ class BDateRange extends TField implements AdiantiWidgetInterface
         $this->endValue = $v;
     }
 
+    /**
+     * Get the name of the end date field
+     *
+     * Returns the name of the end date field if it is set.
+     *
+     * @return string|null End date field name or null if not set.
+     */
+    public function getNameEnd()
+    {
+        return $this->name_end;
+    }
+
+    /**
+     * Get the end date value
+     *
+     * Returns the stored end date value.
+     *
+     * @return string|null End date value.
+     */
     public function getEndValue()
     {
         return $this->endValue;
@@ -254,6 +372,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
 
     /**
      * Return the post data
+     *
+     * Retrieves the value from the request and applies necessary transformations.
+     *
+     * @return string|null Formatted date range value.
      */
     public function getPostData()
     {
@@ -278,8 +400,41 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     }
 
     /**
+     * Validate field value
+     *
+     * Applies validations to the widget's value if defined.
+     *
+     * @throws Exception If validation fails.
+     */
+    public function validate()
+    {
+        $validations = parent::getValidations();
+        if ($validations)
+        {
+            foreach ($validations as $validation)
+            {
+                $label      = $validation[0];
+                $validator  = $validation[1];
+                $parameters = $validation[2];
+                
+                if ($this->parent) 
+                {
+                    $validator->validate($label, $this->parent->getEndValue(), $parameters);
+                }
+                else 
+                {
+                    $validator->validate($label, $this->getValue(), $parameters);
+                }
+            }
+        }
+    }
+
+    /**
      * Define the field's mask
-     * @param $mask  Mask for the field (dd-mm-yyyy)
+     *
+     * Sets the date format mask for the input field.
+     *
+     * @param string $mask Date format mask (e.g., dd-mm-yyyy).
      */
     public function setMask($mask)
     {
@@ -288,6 +443,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
 
     /**
      * Return mask
+     *
+     * Retrieves the current mask format for the input field.
+     *
+     * @return string Mask format.
      */
     public function getMask()
     {
@@ -295,7 +454,11 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set the mask to be used to colect the data
+     * Set the mask to be used for database storage
+     *
+     * Defines the mask used to store values in the database.
+     *
+     * @param string $mask Database mask format.
      */
     public function setDatabaseMask($mask)
     {
@@ -304,6 +467,10 @@ class BDateRange extends TField implements AdiantiWidgetInterface
 
     /**
      * Return database mask
+     *
+     * Retrieves the mask format used for database storage.
+     *
+     * @return string Database mask format.
      */
     public function getDatabaseMask()
     {
@@ -312,6 +479,12 @@ class BDateRange extends TField implements AdiantiWidgetInterface
 
     /**
      * Set extra easepick options
+     *
+     * Configures additional options for the easepick date range picker.
+     *
+     * @param string $option Option name.
+     * @param mixed $value Option value.
+     *
      * @link https://easepick.com/
      */
     public function setOption($option, $value)
@@ -320,8 +493,9 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the action to be executed when the user changes the field
-     * @param $action TAction object
+     * Define the action to be executed when the field loses focus
+     *
+     * @param TAction $action Action to execute.
      */
     public function setExitAction(TAction $action)
     {
@@ -329,8 +503,11 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the action to be executed when the user changes the field
-     * @param $action TAction object
+     * Define the action to be executed when the field value changes
+     *
+     * @param TAction $action Action to execute.
+     *
+     * @throws Exception If the action is not static.
      */
     public function setChangeAction(TAction $action)
     {
@@ -347,8 +524,11 @@ class BDateRange extends TField implements AdiantiWidgetInterface
 
     /**
      * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     *
+     * Enables the specified field in the given form.
+     *
+     * @param string $form_name Form name.
+     * @param string $field Field name.
      */
     public static function enableField($form_name, $field)
     {
@@ -357,19 +537,44 @@ class BDateRange extends TField implements AdiantiWidgetInterface
 
     /**
      * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     *
+     * Disables the specified field in the given form.
+     *
+     * @param string $form_name Form name.
+     * @param string $field Field name.
      */
     public static function disableField($form_name, $field)
     {
         TScript::create( " bdaterange_disable_field('{$form_name}', '{$field}'); " );
     }
     
+    /**
+     * Convert date format mask
+     *
+     * Converts a date format mask from lowercase format (e.g., 'dd-mm-yyyy') to uppercase format
+     * suitable for the easepick date range picker.
+     *
+     * @param string $mask The date format mask to be converted.
+     *
+     * @return string The converted mask with uppercase format.
+     */
     public static function convertMask($mask)
     {
         return str_replace(['d', 'm', 'y', 'i', 's', 'h'], ['D', 'M', 'Y', 'm', 's', 'H'], strtolower($mask));
     }
     
+    /**
+     * Convert date format from one mask to another
+     *
+     * Converts a date value from one date format to another.
+     * This method is useful for transforming between user-friendly formats and database storage formats.
+     *
+     * @param string $value The date value to be transformed.
+     * @param string $fromMask The current mask format of the value.
+     * @param string $toMask The desired mask format for conversion.
+     *
+     * @return string The date value formatted according to the target mask. Returns the original value if conversion fails.
+     */
     public static function replaceToMask($value, $fromMask, $toMask)
     {
         if (empty($value))
@@ -393,7 +598,11 @@ class BDateRange extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Shows the widget at the screen
+     * Show the widget
+     *
+     * Renders the date range widget on the screen with all configured properties.
+     *
+     * @throws Exception If invalid configurations are detected.
      */
     public function show()
     {

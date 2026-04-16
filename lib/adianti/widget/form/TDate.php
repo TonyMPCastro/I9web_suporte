@@ -13,6 +13,9 @@ use Exception;
 /**
  * DatePicker Widget
  *
+ * This class represents a date input field with a date picker widget.
+ * It extends the TEntry class and implements the AdiantiWidgetInterface.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form
@@ -34,7 +37,10 @@ class TDate extends TEntry implements AdiantiWidgetInterface
 
     /**
      * Class Constructor
-     * @param $name Name of the widget
+     *
+     * Initializes the TDate widget with a unique identifier, default mask, and default options.
+     *
+     * @param string $name Name of the widget
      */
     public function __construct($name)
     {
@@ -56,6 +62,11 @@ class TDate extends TEntry implements AdiantiWidgetInterface
 
     /**
      * Store the value inside the object
+     *
+     * If a database mask is set and differs from the display mask, 
+     * it converts the value to the correct format before storing.
+     *
+     * @param string|null $value The date value to be set
      */
     public function setValue($value)
     {
@@ -71,6 +82,11 @@ class TDate extends TEntry implements AdiantiWidgetInterface
 
     /**
      * Return the post data
+     *
+     * If a database mask is set and differs from the display mask, 
+     * it converts the value to the correct format before returning.
+     *
+     * @return string|null The formatted post data
      */
     public function getPostData()
     {
@@ -87,10 +103,13 @@ class TDate extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Convert from one mask to another
-     * @param $value original date
-     * @param $fromMask source mask
-     * @param $toMask target mask
+     * Convert a date from one format mask to another
+     *
+     * @param string|array|null $value The date value to convert (can be an array for multiple values)
+     * @param string $fromMask The source format mask (e.g., 'dd/mm/yyyy')
+     * @param string $toMask The target format mask (e.g., 'yyyy-mm-dd')
+     *
+     * @return string|array|null The formatted date value
      */
     public static function convertToMask($value, $fromMask, $toMask)
     {
@@ -121,8 +140,10 @@ class TDate extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the field's mask
-     * @param $mask  Mask for the field (dd-mm-yyyy)
+     * Define the display mask for the field
+     *
+     * @param string $mask The date format mask (e.g., 'dd-mm-yyyy')
+     * @param bool $replaceOnPost Whether to replace the value on form submission
      */
     public function setMask($mask, $replaceOnPost = FALSE)
     {
@@ -138,7 +159,9 @@ class TDate extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Return mask
+     * Get the current display mask
+     *
+     * @return string The current date format mask
      */
     public function getMask()
     {
@@ -146,7 +169,9 @@ class TDate extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Set the mask to be used to colect the data
+     * Set the mask used to store the data in the database
+     *
+     * @param string $mask The database format mask (e.g., 'yyyy-mm-dd')
      */
     public function setDatabaseMask($mask)
     {
@@ -154,7 +179,9 @@ class TDate extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Return database mask
+     * Get the database mask
+     *
+     * @return string|null The database format mask
      */
     public function getDatabaseMask()
     {
@@ -162,8 +189,12 @@ class TDate extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Set extra datepicker options
+     * Set extra options for the date picker
+     *
      * @link https://bootstrap-datepicker.readthedocs.io/en/latest/options.html
+     *
+     * @param string $option The option name
+     * @param mixed $value The option value
      */
     public function setOption($option, $value)
     {
@@ -171,8 +202,11 @@ class TDate extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the action to be executed when the user changes the field
-     * @param $action TAction object
+     * Define the action to be executed when the user exits the field
+     *
+     * This is an alias for setChangeAction().
+     *
+     * @param TAction $action The action to be executed
      */
     public function setExitAction(TAction $action)
     {
@@ -181,7 +215,10 @@ class TDate extends TEntry implements AdiantiWidgetInterface
 
     /**
      * Define the action to be executed when the user changes the field
-     * @param $action TAction object
+     *
+     * @param TAction $action The action object (must be static)
+     *
+     * @throws Exception If the action is not static
      */
     public function setChangeAction(TAction $action)
     {
@@ -197,7 +234,9 @@ class TDate extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Set change function
+     * Set a JavaScript function to be executed when the field changes
+     *
+     * @param string $function The JavaScript function to execute
      */
     public function setChangeFunction($function)
     {
@@ -205,8 +244,11 @@ class TDate extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Shortcut to convert a date to format yyyy-mm-dd
-     * @param $date = date in format dd/mm/yyyy
+     * Convert a date from Brazilian format (dd/mm/yyyy) to US format (yyyy-mm-dd)
+     *
+     * @param string|null $date The date in dd/mm/yyyy format
+     *
+     * @return string|null The date in yyyy-mm-dd format
      */
     public static function date2us($date)
     {
@@ -221,8 +263,11 @@ class TDate extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Shortcut to convert a date to format dd/mm/yyyy
-     * @param $date = date in format yyyy-mm-dd
+     * Convert a date from US format (yyyy-mm-dd) to Brazilian format (dd/mm/yyyy)
+     *
+     * @param string|null $date The date in yyyy-mm-dd format
+     *
+     * @return string|null The date in dd/mm/yyyy format
      */
     public static function date2br($date)
     {
@@ -237,9 +282,10 @@ class TDate extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Enable the date field in a form
+     *
+     * @param string $form_name The name of the form
+     * @param string $field The name of the field to enable
      */
     public static function enableField($form_name, $field)
     {
@@ -247,9 +293,10 @@ class TDate extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Disable the date field in a form
+     *
+     * @param string $form_name The name of the form
+     * @param string $field The name of the field to disable
      */
     public static function disableField($form_name, $field)
     {
@@ -257,7 +304,12 @@ class TDate extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Shows the widget at the screen
+     * Render the widget on the screen
+     *
+     * This method initializes the date picker JavaScript settings and applies 
+     * the defined mask, language, and options.
+     *
+     * @throws Exception If the change action is defined but the form is not set
      */
     public function show()
     {

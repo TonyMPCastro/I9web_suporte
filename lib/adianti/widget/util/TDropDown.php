@@ -10,6 +10,8 @@ use Adianti\Widget\Util\TImage;
 /**
  * TDropDown Widget
  *
+ * This class represents a dropdown menu component.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage util
@@ -24,8 +26,14 @@ class TDropDown extends TElement
     
     /**
      * Class Constructor
-     * @param $title Dropdown title
-     * @param $icon  Dropdown icon
+     *
+     * Initializes a dropdown component with a button.
+     *
+     * @param string      $label     The dropdown button label.
+     * @param string|null $icon      The dropdown button icon (optional).
+     * @param bool        $use_caret Whether to display a caret icon (optional).
+     * @param string      $title     The tooltip title for the button (optional).
+     * @param int|null    $height    The height of the dropdown menu (optional).
      */
     public function __construct($label, $icon = NULL, $use_caret = FALSE, $title = '', $height = null)
     {
@@ -74,8 +82,9 @@ class TDropDown extends TElement
     }
     
     /**
-     * Define the pull side
-     * @side left/right
+     * Define the dropdown pull side.
+     *
+     * @param string $side The pull direction (left or right).
      */
     public function setPullSide($side)
     {
@@ -83,8 +92,9 @@ class TDropDown extends TElement
     }
 
     /**
-     * Define the button size
-     * @size sm (small) lg (large)
+     * Set the button size.
+     *
+     * @param string $size The button size (e.g., 'sm' for small, 'lg' for large).
      */
     public function setButtonSize($size)
     {
@@ -92,8 +102,9 @@ class TDropDown extends TElement
     }
     
     /**
-     * Define the button class
-     * @class CSS class
+     * Set the button CSS class.
+     *
+     * @param string $class The CSS class to be applied to the button.
      */
     public function setButtonClass($class)
     {
@@ -101,7 +112,9 @@ class TDropDown extends TElement
     }
     
     /**
-     * Returns the dropdown button
+     * Get the dropdown button element.
+     *
+     * @return TElement The button element.
      */
     public function getButton()
     {
@@ -109,10 +122,15 @@ class TDropDown extends TElement
     }
     
     /**
-     * Add an action
-     * @param $title  Title
-     * @param $action Action (TAction or string Javascript action)
-     * @param $icon   Icon
+     * Add an action item to the dropdown.
+     *
+     * @param string       $title   The action title.
+     * @param TAction|string $action The action (TAction instance or JavaScript string).
+     * @param string|null  $icon    The action icon (optional).
+     * @param string       $popover Tooltip or popover text (optional).
+     * @param bool         $add     Whether to add the item to the dropdown (optional, default: true).
+     *
+     * @return TElement|null The created list item element or null if the action is hidden.
      */
     public function addAction($title, $action, $icon = NULL, $popover = '', $add = true)
     {
@@ -122,8 +140,19 @@ class TDropDown extends TElement
         
         if ($action instanceof TAction)
         { 
+            if($action->isHidden())
+            {
+                return;
+            }
+
             $link->{'href'} = $action->serialize();
             $link->{'generator'} = "adianti";
+
+            if($action->isDisabled())
+            {
+                unset($link->generator);
+                $link->disabled = 'disabled';
+            }
         }
         else if (is_string($action))
         {
@@ -156,10 +185,18 @@ class TDropDown extends TElement
     }
     
     /**
-     * Add an action
-     * @param $title  Title
-     * @param $action Action (TAction or string Javascript action)
-     * @param $icon   Icon
+     * Add a POST action to the dropdown.
+     *
+     * This method creates an action that submits a form via AJAX.
+     *
+     * @param string       $title   The action title.
+     * @param TAction|string $action The action (TAction instance or JavaScript string).
+     * @param string       $form    The form name to be submitted.
+     * @param string|null  $icon    The action icon (optional).
+     * @param string       $popover Tooltip or popover text (optional).
+     * @param bool         $add     Whether to add the item to the dropdown (optional, default: true).
+     *
+     * @return TElement|null The created list item element or null if the action is hidden.
      */
     public function addPostAction($title, $action, $form, $icon = NULL, $popover = '', $add = true)
     {
@@ -169,6 +206,11 @@ class TDropDown extends TElement
         
         if ($action instanceof TAction)
         { 
+            if($action->isHidden())
+            {
+                return;
+            }
+
             $url = $action->serialize(FALSE);
             
             if ($action->isStatic())
@@ -179,12 +221,18 @@ class TDropDown extends TElement
             $wait_message = AdiantiCoreTranslator::translate('Loading');
             
             // define the button's action (ajax post)
-            $action = "Adianti.waitMessage = '$wait_message';";
-            $action.= "{$this->functions}";
-            $action.= "__adianti_post_data('{$form}', '{$url}');";
-            $action.= "return false;";
+            $clickAction = "Adianti.waitMessage = '$wait_message';";
+            $clickAction.= "{$this->functions}";
+            $clickAction.= "__adianti_post_data('{$form}', '{$url}');";
+            $clickAction.= "return false;";
+
+            if($action->isDisabled())
+            {
+                $link->disabled = 'disabled';
+                $clickAction = '';
+            }
             
-            $link->{'onclick'} = $action;
+            $link->{'onclick'} = $clickAction;
         }
         else if (is_string($action))
         {
@@ -217,7 +265,11 @@ class TDropDown extends TElement
     }
     
     /**
-     * Add an action group
+     * Add an action group to the dropdown.
+     *
+     * @param string $title   The title of the action group.
+     * @param array  $actions The list of actions (each action should be an array with [title, action, icon]).
+     * @param string $icon    The icon for the action group.
      */
     public function addActionGroup($title, $actions, $icon)
     {
@@ -252,8 +304,9 @@ class TDropDown extends TElement
     }
     
     /**
-     * Add a header
-     * @param $header Options Header
+     * Add a header item to the dropdown.
+     *
+     * @param string $header The header text.
      */
     public function addHeader($header)
     {
@@ -264,7 +317,7 @@ class TDropDown extends TElement
     }
     
     /**
-     * Add a separator
+     * Add a separator to the dropdown.
      */
     public function addSeparator()
     {
@@ -274,7 +327,7 @@ class TDropDown extends TElement
     }
     
     /**
-     * Clear child elements
+     * Clear all items from the dropdown.
      */
     public function clearItems()
     {

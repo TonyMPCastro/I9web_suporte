@@ -7,6 +7,9 @@ use Adianti\Control\TAction;
 /**
  * Page Step
  *
+ * Represents a step indicator for multi-step forms or processes.
+ * It visually highlights the current step and allows navigation between steps.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage util
@@ -22,7 +25,8 @@ class TPageStep extends TElement
     protected $stepNumber = 1;
     
     /**
-     * Constructor
+     * Class Constructor.
+     * Initializes the step container as an unordered list and sets up the structure for step navigation.
      */
     public function __construct()
     {
@@ -36,10 +40,10 @@ class TPageStep extends TElement
     }
     
     /**
-     * Add an item
-     * @param $title     Item title
-     * @param $completed Item is completed
-     * @param $action    Item action
+     * Adds a new step item to the step indicator.
+     *
+     * @param string       $title  The title of the step.
+     * @param TAction|null $action An optional action to be executed when clicking the step.
      */
     public function addItem($title, $action = null)
     {
@@ -72,7 +76,9 @@ class TPageStep extends TElement
     }
     
     /**
-     * Select current item
+     * Marks a step as the current active step.
+     *
+     * @param string $title The title of the step to be marked as active.
      */
     public function select($title)
     {

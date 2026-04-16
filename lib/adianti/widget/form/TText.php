@@ -11,7 +11,10 @@ use Adianti\Core\AdiantiCoreTranslator;
 use Exception;
 
 /**
- * Text Widget (also known as Memo)
+ * Represents a multi-line text input field (textarea, also known as Memo) in a form.
+ *
+ * This widget allows defining size, maximum length, text transformation (uppercase/lowercase),
+ * exit actions, and other properties.
  *
  * @version    7.5
  * @package    widget
@@ -31,7 +34,10 @@ class TText extends TField implements AdiantiWidgetInterface
     
     /**
      * Class Constructor
-     * @param $name Widet's name
+     *
+     * Initializes the TText widget with a unique identifier and default properties.
+     *
+     * @param string $name Widget's name
      */
     public function __construct($name)
     {
@@ -47,9 +53,10 @@ class TText extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the widget's size
-     * @param  $width   Widget's width
-     * @param  $height  Widget's height
+     * Sets the widget's dimensions.
+     *
+     * @param string|int $width  Widget's width (can be a percentage or pixel value)
+     * @param string|int|null $height Widget's height (can be a percentage, pixel value, or null to keep default height)
      */
     public function setSize($width, $height = NULL)
     {
@@ -61,8 +68,9 @@ class TText extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Returns the size
-     * @return array(width, height)
+     * Gets the current size of the widget.
+     *
+     * @return array<int|string> An array containing width and height values.
      */
     public function getSize()
     {
@@ -70,8 +78,9 @@ class TText extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define max length
-     * @param  $length Max length
+     * Defines the maximum length of the text input.
+     *
+     * @param int $length Maximum number of characters allowed
      */
     public function setMaxLength($length)
     {
@@ -82,8 +91,11 @@ class TText extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the action to be executed when the user leaves the form field
-     * @param $action TAction object
+     * Defines an action to be executed when the user exits the text field.
+     *
+     * @param TAction $action The action to be executed
+     *
+     * @throws Exception If the action is not static
      */
     function setExitAction(TAction $action)
     {
@@ -99,7 +111,9 @@ class TText extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Set exit function
+     * Defines a JavaScript function to be executed when the user exits the text field.
+     *
+     * @param string $function JavaScript function name
      */
     public function setExitFunction($function)
     {
@@ -107,7 +121,9 @@ class TText extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Force lower case
+     * Forces the text input to always be in lowercase.
+     *
+     * Applies JavaScript transformation and sets CSS style accordingly.
      */
     public function forceLowerCase()
     {
@@ -119,7 +135,9 @@ class TText extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Force upper case
+     * Forces the text input to always be in uppercase.
+     *
+     * Applies JavaScript transformation and sets CSS style accordingly.
      */
     public function forceUpperCase()
     {
@@ -130,7 +148,9 @@ class TText extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the post data
+     * Retrieves the value of the text input from the $_POST request.
+     *
+     * @return string The posted data value or an empty string if not set
      */
     public function getPostData()
     {
@@ -147,7 +167,12 @@ class TText extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Show the widget
+     * Renders the widget and applies its properties.
+     *
+     * Displays the textarea element with defined size, styles, and actions.
+     * Throws an exception if the exit action is set but the form is not properly registered.
+     *
+     * @throws Exception If the form containing this field is not properly set
      */
     public function show()
     {

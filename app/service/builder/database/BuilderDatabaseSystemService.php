@@ -77,12 +77,17 @@ class BuilderDatabaseSystemService
 			throw new Exception("Database not found");
 		}
 
+        if(!empty($info['keep']))
+        {
+            unset($info['keep']);
+        }
+
         $queries = self::getQueries()['list_structures']??[];
         $prescripts = self::getQueries()['prescripts']??[];
 
         if(! empty($queries[$info['type']]))
         {
-            TTransaction::open($nameDatabase);
+            TTransaction::open($nameDatabase, $info);
             $conn = TTransaction::get();
 
             if(! empty($prescripts[$info['type']]))
@@ -101,10 +106,13 @@ class BuilderDatabaseSystemService
                 }
             }
 
-            $query = str_replace(':database', $info['name'], $queries[$info['type']]);
-            $result = $conn->query($query);
 
+            $query = str_replace(':database', $info['name'], $queries[$info['type']]);
+
+            $result = $conn->query($query);
+            
             self::$structures = $result->fetchAll(PDO::FETCH_NUM);
+
             TTransaction::close();
 
             return self::$structures;
@@ -173,12 +181,17 @@ class BuilderDatabaseSystemService
 
         $structures = self::listSturctures($nameDatabase);
 
+        if(!empty($info['keep']))
+        {
+            unset($info['keep']);;
+        }
+
         if(empty($structures))
         {
             return [];
         }
 
-        TTransaction::open($nameDatabase);
+        TTransaction::open($nameDatabase, $info);
         
         $prescripts = self::getQueries()['prescripts']??[];
 

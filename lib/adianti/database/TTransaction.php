@@ -6,6 +6,7 @@ use Adianti\Database\TConnection;
 use Adianti\Log\TLogger;
 use Adianti\Log\TLoggerSTD;
 use Adianti\Log\TLoggerTXT;
+use Adianti\Log\DebugLogger;
 use Adianti\Log\AdiantiLoggerInterface;
 
 use PDO;
@@ -14,6 +15,9 @@ use Exception;
 
 /**
  * Manage Database transactions
+ *
+ * Manages database transactions.
+ * Provides methods to start, commit, rollback, and log database transactions.
  *
  * @version    7.5
  * @package    database
@@ -29,17 +33,25 @@ class TTransaction
     private static $dbinfo;   // database info
     private static $counter;
     private static $uniqid;
+    private static $globalLog = false;
+    private static $traceLog = [];
+    private static $executionTime = 0;
+    private static $lastLogId = NULL;
     
     /**
-     * Class Constructor
-     * There won't be instances of this class
+     * Class constructor.
+     * Private to prevent instantiation, as this class only provides static methods.
      */
     private function __construct(){}
     
     /**
-     * Open a connection and Initiates a transaction
-     * @param $database Name of the database (an INI file).
-     * @param $dbinfo Optional array with database information
+     * Opens a connection and starts a transaction.
+     *
+     * @param string $database The name of the database (defined in an INI file).
+     * @param array|null $dbinfo Optional array containing database connection details.
+     *
+     * @return PDO The database connection object.
+     * @throws Exception If the connection fails.
      */
     public static function open($database, $dbinfo = NULL)
     {
@@ -51,7 +63,9 @@ class TTransaction
         {
             self::$counter ++;
         }
-        
+        self::$database[self::$counter] = $database;
+        self::$uniqid[self::$counter] = uniqid();
+
         if ($dbinfo)
         {
             self::$conn[self::$counter]   = TConnection::openArray($dbinfo);
@@ -64,14 +78,11 @@ class TTransaction
             self::$dbinfo[self::$counter] = $dbinfo;
         }
         
-        self::$database[self::$counter] = $database;
-        self::$uniqid[self::$counter] = uniqid();
-        
         $driver = self::$conn[self::$counter]->getAttribute(PDO::ATTR_DRIVER_NAME);
         
         $fake = isset($dbinfo['fake']) ? $dbinfo['fake'] : FALSE;
         
-        if (!$fake)
+        if (!$fake && ! self::$conn[self::$counter]->inTransaction())
         {
             // begins transaction
             self::$conn[self::$counter]->beginTransaction();
@@ -94,25 +105,33 @@ class TTransaction
             // turn OFF the log
             self::$logger[self::$counter] = NULL;
         }
+
+        if(self::$globalLog)
+        {
+            self::dumpGlobalLog();
+        }
         
         return self::$conn[self::$counter];
     }
     
     /**
-     * Open fake transaction
-     * @param $database Name of the database (an INI file).
+     * Opens a fake transaction for the specified database.
+     * Fake transactions do not actually begin transactions at the database level.
+     *
+     * @param string $database The name of the database (defined in an INI file).
      */
     public static function openFake($database)
     {
         $info = TConnection::getDatabaseInfo($database);
         $info['fake'] = 1;
         
-        TTransaction::open(null, $info);
+        TTransaction::open($database, $info);
     }
     
     /**
-     * Returns the current active connection
-     * @return PDO
+     * Returns the current active database connection.
+     *
+     * @return PDO|null The active PDO connection, or null if no connection is open.
      */
     public static function get()
     {
@@ -123,7 +142,9 @@ class TTransaction
     }
     
     /**
-     * Rollback all pending operations
+     * Rolls back all pending operations in the current transaction.
+     *
+     * @return bool Returns true if the rollback was successful, false otherwise.
      */
     public static function rollback()
     {
@@ -148,7 +169,9 @@ class TTransaction
     }
     
     /**
-     * Commit all the pending operations
+     * Commits all pending operations and closes the current transaction.
+     *
+     * @return bool Returns true if the commit was successful, false otherwise.
      */
     public static function close()
     {
@@ -158,7 +181,7 @@ class TTransaction
             $info = self::getDatabaseInfo();
             $fake = isset($info['fake']) ? $info['fake'] : FALSE;
             
-            if (!$fake)
+            if (!$fake && self::$conn[self::$counter]->inTransaction())
             {
                 // apply the pending operations
                 self::$conn[self::$counter]->commit();
@@ -173,7 +196,7 @@ class TTransaction
     }
     
     /**
-     * close all transactions
+     * Closes all active transactions by committing them.
      */
     public static function closeAll()
     {
@@ -186,7 +209,7 @@ class TTransaction
     }
     
     /**
-     * rollback all transactions
+     * Rolls back all active transactions.
      */
     public static function rollbackAll()
     {
@@ -199,8 +222,11 @@ class TTransaction
     }
     
     /**
-     * Assign a Logger closure function
-     * @param $logger A Closure
+     * Assigns a logger function to log transaction messages.
+     *
+     * @param Closure $logger A Closure function used for logging messages.
+     *
+     * @throws Exception If no active transaction exists.
      */
     public static function setLoggerFunction(Closure $logger)
     {
@@ -216,8 +242,11 @@ class TTransaction
     }
     
     /**
-     * Assign a Logger strategy
-     * @param $logger A TLogger child object
+     * Assigns a logger strategy to log transaction messages.
+     *
+     * @param AdiantiLoggerInterface $logger An instance of a logger implementing AdiantiLoggerInterface.
+     *
+     * @throws Exception If no active transaction exists.
      */
     public static function setLogger(AdiantiLoggerInterface $logger)
     {
@@ -233,8 +262,9 @@ class TTransaction
     }
     
     /**
-     * Write a message in the LOG file, using the user strategy
-     * @param $message Message to be logged
+     * Logs a message using the assigned logger strategy.
+     *
+     * @param string $message The message to be logged.
      */
     public static function log($message)
     {
@@ -246,7 +276,14 @@ class TTransaction
             // avoid recursive log
             self::$logger[self::$counter] = NULL;
             
-            if ($log instanceof AdiantiLoggerInterface)
+            if(self::$globalLog)
+            {
+                self::$lastLogId = uniqid();
+
+                self::$executionTime = microtime(true);
+                $log->write($message);
+            }
+            else if ($log instanceof AdiantiLoggerInterface)
             {
                 // call log method
                 $log->write($message);
@@ -262,7 +299,9 @@ class TTransaction
     }
     
     /**
-     * Return the Database Name
+     * Returns the name of the current active database.
+     *
+     * @return string|null The database name, or null if no database is set.
      */
     public static function getDatabase()
     {
@@ -273,7 +312,9 @@ class TTransaction
     }
     
     /**
-     * Returns the Database Information
+     * Returns the database connection details of the active transaction.
+     *
+     * @return array|null The database connection information, or null if not available.
      */
     public static function getDatabaseInfo()
     {
@@ -284,7 +325,9 @@ class TTransaction
     }
     
     /**
-     * Returns the Transaction uniqid
+     * Returns the unique transaction identifier.
+     *
+     * @return string|null The unique transaction ID, or null if not available.
      */
     public static function getUniqId()
     {
@@ -295,11 +338,17 @@ class TTransaction
     }
     
     /**
-     * Enable transaction log
+     * Enables transaction logging to a file or standard output.
+     *
+     * @param string|null $file Optional file path to write logs. If not specified, logs will be printed to STDOUT.
      */
     public static function dump( $file = null )
     {
-        if ($file)
+        if(self::$globalLog)
+        {
+            self::setLogger( new DebugLogger() );
+        }
+        else if ($file)
         {
             self::setLogger( new TLoggerTXT($file) );
         }
@@ -307,5 +356,120 @@ class TTransaction
         {
             self::setLogger( new TLoggerSTD );
         }
+    }
+
+    /**
+     * Checks if a transaction is open for a specific database.
+     *
+     * @param string $database The name of the database to check.
+     *
+     * @return bool True if the transaction is open, false otherwise.
+     */
+    public static function isOpen($database, $fake = false)
+    {   
+        $cur_conn = serialize(TTransaction::getDatabaseInfo());
+        $new_conn = serialize(TConnection::getDatabaseInfo($database));
+        
+        if($fake)
+        {
+            $new_conn['fake'] = 1;
+        }
+        
+        return ($cur_conn === $new_conn);
+    }
+
+    /**
+     * Checks if a fake transaction is open for a specific database.
+     *
+     * @param string $database The name of the database to check.
+     *
+     * @return bool True if the fake transaction is open, false otherwise.
+     */
+    public static function isOpenFake($database)
+    {   
+        $cur_conn = serialize(TTransaction::getDatabaseInfo());
+        $new_conn = TConnection::getDatabaseInfo($database);
+        $new_conn['fake'] = 1;
+
+        $new_conn = serialize($new_conn);
+        
+        return ($cur_conn === $new_conn);
+    }
+
+    public static function hasConnection($database)
+    {
+        return self::isOpen($database) || self::isOpenFake($database);
+    }
+
+    public static function enableGlobalLog()
+    {
+        self::$globalLog = true;
+    }
+
+    public static function logExecutionTime()
+    {
+        // check if exist a logger
+        if (!empty(self::$logger[self::$counter]))
+        {
+            $log = self::$logger[self::$counter];
+            
+            // avoid recursive log
+            self::$logger[self::$counter] = NULL;
+            
+            if (self::$globalLog)
+            {
+                $log->writeExecutionTime((microtime(true) - self::$executionTime) * 1000, self::$lastLogId);
+            }
+            
+            // restore logger
+            self::$logger[self::$counter] = $log;
+        }
+    }
+
+     /**
+     * Returns the Transaction uniqid
+     */
+    public static function getLastLogId()
+    {
+        return self::$lastLogId;
+    }
+
+    public static function getTraceLog()
+    {
+        return self::$traceLog[self::$uniqid[max(0, self::$counter)] ?? ''] ?? 'Unknown';
+    }
+
+    public static function dumpGlobalLog()
+    {
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        if($backtrace){
+            foreach($backtrace as $trace){
+                if(!empty($trace['file']) && preg_match("/app\//", $trace['file'])){
+                    self::$traceLog[self::$uniqid[self::$counter]] = basename($trace['file']).'('.$trace['line'].')';
+                    break;
+                }
+            }
+        }
+
+        if(empty(self::$traceLog[self::$uniqid[self::$counter]]))
+        {
+            self::$traceLog[self::$uniqid[self::$counter]] = 'Unknown';
+        }
+        
+        self::dump();
+    }
+
+    /**
+     * Returns the current active connection
+     * @return PDO
+     */
+    public static function getConnectionId()
+    {
+        if (isset(self::$conn[self::$counter]))
+        {
+            return spl_object_hash(self::$conn[self::$counter]);
+        }
+
+        return uniqid();
     }
 }

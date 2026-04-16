@@ -13,7 +13,10 @@ use Adianti\Widget\Datagrid\TDataGridColumn;
 use Adianti\Wrapper\BootstrapDatagridWrapper;
 
 /**
- * Table chart Widget
+ * Class BTableChart
+ *
+ * This widget represents a table-based chart that integrates with Adianti's DataGrid.
+ * It allows dynamic column definitions, database connections, custom styling, and group columns.
  *
  * @version    7.4
  * @package    widget
@@ -33,6 +36,7 @@ class BTableChart extends TElement
     protected $data;
     protected $loaded;
     protected $title;
+    protected $subTitle;
     protected $customClass;
     protected $showPanel;
     protected $height;
@@ -52,13 +56,16 @@ class BTableChart extends TElement
     private $tableFooterFontColor;
 
     /**
-     * Class Constructor
-     * @param  $name         widget's name
-     * @param  $database     database name
-     * @param  $model        model class name
-     * @param  $joins        array with joins to be used on select
+     * BTableChart constructor.
+     *
+     * Initializes the table chart with a name, database, model, and optional joins.
+     *
+     * @param string      $name     The name of the chart.
+     * @param string|null $database The database name (optional).
+     * @param string|null $model    The model class name (optional).
+     * @param array       $joins    An array of joins to be used in the SQL query (optional).
      */
-    public function __construct(String $name, String $database = null, String $model = null, array $joins = [])
+    public function __construct(String $name, ?String $database = null, ?String $model = null, array $joins = [])
     {
         parent::__construct('div');
 
@@ -82,8 +89,9 @@ class BTableChart extends TElement
     }
     
     /**
-     * Set row odd color
-     * @param $rowColorOdd string color
+     * Sets the background color for odd rows.
+     *
+     * @param string $rowColorOdd The color code for odd rows.
      */
     public function setRowColorOdd($rowColorOdd)
     {
@@ -91,7 +99,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Validate method is allowed
+     * Checks if the chart should be displayed based on allowed methods.
+     *
+     * @return bool True if the chart can be displayed, false otherwise.
      */
     public function canDisplay()
     {
@@ -104,9 +114,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set display condition
+     * Sets the allowed methods for displaying the chart.
      *
-     * @param $methods methods show chart
+     * @param array $methods An array of method names that can display the chart.
      */
     public function setShowMethods($methods = [])
     {
@@ -114,7 +124,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Get row odd color
+     * Gets the background color for odd rows.
+     *
+     * @return string The color code for odd rows.
      */
     public function getRowColorOdd()
     {
@@ -122,8 +134,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set row even color
-     * @param $rowColorEven string color
+     * Sets the background color for even rows.
+     *
+     * @param string $rowColorEven The color code for even rows.
      */
     public function setRowColorEven($rowColorEven)
     {
@@ -131,7 +144,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Get row even color
+     * Gets the background color for even rows.
+     *
+     * @return string The color code for even rows.
      */
     public function getRowColorEven()
     {
@@ -139,8 +154,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set row odd font color
-     * @param $fontRowColorOdd string color
+     * Sets the font color for odd rows.
+     *
+     * @param string $fontRowColorOdd The font color for odd rows.
      */
     public function setFontRowColorOdd($fontRowColorOdd)
     {
@@ -148,7 +164,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Get row odd font color
+     * Gets the font color for odd rows.
+     *
+     * @return string The font color for odd rows.
      */
     public function getFontRowColorOdd()
     {
@@ -156,8 +174,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set row even font color
-     * @param $fontRowColorEven string color
+     * Sets the font color for even rows.
+     *
+     * @param string $fontRowColorEven The font color for even rows.
      */
     public function setFontRowColorEven($fontRowColorEven)
     {
@@ -165,7 +184,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Get row even font color
+     * Gets the font color for even rows.
+     *
+     * @return string The font color for even rows.
      */
     public function getFontRowColorEven()
     {
@@ -173,8 +194,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set row border color
-     * @param $borderColor string color
+     * Sets the border color of table rows.
+     *
+     * @param string $borderColor The border color.
      */
     public function setBorderColor($borderColor)
     {
@@ -182,7 +204,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Get row border color
+     * Gets the border color of table rows.
+     *
+     * @return string The border color.
      */
     public function getBorderColor()
     {
@@ -190,8 +214,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set table header color
-     * @param $tableHeaderColor string color
+     * Sets the table header background color.
+     *
+     * @param string $tableHeaderColor The header background color.
      */
     public function setTableHeaderColor($tableHeaderColor)
     {
@@ -199,7 +224,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Get table header color
+     * Gets the table header background color.
+     *
+     * @return string The header background color.
      */
     public function getTableHeaderColor()
     {
@@ -207,8 +234,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set table header font color
-     * @param $tableHeaderFontColor string color
+     * Sets the font color for the table header.
+     *
+     * @param string $tableHeaderFontColor The font color for the table header.
      */
     public function setTableHeaderFontColor($tableHeaderFontColor)
     {
@@ -216,7 +244,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Get table header font color
+     * Gets the font color for the table header.
+     *
+     * @return string The font color for the table header.
      */
     public function getTableHeaderFontColor()
     {
@@ -224,8 +254,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set table footer color
-     * @param $tableFooterColor string color
+     * Sets the table footer background color.
+     *
+     * @param string $tableFooterColor The footer background color.
      */
     public function setTableFooterColor($tableFooterColor)
     {
@@ -233,7 +264,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Get table footer color
+     * Gets the table footer background color.
+     *
+     * @return string The footer background color.
      */
     public function getTableFooterColor()
     {
@@ -241,16 +274,19 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set table footer font color
-     * @param $tableFooterFontColor string color
+     * Sets the font color for the table footer.
+     *
+     * @param string $tableFooterFontColor The font color for the table footer.
      */
     public function setTableFooterFontColor($tableFooterFontColor)
     {
         $this->tableFooterFontColor = $tableFooterFontColor;
     }
 
-     /**
-     * Get table footer font color
+    /**
+     * Gets the font color for the table footer.
+     *
+     * @return string The font color for the table footer.
      */
     public function getTableFooterFontColor()
     {
@@ -258,8 +294,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Get name
+     * Gets the name of the chart.
      *
+     * @return string The name of the chart.
      */
     public function getName()
     {
@@ -267,9 +304,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set name
+     * Sets the name of the chart.
      *
-     * @param $name name of chart
+     * @param string $name The name of the chart.
      */
     public function setName($name)
     {
@@ -277,9 +314,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Define custom css class
+     * Defines a custom CSS class for the chart.
      *
-     * @param $class css class
+     * @param string $class The CSS class name.
      */
     public function setCustomClass($class)
     {
@@ -287,7 +324,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Get database name
+     * Gets the database name.
+     *
+     * @return string The database name.
      */
     public function getDatabase()
     {
@@ -295,8 +334,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set database name
-     * @param  $database database name
+     * Sets the database name.
+     *
+     * @param string $database The database name.
      */
     public function setDatabase($database)
     {
@@ -304,8 +344,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set model name
-     * @param  $model model extends TRecord
+     * Sets the model class name.
+     *
+     * @param string $model The model class name.
      */
     public function setModel($model)
     {
@@ -313,19 +354,33 @@ class BTableChart extends TElement
     }
 
     /**
-     * Add column
-     * @param  $column BTableColumnChart column
+     * Adds a column to the table chart.
+     *
+     * @param BTableColumnChart $column The column object to add.
      */
     public function addColumn(BTableColumnChart $column)
     {
-        $this->columns[] = $column;
+        if(empty($this->columns[$column->getName()]))
+        {
+            $this->columns[$column->getName()] = $column;    
+        }
+        else
+        {
+            $column->alias = $column->getName().'_'.uniqid();
+            $this->columns[$column->alias] = $column;
+        }
+        
     }
 
     /**
-     * Set group column
-     * @param  $column BTableColumnChart column
+     * Defines a group column with an optional transformer and total calculation.
+     *
+     * @param string        $column           The column name.
+     * @param callable|null $transformer      A function to transform values (optional).
+     * @param bool         $showTotal         Whether to show totals (default: false).
+     * @param callable|null $transformerTotal A function to transform total values (optional).
      */
-    public function setGroupColumn($column, callable $transformer = null, bool $showTotal = false, callable $transformerTotal = null)
+    public function setGroupColumn($column, ?Callable $transformer = null, bool $showTotal = false, ?callable $transformerTotal = null)
     {
         $groupColumn = new stdClass;
         $groupColumn->column = $column;
@@ -337,8 +392,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set columns
-     * @param  $columns [ BTableColumnChart ] array of columns
+     * Sets multiple columns in the table chart.
+     *
+     * @param array $columns An array of BTableColumnChart objects.
      */
     public function setColumns($columns)
     {
@@ -354,17 +410,21 @@ class BTableChart extends TElement
     }
 
     /**
-     * Get column     
-     * List columns
+     * Gets all columns in the table chart.
+     *
+     * @return array An array of BTableColumnChart objects.
      */
     public function getColumns()
     {
         return $this->columns;
     }
 
-     /**
-     * Get column     
-     * List columns
+    /**
+     * Gets a specific column by name.
+     *
+     * @param string $name The column name.
+     *
+     * @return BTableColumnChart|null The column object, or null if not found.
      */
     public function getColumn($name)
     {
@@ -374,8 +434,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set joins
-     * @param  $joins database joins
+     * Sets database joins for queries.
+     *
+     * @param array $joins An array of join definitions.
      */
     public function setJoins($joins)
     {
@@ -383,8 +444,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set criteria for filter
-     * @param  $criteria criteria with filters
+     * Sets a filtering criteria for the table chart.
+     *
+     * @param TCriteria $criteria The criteria object containing filters.
      */
     public function setCriteria(TCriteria $criteria)
     {
@@ -392,16 +454,28 @@ class BTableChart extends TElement
     }
 
     /**
-     * Get title panel
-     * @param $title String title
+     * Sets the title of the panel.
+     *
+     * @param string $title The panel title.
      */
     public function setTitle($title)
     {
         $this->title = $title;
     }
 
-     /**
-     * Hide panel
+    /**
+     * Set subtitle panel
+     * @param $subtitle String subtitle
+     */
+    public function setSubTitle($subtitle)
+    {
+        $this->subTitle = $subtitle;
+    }
+
+    /**
+     * Hides or shows the panel.
+     *
+     * @param bool $hide Whether to hide the panel (default: true).
      */
     public function hidePanel($hide = true)
     {
@@ -409,9 +483,10 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set size panel chart
-     * @param $width  size width
-     * @param $height size height
+     * Sets the width and height of the chart.
+     *
+     * @param string|int $width  The width of the chart.
+     * @param string|int $height The height of the chart.
      */
     public function setSize($width, $height)
     {
@@ -423,9 +498,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Set size panel chart
-     * @param $width  size width
-     * @param $height size height
+     * Gets the size of the chart.
+     *
+     * @return null This method currently does not return a value.
      */
     public function getSize()
     {
@@ -433,7 +508,9 @@ class BTableChart extends TElement
     }
 
     /**
-     * Get data
+     * Loads data from the database according to the defined model, columns, and criteria.
+     *
+     * @throws Exception If the database, model, or columns are not set.
      */
     private function loadData()
     {
@@ -517,10 +594,20 @@ class BTableChart extends TElement
         {
             $nameColumn = $tableColumn->getName();
             $name = $tableColumn->getName();
+            
+            if(isset($tableColumn->alias))
+            {
+                $name = $tableColumn->alias;
+            }
 
             // Not find dot, insert table name before
             if (strpos($nameColumn, '.') === FALSE && strpos($nameColumn, ':') === FALSE && strpos($nameColumn, '(') === FALSE)
             {
+                if(preg_match('/builder_db_query_temp/i', $entity))
+                {
+                    $entity = 'builder_db_query_temp';
+                }
+                
                 $nameColumn = "{$entity}.{$nameColumn}";
             }
 
@@ -532,12 +619,12 @@ class BTableChart extends TElement
             {
                 $groups[] = ($nameColumn);
             }
-
+            
             $sql->addColumn("{$nameColumn} as \"{$name}\" ");
 
             if ($tableColumn->getOrder())
             {
-                $orders[] = "{$name} {$tableColumn->getOrder()}";
+                $orders[] = "{$nameColumn} {$tableColumn->getOrder()}";
             }
         }
 
@@ -588,7 +675,7 @@ class BTableChart extends TElement
     }
 
     /**
-     * Exec chart before show
+     * Executes the necessary processes before displaying the chart.
      */
     public function create()
     {
@@ -596,6 +683,9 @@ class BTableChart extends TElement
         $this->loadData();
     }
 
+    /**
+     * Creates the DataGrid structure, including columns, groups, and styles.
+     */
     private function makeDatagrid()
     {
         $this->datagrid->{'class'} .= " {$this->customClass} table-responsive ";
@@ -614,7 +704,14 @@ class BTableChart extends TElement
 
         foreach( $this->columns as $tableColumn)
         {
-            $tdcolumn = new TDataGridColumn($tableColumn->getName(), $tableColumn->getLabel(), $tableColumn->getAlign() , $tableColumn->getWidth());
+            $name = $tableColumn->getName();
+            
+            if(isset($tableColumn->alias))
+            {
+                $name = $tableColumn->alias;
+            }
+            
+            $tdcolumn = new TDataGridColumn($name, $tableColumn->getLabel(), $tableColumn->getAlign() , $tableColumn->getWidth());
             
             $totalFunction = $tableColumn->getTotal();
             $transformerTotal = $tableColumn->getTransformerTotal();
@@ -669,6 +766,9 @@ class BTableChart extends TElement
         $this->datagrid->createModel();
     }
 
+    /**
+     * Populates the DataGrid with the loaded data.
+     */
     public function setDataDatagrid()
     {
         $this->datagrid->clear();
@@ -684,7 +784,16 @@ class BTableChart extends TElement
         }
     }
 
-    public function setRowColors(string $rowColorOdd, string $rowColorEven, string $fontRowColorOdd = null, string $fontRowColorEven = null, $borderColor = null)
+    /**
+     * Sets the colors for table rows, including odd/even row background colors and font colors.
+     *
+     * @param string      $rowColorOdd      The background color for odd rows.
+     * @param string      $rowColorEven     The background color for even rows.
+     * @param string|null $fontRowColorOdd  The font color for odd rows (optional).
+     * @param string|null $fontRowColorEven The font color for even rows (optional).
+     * @param string|null $borderColor      The border color for table rows (optional).
+     */
+    public function setRowColors(string $rowColorOdd, string $rowColorEven, ?string $fontRowColorOdd = null, ?string $fontRowColorEven = null, ?string $borderColor = null)
     {
         $this->rowColorOdd = $rowColorOdd;
         $this->rowColorEven = $rowColorEven;
@@ -693,18 +802,33 @@ class BTableChart extends TElement
         $this->borderColor = $borderColor;
     }
 
-    public function setTableHeaderColors(string $tableHeaderColor, string $tableHeaderFontColor = null)
+    /**
+     * Sets the background and font color for the table header.
+     *
+     * @param string      $tableHeaderColor     The background color of the table header.
+     * @param string|null $tableHeaderFontColor The font color of the table header (optional).
+     */
+    public function setTableHeaderColors(string $tableHeaderColor, ?string $tableHeaderFontColor = null)
     {
         $this->tableHeaderColor = $tableHeaderColor;
         $this->tableHeaderFontColor = $tableHeaderFontColor;
     }
 
-    public function setTableFooterColors(string $tableFooterColor, string $tableFooterFontColor = null)
+    /**
+     * Sets the background and font color for the table footer.
+     *
+     * @param string      $tableFooterColor     The background color of the table footer.
+     * @param string|null $tableFooterFontColor The font color of the table footer (optional).
+     */
+    public function setTableFooterColors(string $tableFooterColor, ?string $tableFooterFontColor = null)
     {
         $this->tableFooterColor = $tableFooterColor;
         $this->tableFooterFontColor = $tableFooterFontColor;
     }
 
+    /**
+     * Applies the defined styles to the table, including row colors, header styles, and borders.
+     */
     private function showStyle()
     {
         if ($this->tableHeaderColor)
@@ -772,8 +896,8 @@ class BTableChart extends TElement
     }
 
     /**
-    * Show
-    */
+     * Renders the chart on the screen.
+     */
     public function show()
     {
         if (! $this->canDisplay())
@@ -786,16 +910,16 @@ class BTableChart extends TElement
             $this->create();
         }
 
-        $this->{'class'} = 'btablechart ' . $this->name;
+        $this->{'class'} = 'btablechart chart-container ' . $this->name;
 
         if (empty($this->data))
         {
             $panel = new TElement('div');
-            $panel->{'class'} = 'panel panel-default';
+            $panel->{'class'} = 'panel panel-default chart-header';
 
             $panelHeader = new TElement('div');
-            $panelHeader->{'class'} = 'panel-heading';
-            $panelHeader->add("<div class='panel-title'>{$this->title}</div>");
+            $panelHeader->{'class'} = 'panel-heading chart-title';
+            $panelHeader->add("<div class='panel-title card-title'>{$this->title}</div> <p class='chart-subtitle'>{$this->subTitle}</p>");
             $panel->add($panelHeader);
 
             $panelBody = new TElement('div');
@@ -814,11 +938,11 @@ class BTableChart extends TElement
             if ($this->showPanel)
             {
                 $panel = new TElement('div');
-                $panel->{'class'} = 'panel panel-default';
+                $panel->{'class'} = 'panel panel-default chart-header';
 
                 $panelHeader = new TElement('div');
-                $panelHeader->{'class'} = 'panel-heading';
-                $panelHeader->add("<div class='panel-title'>{$this->title}</div>");
+                $panelHeader->{'class'} = 'panel-heading chart-title';
+                $panelHeader->add("<div class='panel-title card-title'>{$this->title}</div> <p class='chart-subtitle'>{$this->subTitle}</p>");
                 $panel->add($panelHeader);
 
                 $panelBody = new TElement('div');

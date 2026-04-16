@@ -3,7 +3,7 @@
 namespace Math;
 
 /**
- * Tokenize mathematical expression.
+ * Tokenizes a mathematical expression into individual tokens.
  *
  * @author Adrean Boyadzhiev (netforce) <adrean.boyadzhiev@gmail.com>
  */
@@ -37,17 +37,21 @@ class Lexer
         '%' => array('priority' => 1, 'associativity' => Operator::O_LEFT_ASSOCIATIVE),
     );
 
+    /**
+     * Initializes the Lexer instance with an empty token collection.
+     */
     public function __construct()
     {
         $this->tokens = array();
     }
     
     /**
-     * Tokenize matematical expression.
-     * 
-     * @param type $code
-     * @return array Collection of Token instances
-     * @throws \InvalidArgumentException
+     * Tokenizes a mathematical expression into an array of Token instances.
+     *
+     * @param string $code The mathematical expression to be tokenized.
+     *
+     * @return Token[] Array of Token instances.
+     * @throws \InvalidArgumentException If the input string is empty or contains invalid tokens.
      */
     public function tokenize($code)
     {

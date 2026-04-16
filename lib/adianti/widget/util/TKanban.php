@@ -14,7 +14,10 @@ use ApplicationTranslator;
 use Exception;
 
 /**
- * Kanban
+ * Kanban Board Widget
+ *
+ * This class provides a Kanban board implementation that allows adding stages, 
+ * items, actions, and templates, with support for drag-and-drop functionality.
  *
  * @version    7.5
  * @package    widget
@@ -45,6 +48,9 @@ class TKanban extends TElement
     
     /**
      * Class Constructor
+     *
+     * Initializes the Kanban board structure, setting default properties and 
+     * creating the main container.
      */
 	public function __construct()
     {
@@ -60,13 +66,15 @@ class TKanban extends TElement
         $this->limitItems        = 20;
         
         $this->kanban                 = new TElement('div');
-        $this->kanban->{'id'}         = 'tkanban_' . mt_rand(1000000000, 1999999999);
+        $this->kanban->id             = 'tkanban_' . mt_rand(1000000000, 1999999999);
         $this->kanban->{'item_class'} = 'kanban-item-wrapper';
-        $this->kanban->{'class'}      = 'kanban-board';
+        $this->kanban->class          = 'kanban-board';
     }
     
     /**
+     * Set the height of Kanban stages
      *
+     * @param int|string $height Height value (can be in pixels or a CSS-compatible unit)
      */
     public function setStageHeight($height)
     {
@@ -74,7 +82,7 @@ class TKanban extends TElement
     }
     
     /**
-     * Enable Top Scrollbar
+     * Enable the top scrollbar for horizontal scrolling
      */
     public function enableTopScrollbar()
     {
@@ -82,7 +90,7 @@ class TKanban extends TElement
     }
 
     /**
-     * Enable MiniMap
+     * Enable the minimap for the Kanban board
      */
     public function enableMiniMap()
     {
@@ -90,7 +98,10 @@ class TKanban extends TElement
     }
 
     /**
-     * Define action load itens
+     * Define the action to load more items dynamically
+     *
+     * @param TAction $action The action to be triggered for loading more items
+     * @param int|null $limit The maximum number of items to be loaded at a time (optional)
      */
     public function setLoadMoreAction(TAction $action, $limit = null)
     {
@@ -102,7 +113,9 @@ class TKanban extends TElement
     }
     
     /**
-     * Define limit load more
+     * Set the limit for the number of items to load
+     *
+     * @param int $limit Number of items to load per request
      */
     public function setLimitItem($limit)
     {
@@ -110,11 +123,12 @@ class TKanban extends TElement
     }
     
     /**
-     * Add stage to kanban board
-     * @param  $id     Stage id
-     * @param  $title  Stage title
-     * @param  $color  Stage color
-     * @param  $object Stage data object
+     * Add a stage to the Kanban board
+     *
+     * @param string|int $id Stage identifier
+     * @param string $title Stage title
+     * @param stdClass|null $object Additional data associated with the stage (optional)
+     * @param string|null $color Stage background color (optional)
      */
     public function addStage($id, $title, $object = null, $color = null)
     {
@@ -124,44 +138,47 @@ class TKanban extends TElement
         }
         
         $stage             = new stdClass;
-        $stage->{'id'}     = $id;
-        $stage->{'title'}  = $title;
-        $stage->{'object'} = $object;
-        $stage->{'color'}  = $color;
+        $stage->id     = $id;
+        $stage->title  = $title;
+        $stage->object = $object;
+        $stage->color  = $color;
         
         $this->stages[] = $stage;
     }
     
     /**
-     * Add item to stage
-     * @param  $id       Item id
-     * @param  $stage_id Stage id
-     * @param  $title    Item title
-     * @param  $content  Item content
-     * @param  $color    Item color
-     * @param  $object   Item data object
+     * Add an item to a specific stage in the Kanban board
+     *
+     * @param string|int $id Item identifier
+     * @param string|int $stage_id Stage identifier where the item will be added
+     * @param string $title Item title
+     * @param string $content Item content
+     * @param string|null $color Item background color (optional)
+     * @param stdClass|null $object Additional data associated with the item (optional)
+     *
+     * @return stdClass The created item object
      */
     public function addItem($id, $stage_id, $title, $content, $color = null, $object = null)
     {
         if (is_null($object))
         {
             $object = new stdClass;
-            $object->{'title'} = $title;
-            $object->{'content'} = $content;
-            $object->{'color'} = $color;
+            $object->title = $title;
+            $object->content = $content;
+            $object->color = $color;
         }
 
-        if (empty($object->{'id'}))
+        if (empty($object->id))
         {
-            $object->{'id'} = $id;
+            $object->id = $id;
         }
 
         $item              = new stdClass;
-        $item->{'id'}      = $id;
-        $item->{'title'}   = $title;
-        $item->{'color'}   = $color;
-        $item->{'content'} = $content;
-        $item->{'object'}  = $object;
+        $item->id      = $id;
+        $item->title   = $title;
+        $item->color   = $color;
+        $item->content = $content;
+        $item->object  = $object;
         
         $this->items[$stage_id][] = $item;
         
@@ -169,8 +186,9 @@ class TKanban extends TElement
     }
     
     /**
-     * Set kanban item template for rendering
-     * @param  $path   Template path
+     * Set the template path for Kanban item rendering
+     *
+     * @param string $path Path to the template file
      */
     public function setTemplatePath($path)
     {
@@ -178,8 +196,9 @@ class TKanban extends TElement
     }
     
     /**
-     * Set card item template for rendering
-     * @param  $template   Template content
+     * Set the HTML template for rendering Kanban items
+     *
+     * @param string $template Template content
      */
     public function setItemTemplate($template)
     {
@@ -187,8 +206,9 @@ class TKanban extends TElement
     }
     
     /**
-     * Set item min database
-     * @param $database min database
+     * Set the database connection name for item retrieval
+     *
+     * @param string $database Database connection identifier
      */
     public function setItemDatabase($database)
     {
@@ -196,8 +216,11 @@ class TKanban extends TElement
     }
     
     /**
-     * Set item drop action
-     * @param  $action  TAction object
+     * Set the action to be triggered when an item is dropped
+     *
+     * @param TAction $action The action to execute
+     *
+     * @throws Exception If the provided action is not static
      */
     public function setItemDropAction(TAction $action)
     {
@@ -213,8 +236,11 @@ class TKanban extends TElement
     }
     
     /**
-     * Set stage drop action
-     * @param  $action  TAction object
+     * Set the action to be triggered when a stage is dropped
+     *
+     * @param TAction $action The action to execute
+     *
+     * @throws Exception If the provided action is not static
      */
     public function setStageDropAction(TAction $action)
     {
@@ -230,12 +256,15 @@ class TKanban extends TElement
     }
     
     /**
-     * Add item action
-     * @param  $label             Action label
-     * @param  $action            Action callback (TAction)
-     * @param  $icon              Action icon
-     * @param  $display_condition Display condition
-     * @param  $useButton         Action displat button
+     * Add an action to Kanban items
+     *
+     * @param string $label Action label
+     * @param TAction $action Action callback
+     * @param string|null $icon Icon associated with the action (optional)
+     * @param callable|null $display_condition Condition callback to determine visibility (optional)
+     * @param bool $useButton Whether to display the action as a button (default: false)
+     *
+     * @return stdClass The created action object
      */
     public function addItemAction($label, TAction $action, $icon = NULL, $display_condition = NULL, $useButton = FALSE)
     {
@@ -252,10 +281,12 @@ class TKanban extends TElement
     }
     
     /**
-     * Add stage action
-     * @param  $label             Action label
-     * @param  $action            Action callback (TAction)
-     * @param  $icon              Action icon
+     * Add an action to Kanban stages
+     *
+     * @param string $label Action label
+     * @param TAction $action Action callback
+     * @param string|null $icon Icon associated with the action (optional)
+     * @param callable|null $display_condition Condition callback to determine visibility (optional)
      */
     public function addStageAction($label, TAction $action, $icon = NULL, $display_condition = NULL)
     {
@@ -269,10 +300,11 @@ class TKanban extends TElement
     }
     
     /**
-     * Add stage shortcut
-     * @param  $label             Action label
-     * @param  $action            Action callback (TAction)
-     * @param  $icon              Action icon
+     * Add a shortcut action to Kanban stages
+     *
+     * @param string $label Shortcut label
+     * @param TAction $action Shortcut callback
+     * @param string|null $icon Icon associated with the shortcut (optional)
      */
     public function addStageShortcut($label, TAction $action, $icon = NULL)
     {
@@ -285,24 +317,29 @@ class TKanban extends TElement
     }
     
     /**
-     * Render stage items
+     * Render all items within a given stage
+     *
+     * This method generates the container for stage items, applies styles, and 
+     * populates it with existing items.
+     *
+     * @param TElement $stage The stage element where items will be rendered
      */
     private function renderStageItems($stage)
     {
         $itemSortable               = new TElement('div');
-        $itemSortable->{'class'}    = 'kanban-item-sortable ' . $this->kanban->item_class;
+        $itemSortable->class    = 'kanban-item-sortable ' . $this->kanban->item_class;
         $itemSortable->{'stage_id'} = $stage->{'stage_id'};
         $itemSortable->{'data-count'} = count($this->items[$stage->{'stage_id'}]??[]);
-        $itemSortable->{'style'} = '';
+        $itemSortable->style = '';
 
         if($this->miniMap == true)
         {
-            $itemSortable->{'style'} .= 'flex: 1 1 auto;';
+            $itemSortable->style .= 'flex: 1 1 auto;';
         }
 
         if (!empty($this->stageHeight))
         {
-            $itemSortable->{'style'} .= ';overflow-y:auto;height:'.$this->stageHeight; 
+            $itemSortable->style .= ';overflow-y:auto;height:'.$this->stageHeight; 
         }
 
         if (!empty($this->itemDatabase))
@@ -328,7 +365,14 @@ class TKanban extends TElement
 
     
     /**
-     * Render item
+     * Render a single Kanban item
+     *
+     * This method creates the item structure using either a template or a standard
+     * HTML structure, including title, content, and styling.
+     *
+     * @param stdClass $item The item object containing its properties
+     *
+     * @return TElement|string The generated HTML element or rendered template
      */
     private function renderItem($item)
     {
@@ -337,32 +381,32 @@ class TKanban extends TElement
             $html = new THtmlRenderer($this->templatePath);
             $html->enableSection('main');
             $html->enableTranslation();
-            $html = AdiantiTemplateHandler::replace($html->getContents(), $item->{'object'});
+            $html = AdiantiTemplateHandler::replace($html->getContents(), $item->object);
 
             return $html;
         }
         
         $item_wrapper              = new TElement('div');
         $item_wrapper->{'item_id'} = $item->id;
-        $item_wrapper->{'class'}   = 'kanban-item';
+        $item_wrapper->class   = 'kanban-item';
         
         if (!empty($item->color))
         {
-            $item_wrapper->{'style'} = 'border-top: 3px solid '.$item->color;
+            $item_wrapper->style = 'border-top: 3px solid '.$item->color;
         }
 
         $item_title = new TElement('div');
-        $item_title->{'class'} = 'kanban-item-title';
-        $item_title->add(AdiantiTemplateHandler::replace($item->{'title'}, $item->{'object'}));
+        $item_title->class = 'kanban-item-title';
+        $item_title->add(AdiantiTemplateHandler::replace($item->title, $item->object));
         
         $item_content = new TElement('div');
-        $item_content->{'class'} = 'kanban-item-content';
-        $item_content->add(AdiantiTemplateHandler::replace($item->{'content'}, $item->{'object'}));
+        $item_content->class = 'kanban-item-content';
+        $item_content->add(AdiantiTemplateHandler::replace($item->content, $item->object));
         
         if (!empty($this->itemTemplate))
         {
             $item_content = new TElement('div');
-            $item_content->{'class'} = 'kanban-item-content';
+            $item_content->class = 'kanban-item-content';
             $item_template = ApplicationTranslator::translateTemplate($this->itemTemplate);
             $item_template = AdiantiTemplateHandler::replace($item_template, $item);
             $item_content->add($item_template);
@@ -379,29 +423,32 @@ class TKanban extends TElement
     }
     
     /**
-     * Render stages
+     * Render all stages of the Kanban board
+     *
+     * This method iterates through all defined stages, creating their respective
+     * elements, actions, and associated items.
      */
     private function renderStages()
     {
         foreach ($this->stages as $key => $stage)
         {
             $title            = new TElement('div');
-            $title->{'class'} = 'kanban-title';
-            $title->add(AdiantiTemplateHandler::replace($stage->{'title'}, $stage->{'object'}));
+            $title->class = 'kanban-title';
+            $title->add(AdiantiTemplateHandler::replace($stage->title, $stage->object));
             
             $stageDiv               = new TElement('div');
-            $stageDiv->{'stage_id'} = $stage->{'id'};
-            $stageDiv->{'class'}    = 'kanban-stage';
+            $stageDiv->{'stage_id'} = $stage->id;
+            $stageDiv->class    = 'kanban-stage';
             
             if($this->miniMap)
             {
-                $title->{'style'}    .= 'flex: 0 1 auto;';
-                $stageDiv->{'style'} = 'height: 100%; display: flex; flex-flow: column; width: 330px;';
+                $title->style    .= 'flex: 0 1 auto;';
+                $stageDiv->style = 'height: 100%; display: flex; flex-flow: column; width: 330px;';
             }
             
-            if (!empty($stage->{'color'}))
+            if (!empty($stage->color))
             {
-                $stageDiv->{'style'} = 'background:'.$stage->{'color'};
+                $stageDiv->style = 'background:'.$stage->color;
             }
             
             $stageDiv->add($title);
@@ -409,7 +456,7 @@ class TKanban extends TElement
             if (!empty($this->stageActions))
             {
                 $title = $stageDiv->children[0];
-                $title->add($this->renderStageActions( $stage->{'id'}, $stage ));
+                $title->add($this->renderStageActions( $stage->id, $stage ));
             }
             
             $this->renderStageItems($stageDiv);
@@ -421,15 +468,28 @@ class TKanban extends TElement
     }
     
     /**
-     * Render item actions
+     * Render actions for a Kanban item
+     *
+     * This method generates action buttons/icons for a given item, based on 
+     * previously defined actions.
+     *
+     * @param string|int $itemId The ID of the item
+     * @param stdClass|null $object The data object associated with the item (optional)
+     *
+     * @return TElement The generated action container
      */
     private function renderItemActions($itemId, $object = NULL)
     {
         $div            = new TElement('div');
-        $div->{'class'} = 'kanban-item-actions';
+        $div->class = 'kanban-item-actions';
         
         foreach ($this->itemActions as $key => $actionTemplate)
         {
+            if($actionTemplate->action->isHidden())
+            {
+                return;
+            }
+
             $itemAction = $actionTemplate->action->prepare($object);
             
             if (empty($actionTemplate->condition) OR call_user_func($actionTemplate->condition, $object))
@@ -441,14 +501,21 @@ class TKanban extends TElement
                 if ($actionTemplate->useButton)
                 {
                     $icon = new TImage($actionTemplate->icon);
-                    $icon->{'style'} .= ';cursor:pointer;margin-right:4px;border:unset;padding:0px;box-shadow:unset;background-color:transparent !important;';
+                    $icon->style .= ';cursor:pointer;margin-right:4px;border:unset;padding:0px;box-shadow:unset;background-color:transparent !important;';
 
                     $action = new TElement('button');
-                    $action->{'class'}     = 'btn ' . (empty($actionTemplate->buttonClass) ? 'btn-default' : $actionTemplate->buttonClass);
+                    $action->class     = 'btn ' . (empty($actionTemplate->buttonClass) ? 'btn-default' : $actionTemplate->buttonClass);
                     $action->{'type'}      = 'button';
-                    $action->{'generator'} = 'adianti';
-                    $action->{'href'}      = $url;
+                    $action->generator = 'adianti';
+                    $action->href      = $url;
                     $action->add($icon);
+
+                    if($itemAction->isDisabled())
+                    {
+                        unset($action->generator);
+                        $action->disabled = 'disabled';
+                    }
+
                     $action->add(TElement::tag('span', $actionTemplate->label));
                     
                     $div->add($action);
@@ -456,11 +523,17 @@ class TKanban extends TElement
                 else
                 {
                     $icon                = new TImage($actionTemplate->icon);
-                    $icon->{'style'}    .= ';cursor:pointer;margin-right:4px;';
-                    $icon->{'title'}     = $actionTemplate->label;
-                    $icon->{'generator'} = 'adianti';
-                    $icon->{'href'}      = $url;
+                    $icon->style    .= ';cursor:pointer;margin-right:4px;';
+                    $icon->title     = $actionTemplate->label;
+                    $icon->generator = 'adianti';
+                    $icon->href      = $url;
                     
+                    if($itemAction->isDisabled())
+                    {
+                        unset($icon->generator);
+                        $icon->disabled = 'disabled';
+                    }
+
                     $div->add($icon);
                 }
             }
@@ -470,7 +543,15 @@ class TKanban extends TElement
     }
     
     /**
-     * Render stage actions
+     * Render actions for a Kanban stage
+     *
+     * This method creates a dropdown menu containing the available actions for 
+     * a given stage.
+     *
+     * @param string|int $stage_id The ID of the stage
+     * @param stdClass $stage The stage data object
+     *
+     * @return TElement The generated action container
      */
     private function renderStageActions($stage_id, $stage)
     {
@@ -478,11 +559,16 @@ class TKanban extends TElement
         $icon->{'data-toggle'} = 'dropdown';
 
         $ul = new TElement('ul');
-        $ul->{'class'} = 'dropdown-menu pull-right';
+        $ul->class = 'dropdown-menu pull-right';
         
         foreach ($this->stageActions as $key => $stageActionTemplate)
         {
             $stageAction = $stageActionTemplate->action->prepare($stage);
+
+            if($stageAction->isHidden())
+            {
+                return;
+            }
             
             if (empty($stageActionTemplate->condition) OR call_user_func($stageActionTemplate->condition, $stage))
             {
@@ -490,9 +576,15 @@ class TKanban extends TElement
                 $stageAction->setParameter('key', $stage_id);
                 $url = $stageAction->serialize();
                 
-                $action                = new TElement('a');
-                $action->{'generator'} = 'adianti';
-                $action->{'href'}      = $url;
+                $action            = new TElement('a');
+                $action->generator = 'adianti';
+                $action->href      = $url;
+
+                if($stageAction->isDisabled())
+                {
+                    unset($action->generator);
+                    $action->disabled = 'disabled';
+                }
                 if (!empty($stageActionTemplate->icon))
                 {
                     $action->add(new TImage($stageActionTemplate->icon));
@@ -506,43 +598,61 @@ class TKanban extends TElement
         }
         
         $dropWrapper = new TElement('div');
-        $dropWrapper->{'style'} = 'cursor:pointer;';
-        $dropWrapper->{'class'} = 'btn-group user-helper-dropdown';
+        $dropWrapper->style = 'cursor:pointer;';
+        $dropWrapper->class = 'btn-group user-helper-dropdown';
         $dropWrapper->add($icon);
         $dropWrapper->add($ul);
 
         $stageActions = new TElement('span');
-        $stageActions->{'style'} = 'float: right;';
-        $stageActions->{'class'} = 'kanban-stage-actions';
+        $stageActions->style = 'float: right;';
+        $stageActions->class = 'kanban-stage-actions';
         $stageActions->add($dropWrapper);
         
         return $stageActions;
     }
     
     /**
-     * Render stage shortcuts
+     * Render shortcut actions for a Kanban stage
+     *
+     * This method generates shortcut buttons/icons for quick actions related 
+     * to a stage.
+     *
+     * @param stdClass $stage The stage data object
+     *
+     * @return TElement The generated shortcut container
      */
     private function renderStageShortcuts($stage)
     {
         $actions_wrapper = new TElement('div');
-        $actions_wrapper->{'class'} = 'kanban-shortcuts';
+        $actions_wrapper->class = 'kanban-shortcuts';
 
         if($this->miniMap == true)
         {
-            $actions_wrapper->{'style'} = 'position: sticky; bottom: 0px; flex: 0 1 auto;';
+            $actions_wrapper->style = 'position: sticky; bottom: 0px; flex: 0 1 auto;';
         }
 
         foreach ($this->stageShortcuts as $key => $stageActionTemplate)
         {
             $stageAction = $stageActionTemplate->action->prepare($stage);
+
+            if($stageAction->isHidden())
+            {
+                return;
+            }
             
-            $stageAction->setParameter('id',  $stage->{'id'});
-            $stageAction->setParameter('key', $stage->{'id'});
+            $stageAction->setParameter('id',  $stage->id);
+            $stageAction->setParameter('key', $stage->id);
             $url = $stageAction->serialize();
             
-            $action                = new TElement('a');
-            $action->{'generator'} = 'adianti';
-            $action->{'href'}      = $url;
+            $action              = new TElement('a');
+            $action->generator   = 'adianti';
+            $action->href        = $url;
+
+            if($stageAction->isDisabled())
+            {
+                unset($action->generator);
+                $action->disabled = 'disabled';
+            }
             
             if (!empty($stageActionTemplate->icon))
             {
@@ -557,7 +667,9 @@ class TKanban extends TElement
     }
     
     /**
-     * Show kanban
+     * Render and display the Kanban board
+     *
+     * Generates the necessary HTML structure and executes the required JavaScript.
      */
     public function show()
     {
@@ -589,12 +701,12 @@ class TKanban extends TElement
         }
 
         $this->add($this->kanban);
-        $this->{'style'} .= ';overflow-x:auto';
-        $this->{'class'}  = 'kanban-board-wrapper';
+        $this->style .= ';overflow-x:auto';
+        $this->class  = 'kanban-board-wrapper';
         
         if ($this->topScrollbar && !$this->miniMap)
         {
-            $this->{'class'}  = 'kanban-board-wrapper top-scroll';
+            $this->class  = 'kanban-board-wrapper top-scroll';
         }
         
         if (!empty($this->stageDropAction))
@@ -622,6 +734,18 @@ class TKanban extends TElement
         parent::show();
     }
 
+    /**
+     * Create and add a new Kanban item dynamically
+     *
+     * @param string|int $id Item identifier
+     * @param string|int $stage_id Stage identifier
+     * @param string $title Item title
+     * @param string $content Item content
+     * @param string|null $color Item background color (optional)
+     * @param stdClass $object Additional data associated with the item
+     * @param string|null $htmlTemplate Path to the template file (optional)
+     * @param array $actions List of item actions (optional)
+     */
     public static function createItem($id, $stage_id, $title, $content, $color, $object, $htmlTemplate = null, $actions = [])
     {
         $kanban = new self;
@@ -645,6 +769,19 @@ class TKanban extends TElement
         TScript::create("tkanban_add_item('{$id}', '{$stage_id}', '{$html}');");
     }
 
+    /**
+     * Generate the HTML representation of a Kanban item
+     *
+     * @param string|int $id Item identifier
+     * @param string|int $stage_id Stage identifier
+     * @param string $title Item title
+     * @param string $content Item content
+     * @param string|null $color Item background color (optional)
+     * @param stdClass $object Additional data associated with the item
+     * @param string|null $htmlTemplate Path to the template file (optional)
+     *
+     * @return string Base64-encoded HTML representation of the item
+     */
     public static function getHtmlItem($id, $stage_id, $title, $content, $color, $object, $htmlTemplate = null)
     {
         $kanban = new self;
@@ -660,6 +797,11 @@ class TKanban extends TElement
         return $html;
     }
 
+    /**
+     * Clear all items from a specific Kanban stage
+     *
+     * @param string|int $stage_id Identifier of the stage to clear
+     */
     public static function clearStage($stage_id)
     {
         TScript::create("$(\".kanban-item-wrapper[stage_id={$stage_id}]\").empty();");

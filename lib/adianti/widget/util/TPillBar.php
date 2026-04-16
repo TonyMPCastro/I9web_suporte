@@ -5,7 +5,8 @@ use Adianti\Widget\Base\TElement;
 use Adianti\Control\TAction;
 
 /**
- * Pillbar
+ * Represents a navigation pill bar for organizing content into multiple sections.
+ * It allows users to navigate between sections in a visually structured manner.
  *
  * @version    7.5
  * @package    widget
@@ -22,7 +23,8 @@ class TPillBar extends TElement
     protected $stepNumber = 1;
     
     /**
-     * Constructor
+     * Class Constructor.
+     * Initializes the navigation pill bar container and sets its default style.
      */
     public function __construct()
     {
@@ -37,10 +39,10 @@ class TPillBar extends TElement
     }
     
     /**
-     * Add an item
-     * @param $title     Item title
-     * @param $completed Item is completed
-     * @param $action    Item action
+     * Adds a new navigation item to the pill bar.
+     *
+     * @param string       $title  The title of the navigation item.
+     * @param TAction|null $action An optional action associated with the item.
      */
     public function addItem($title, $action = null)
     {
@@ -69,7 +71,9 @@ class TPillBar extends TElement
     }
     
     /**
+     * Selects a navigation item based on its index.
      *
+     * @param int $index The index of the item to be selected.
      */
     public function selectIndex($index)
     {
@@ -89,7 +93,9 @@ class TPillBar extends TElement
     }
     
     /**
-     * Select current item
+     * Selects a navigation item based on its title.
+     *
+     * @param string $title The title of the item to be marked as active.
      */
     public function select($title)
     {

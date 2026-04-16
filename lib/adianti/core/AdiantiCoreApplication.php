@@ -11,9 +11,13 @@ use Adianti\Control\TPage;
 use Adianti\Widget\Base\TScript;
 use Adianti\Widget\Dialog\TMessage;
 use Adianti\Widget\Util\TExceptionView;
+use Mad\Service\MadLogService;
 
 /**
  * Basic structure to run a web application
+ *
+ * Provides the core structure for executing web applications within the Adianti Framework.
+ * Handles request execution, error handling, routing, and application flow.
  *
  * @version    7.5
  * @package    core
@@ -28,14 +32,17 @@ class AdiantiCoreApplication
     private static $debug;
     
     /**
-     * Execute class/method based on request
+     * Executes the requested class and method based on HTTP request parameters.
+     * Handles errors and exceptions, and manages the application flow.
      *
-     * @param $debug Activate Exception debug
+     * @param bool $debug Whether to enable detailed debugging for exceptions.
      */
     public static function run($debug = FALSE)
     {
         self::$request_id = uniqid();
         self::$debug = $debug;
+
+        MadLogService::initializeDebugLogging();
         
         $ini = AdiantiApplicationConfig::get();
         $service = isset($ini['general']['request_log_service']) ? $ini['general']['request_log_service'] : '\SystemRequestLogService';
@@ -140,12 +147,22 @@ class AdiantiCoreApplication
             echo TPage::getLoadedCSS();
         }
         echo TPage::getLoadedJS();
+
+        MadLogService::finalizeDebugLogging();
         
         echo $content;
     }
     
     /**
-     * Execute internal method
+     * Executes an internal method of a specified class with provided parameters.
+     *
+     * @param string      $class     The class name to be executed.
+     * @param string      $method    The method name to be executed.
+     * @param array       $request   The request parameters.
+     * @param string|null $endpoint  The request endpoint for logging purposes (optional).
+     *
+     * @return mixed The response from the executed method.
+     * @throws Exception If the class or method is not found or cannot be executed.
      */
     public static function execute($class, $method, $request, $endpoint = null)
     {
@@ -200,7 +217,8 @@ class AdiantiCoreApplication
     }
     
     /**
-     * Filter specific framework commands
+     * Filters request inputs to prevent execution of unauthorized SQL commands.
+     * Ensures security by sanitizing potentially dangerous input values.
      */
     public static function filterInput()
     {
@@ -237,7 +255,9 @@ class AdiantiCoreApplication
     }
     
     /**
-     * Set router callback
+     * Sets a custom router callback for handling application routes.
+     *
+     * @param callable $callback The routing callback function.
      */
     public static function setRouter(Callable $callback)
     {
@@ -245,7 +265,9 @@ class AdiantiCoreApplication
     }
     
     /**
-     * Get router callback
+     * Retrieves the currently set router callback.
+     *
+     * @return callable|null The registered router callback, or null if not set.
      */
     public static function getRouter()
     {
@@ -253,11 +275,12 @@ class AdiantiCoreApplication
     }
     
     /**
-     * Execute a specific method of a class with parameters
+     * Executes a method of a specified class with given parameters.
+     * Redirects execution to the gotoPage method.
      *
-     * @param $class class name
-     * @param $method method name
-     * @param $parameters array of parameters
+     * @param string      $class      The class name.
+     * @param string|null $method     The method name (optional).
+     * @param array|null  $parameters Additional parameters (optional).
      */
     public static function executeMethod($class, $method = NULL, $parameters = NULL)
     {
@@ -265,7 +288,11 @@ class AdiantiCoreApplication
     }
     
     /**
-     * Process request and insert the result it into template
+     * Processes the application request and inserts the output into a given template.
+     *
+     * @param string $template The HTML template where content should be inserted.
+     *
+     * @return string The processed template with dynamic content.
      */
     public static function processRequest($template)
     {
@@ -280,11 +307,12 @@ class AdiantiCoreApplication
     }
      
     /**
-     * Goto a page
+     * Redirects the application to a specific page using JavaScript navigation.
      *
-     * @param $class class name
-     * @param $method method name
-     * @param $parameters array of parameters
+     * @param string      $class      The class name to navigate to.
+     * @param string|null $method     The method to be called (optional).
+     * @param array|null  $parameters Additional parameters (optional).
+     * @param callable|null $callback Custom callback function for navigation (optional).
      */
     public static function gotoPage($class, $method = NULL, $parameters = NULL, $callback = NULL)
     {
@@ -295,11 +323,11 @@ class AdiantiCoreApplication
     }
     
     /**
-     * Load a page
+     * Loads a specific page within the application using JavaScript.
      *
-     * @param $class class name
-     * @param $method method name
-     * @param $parameters array of parameters
+     * @param string      $class      The class name to load.
+     * @param string|null $method     The method to be called (optional).
+     * @param array|null  $parameters Additional parameters (optional).
      */
     public static function loadPage($class, $method = NULL, $parameters = NULL)
     {
@@ -309,11 +337,9 @@ class AdiantiCoreApplication
     }
     
     /**
-     * Load a page url
+     * Loads a page by a specified URL using JavaScript.
      *
-     * @param $class class name
-     * @param $method method name
-     * @param $parameters array of parameters
+     * @param string $query The URL query string for loading the page.
      */
     public static function loadPageURL($query)
     {
@@ -321,11 +347,12 @@ class AdiantiCoreApplication
     }
     
     /**
-     * Post data
+     * Sends form data via JavaScript to a specified class and method.
      *
-     * @param $class class name
-     * @param $method method name
-     * @param $parameters array of parameters
+     * @param string      $formName   The name of the form to submit.
+     * @param string      $class      The target class.
+     * @param string|null $method     The method to be executed (optional).
+     * @param array|null  $parameters Additional parameters (optional).
      */
     public static function postData($formName, $class, $method = NULL, $parameters = NULL)
     {
@@ -340,11 +367,13 @@ class AdiantiCoreApplication
     }
     
     /**
-     * Build HTTP Query
+     * Constructs an HTTP query string based on class, method, and parameters.
      *
-     * @param $class class name
-     * @param $method method name
-     * @param $parameters array of parameters
+     * @param string      $class      The target class.
+     * @param string|null $method     The method to be executed (optional).
+     * @param array|null  $parameters Additional parameters (optional).
+     *
+     * @return string The constructed HTTP query string.
      */
     public static function buildHttpQuery($class, $method = NULL, $parameters = NULL)
     {
@@ -391,7 +420,7 @@ class AdiantiCoreApplication
     }
     
     /**
-     * Reload application
+     * Reloads the current application by redirecting to the main index page.
      */
     public static function reload()
     {
@@ -399,9 +428,9 @@ class AdiantiCoreApplication
     }
     
     /**
-     * Register URL
+     * Registers a page state for tracking in JavaScript.
      *
-     * @param $page URL to be registered
+     * @param string $page The page URL to be registered.
      */
     public static function registerPage($page)
     {
@@ -409,7 +438,15 @@ class AdiantiCoreApplication
     }
     
     /**
-     * Handle Catchable Errors
+     * Handles recoverable errors and converts them into exceptions.
+     *
+     * @param int    $errno   The error number.
+     * @param string $errstr  The error message.
+     * @param string $errfile The file where the error occurred.
+     * @param int    $errline The line number of the error.
+     *
+     * @return bool Returns false to continue with PHP's default error handler.
+     * @throws ErrorException If the error is recoverable.
      */
     public static function errorHandler($errno, $errstr, $errfile, $errline)
     {
@@ -422,7 +459,9 @@ class AdiantiCoreApplication
     }
     
     /**
-     * Get request headers
+     * Retrieves all HTTP request headers.
+     *
+     * @return array The associative array of HTTP headers.
      */
     public static function getHeaders()
     {
@@ -449,9 +488,35 @@ class AdiantiCoreApplication
         }
         return $headers;
     }
+
+    /**
+     * Shows a page with the given class and method.
+     *
+     * @param string $class The class name.
+     * @param string|null $method The method name (optional).
+     * @param array|null $parameters Additional parameters (optional).
+     */
+
+    public static function showPage($class, $method = NULL, $parameters = NULL)
+    {
+        $page = new $class($parameters);
+        
+        if($method)
+        {
+            $page->$method($parameters);
+        }
+        
+        $page->setTargetContainer($parameters['target_container'] ?? 'adianti_div_content');
+        
+        $page->setProperty('class', '');
+        $page->setIsWrapped(true);
+        $page->show();
+    }
     
     /**
-     * Returns the execution id
+     * Retrieves the unique request ID assigned to the current execution.
+     *
+     * @return string The unique request ID.
      */
     public static function getRequestId()
     {
@@ -459,7 +524,9 @@ class AdiantiCoreApplication
     }
     
     /**
-     * Returns the debug mode
+     * Checks whether debug mode is enabled.
+     *
+     * @return bool True if debug mode is enabled, false otherwise.
      */
     public static function getDebugMode()
     {

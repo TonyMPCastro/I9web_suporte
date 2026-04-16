@@ -11,6 +11,9 @@ use Exception;
 /**
  * Standard Form Trait
  *
+ * This trait provides standard form handling functionality for Adianti framework applications.
+ * It includes methods to handle form saving, clearing, and editing, while managing database transactions.
+ *
  * @version    7.5
  * @package    base
  * @author     Pablo Dall'Oglio
@@ -25,8 +28,9 @@ trait AdiantiStandardFormTrait
     use AdiantiStandardControlTrait;
     
     /**
-     * method setAfterSaveAction()
-     * Define after save action
+     * Sets the action to be executed after saving the form.
+     *
+     * @param mixed $action The action to be executed after save (typically a TAction instance).
      */
     public function setAfterSaveAction($action)
     {
@@ -34,7 +38,9 @@ trait AdiantiStandardFormTrait
     }
     
     /**
-     * Define if will use messages after operations
+     * Defines whether messages should be displayed after form operations.
+     *
+     * @param bool $bool If true, messages will be shown; otherwise, they will be suppressed.
      */
     public function setUseMessages($bool)
     {
@@ -42,8 +48,20 @@ trait AdiantiStandardFormTrait
     }
     
     /**
-     * method onSave()
-     * Executed whenever the user clicks at the save button
+     * Saves the form data to the database.
+     *
+     * This method performs the following operations:
+     * - Validates the existence of the database and active record.
+     * - Opens a transaction.
+     * - Retrieves and validates form data.
+     * - Stores the object in the database.
+     * - Closes the transaction.
+     * - Displays a success message or redirects to the after-save action.
+     *
+     * If an exception occurs, it rolls back the transaction and displays an error message.
+     *
+     * @return object|null The saved object if successful, or null in case of an error.
+     * @throws Exception If the database or active record is not defined.
      */
     public function onSave()
     {
@@ -106,7 +124,9 @@ trait AdiantiStandardFormTrait
     }
     
     /**
-     * Clear form
+     * Clears the form data.
+     *
+     * @param array $param The parameters received from the request.
      */
     public function onClear($param)
     {
@@ -114,9 +134,15 @@ trait AdiantiStandardFormTrait
     }
     
     /**
-     * method onEdit()
-     * Executed whenever the user clicks at the edit button da datagrid
-     * @param  $param An array containing the GET ($_GET) parameters
+     * Loads an existing record into the form based on the provided key.
+     *
+     * If no key is provided, the form is cleared.
+     * If an exception occurs, it rolls back the transaction and displays an error message.
+     *
+     * @param array $param An associative array containing the request parameters, including 'key' to identify the record.
+     *
+     * @return object|null The retrieved object if found, or null otherwise.
+     * @throws Exception If the database or active record is not defined.
      */
     public function onEdit($param)
     {

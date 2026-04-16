@@ -8,6 +8,8 @@ use Exception;
 /**
  * Maximum value validation
  *
+ * Validates that a given value does not exceed a specified maximum value.
+ *
  * @version    7.5
  * @package    validator
  * @author     Pablo Dall'Oglio
@@ -17,10 +19,13 @@ use Exception;
 class TMaxValueValidator extends TFieldValidator
 {
     /**
-     * Validate a given value
-     * @param $label Identifies the value to be validated in case of exception
-     * @param $value Value to be validated
-     * @param $parameters aditional parameters for validation (max value)
+     * Validates if the given value does not exceed the specified maximum value.
+     *
+     * @param string $label The label identifying the value to be validated.
+     * @param float|int $value The numeric value to be validated.
+     * @param array|null $parameters An array containing the maximum allowed value as the first element.
+     *
+     * @throws Exception If the value exceeds the maximum allowed.
      */
     public function validate($label, $value, $parameters = NULL)
     {

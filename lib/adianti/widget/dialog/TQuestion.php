@@ -6,7 +6,8 @@ use Adianti\Control\TAction;
 use Adianti\Widget\Base\TScript;
 
 /**
- * Question Dialog
+ * Class for displaying question dialogs.
+ * This class creates a confirmation dialog with "Yes" and "No" actions.
  *
  * @version    7.5
  * @package    widget
@@ -18,13 +19,17 @@ use Adianti\Widget\Base\TScript;
 class TQuestion
 {
     /**
-     * Class Constructor
-     * @param  $message    A string containint the question
-     * @param  $action_yes Action taken for YES response
-     * @param  $action_no  Action taken for NO  response
-     * @param  $title_msg  Dialog Title
+     * TQuestion constructor.
+     * Initializes a question dialog with actions for "Yes" and "No" responses.
+     *
+     * @param string      $message    The question message to be displayed.
+     * @param TAction|null $action_yes The action to be executed if the user selects "Yes" (optional).
+     * @param TAction|null $action_no  The action to be executed if the user selects "No" (optional).
+     * @param string      $title_msg  The title of the dialog (optional).
+     * @param string      $label_yes  The label for the "Yes" button (optional, defaults to "Yes").
+     * @param string      $label_no   The label for the "No" button (optional, defaults to "No").
      */
-    public function __construct($message, TAction $action_yes = NULL, TAction $action_no = NULL, $title_msg = '', $label_yes = '', $label_no = '')
+    public function __construct($message, ?TAction $action_yes = NULL, ?TAction $action_no = NULL, $title_msg = '', $label_yes = '', $label_no = '')
     {
         $title        = ( $title_msg ? $title_msg : AdiantiCoreTranslator::translate('Question') );
         $callback_yes = "function () {}";

@@ -14,6 +14,8 @@ use Exception;
 /**
  * Spinner Widget (also known as spin button)
  *
+ * This widget provides a numeric input field with increment and decrement buttons.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form
@@ -35,7 +37,10 @@ class TSpinner extends TField implements AdiantiWidgetInterface
     
     /**
      * Class Constructor
-     * @param $name Name of the widget
+     *
+     * Initializes the spinner widget with a unique identifier and default properties.
+     *
+     * @param string $name Name of the widget
      */
     public function __construct($name)
     {
@@ -47,9 +52,15 @@ class TSpinner extends TField implements AdiantiWidgetInterface
     
     /**
      * Define the field's range
-     * @param $min Minimal value
-     * @param $max Maximal value
-     * @param $step Step value
+     *
+     * Sets the minimum, maximum, and step values for the spinner. 
+     * Throws an exception if the step value is zero.
+     *
+     * @param float|int $min Minimal value allowed
+     * @param float|int $max Maximal value allowed
+     * @param float|int $step Step increment value
+     *
+     * @throws Exception If the step value is zero
      */
     public function setRange($min, $max, $step)
     {
@@ -70,7 +81,12 @@ class TSpinner extends TField implements AdiantiWidgetInterface
     
     /**
      * Define the action to be executed when the user leaves the form field
-     * @param $action TAction object
+     *
+     * The action must be static; otherwise, an exception will be thrown.
+     *
+     * @param TAction $action Action object to be executed on exit
+     *
+     * @throws Exception If the action is not static
      */
     function setExitAction(TAction $action)
     {
@@ -87,8 +103,11 @@ class TSpinner extends TField implements AdiantiWidgetInterface
     
     /**
      * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     *
+     * Allows user interaction with the specified field.
+     *
+     * @param string $form_name Name of the form
+     * @param string $field Name of the field
      */
     public static function enableField($form_name, $field)
     {
@@ -97,8 +116,11 @@ class TSpinner extends TField implements AdiantiWidgetInterface
     
     /**
      * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     *
+     * Prevents user interaction with the specified field.
+     *
+     * @param string $form_name Name of the form
+     * @param string $field Name of the field
      */
     public static function disableField($form_name, $field)
     {
@@ -107,6 +129,10 @@ class TSpinner extends TField implements AdiantiWidgetInterface
     
     /**
      * Set exit function
+     *
+     * Defines a JavaScript function to be executed when the user exits the field.
+     *
+     * @param string $function JavaScript function to be executed
      */
     public function setExitFunction($function)
     {
@@ -115,6 +141,8 @@ class TSpinner extends TField implements AdiantiWidgetInterface
     
     /**
      * Enable stepper buttons
+     *
+     * Activates the increment and decrement buttons for the spinner widget.
      */
     public function enableStepper()
     {
@@ -123,6 +151,8 @@ class TSpinner extends TField implements AdiantiWidgetInterface
 
     /**
      * Disable stepper buttons
+     *
+     * Deactivates the increment and decrement buttons for the spinner widget.
      */
     public function disableStepper()
     {
@@ -130,7 +160,12 @@ class TSpinner extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Shows the widget at the screen
+     * Render the widget on the screen
+     *
+     * Generates the HTML and JavaScript necessary for displaying the spinner widget.
+     * Configures the properties such as min, max, step values, and exit action.
+     *
+     * @throws Exception If the form name is not set when an exit action is defined
      */
     public function show()
     {
@@ -199,9 +234,32 @@ class TSpinner extends TField implements AdiantiWidgetInterface
     
     /**
      * Set the value
+     *
+     * Assigns a numeric value to the spinner widget.
+     *
+     * @param float|int $value The value to be set
      */
     public function setValue($value)
     {
         parent::setValue( (float) $value);
+    }
+
+    /**
+     * Retrieves the value of the field from a form submission (POST request).
+     *
+     * @return string|float The submitted value, formatted based on mask settings.
+     */
+    public function getPostData()
+    {
+        $name = str_replace(['[',']'], ['',''], $this->name);
+        
+        if (isset($_POST[$name]))
+        {
+            return $_POST[$name];
+        }
+        else
+        {
+            return '';
+        }
     }
 }

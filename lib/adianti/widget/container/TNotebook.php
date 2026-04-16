@@ -7,7 +7,11 @@ use Adianti\Widget\Container\TTable;
 use Adianti\Widget\Container\TFrame;
 
 /**
- * Notebook
+ * Represents a notebook (tabbed interface) container widget.
+ *
+ * This class provides an interface to create a notebook with multiple pages,
+ * where each page has a title and content. It allows setting actions on tabs,
+ * defining visibility and sensitivity of tabs, and managing page navigation.
  *
  * @version    7.5
  * @package    widget
@@ -31,9 +35,10 @@ class TNotebook extends TElement
     private static $noteCounter;
     
     /**
-     * Class Constructor
-     * @param $width   Notebook's width
-     * @param $height  Notebook's height
+     * Initializes a new instance of the TNotebook class.
+     *
+     * @param int|null $width  The width of the notebook.
+     * @param int|null $height The height of the notebook.
      */
     public function __construct($width = null, $height = null)
     {
@@ -51,8 +56,9 @@ class TNotebook extends TElement
     }
     
     /**
-     * Define if the tabs will be visible or not
-     * @param $visible If the tabs will be visible
+     * Sets the visibility of the notebook's tabs.
+     *
+     * @param bool $visible If true, tabs will be visible; otherwise, they will be hidden.
      */
     public function setTabsVisibility($visible)
     {
@@ -60,8 +66,9 @@ class TNotebook extends TElement
     }
     
     /**
-     * Define the tabs click sensibility
-     * @param $sensibility If the tabs will be sensible to click
+     * Sets the click sensitivity of the notebook's tabs.
+     *
+     * @param bool $sensibility If true, tabs will respond to clicks; otherwise, they will be disabled.
      */
     public function setTabsSensibility($sensibility)
     {
@@ -69,7 +76,9 @@ class TNotebook extends TElement
     }
     
     /**
-     * Returns the element ID
+     * Gets the unique identifier of the notebook.
+     *
+     * @return string The unique ID of the notebook.
      */
     public function getId()
     {
@@ -77,9 +86,10 @@ class TNotebook extends TElement
     }
     
     /**
-     * Set the notebook size
-     * @param $width  Notebook's width
-     * @param $height Notebook's height
+     * Sets the dimensions of the notebook.
+     *
+     * @param int|null $width  The width of the notebook.
+     * @param int|null $height The height of the notebook.
      */
     public function setSize($width, $height)
     {
@@ -89,8 +99,9 @@ class TNotebook extends TElement
     }
     
     /**
-     * Returns the frame size
-     * @return array(width, height)
+     * Gets the dimensions of the notebook.
+     *
+     * @return array An array containing the width and height of the notebook.
      */
     public function getSize()
     {
@@ -98,8 +109,9 @@ class TNotebook extends TElement
     }
     
     /**
-     * Define the current page to be shown
-     * @param $i An integer representing the page number (start at 0)
+     * Sets the current active page in the notebook.
+     *
+     * @param int $i The index of the page to be displayed (starting from 0).
      */
     public function setCurrentPage($i)
     {
@@ -108,7 +120,9 @@ class TNotebook extends TElement
     }
     
     /**
-     * Returns the current page
+     * Gets the index of the currently active page.
+     *
+     * @return int The index of the current page (starting from 0).
      */
     public function getCurrentPage()
     {
@@ -116,9 +130,10 @@ class TNotebook extends TElement
     }
     
     /**
-     * Add a tab to the notebook
-     * @param $title   tab's title
-     * @param $object  tab's content
+     * Adds a new page to the notebook.
+     *
+     * @param string $title  The title of the tab.
+     * @param mixed  $object The content associated with the tab.
      */
     public function appendPage($title, $object)
     {
@@ -126,7 +141,9 @@ class TNotebook extends TElement
     }
 
     /**
-     * Return the Page count
+     * Gets the total number of pages in the notebook.
+     *
+     * @return int The number of pages.
      */
     public function getPageCount()
     {
@@ -134,9 +151,9 @@ class TNotebook extends TElement
     }
     
     /**
-     * Define the action for the Notebook tab
-     * @param $action Action taken when the user
-     * clicks over Notebook tab (A TAction object)
+     * Sets an action to be executed when a tab is clicked.
+     *
+     * @param TAction $action The action to be executed when a tab is clicked.
      */
     public function setTabAction(TAction $action)
     {
@@ -144,7 +161,12 @@ class TNotebook extends TElement
     }
     
     /**
-     * Render the notebook
+     * Renders the notebook interface.
+     *
+     * This method creates the HTML structure for the notebook, including the tabs
+     * and their respective content.
+     *
+     * @return TElement The generated HTML structure for the notebook.
      */
     public function render()
     {
@@ -264,7 +286,10 @@ class TNotebook extends TElement
     }
     
     /**
-     * Show the notebook
+     * Displays the notebook.
+     *
+     * If the notebook has not been rendered yet, this method will generate its structure
+     * before displaying it.
      */
     public function show()
     {

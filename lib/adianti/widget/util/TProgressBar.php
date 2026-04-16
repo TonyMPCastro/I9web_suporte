@@ -6,6 +6,8 @@ use Adianti\Widget\Base\TElement;
 /**
  * TProgressBar
  *
+* A progress bar widget that visually represents a percentage-based progress.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage util
@@ -20,7 +22,12 @@ class TProgressBar extends TElement
     private $mask;
     private $className;
     
-    public function __construct() 
+    /**
+     * Constructor
+     *
+     * Initializes the progress bar with default values and styling.
+     */
+    public function __construct()
     {
         parent::__construct('div');
         $this->{'class'} = 'progress';
@@ -31,7 +38,11 @@ class TProgressBar extends TElement
     }
     
     /**
-     * set mask for progress bar value Ex: "{value}%"
+     * Sets the mask for the progress bar display.
+     *
+     * The mask defines how the progress value is shown (e.g., "{value}%").
+     *
+     * @param string $mask The mask format where `{value}` will be replaced with the actual progress value.
      */
     public function setMask($mask)
     {
@@ -41,7 +52,9 @@ class TProgressBar extends TElement
     }
     
     /**
-     * set style class
+     * Sets the CSS class for the progress bar.
+     *
+     * @param string $class The CSS class name that defines the visual style of the progress bar.
      */
     public function setClass($class)
     {
@@ -49,16 +62,18 @@ class TProgressBar extends TElement
     }
     
     /**
-     * Set the value of progress bar
-     */ 
+     * Sets the progress bar value.
+     *
+     * @param int|float $value The progress value (percentage) ranging from 0 to 100.
+     */
     public function setValue($value)
     {
        $this->value = $value;
     }
             
     /**
-     * Shows the widget at the screen
-     */       
+     * Renders and displays the progress bar on the screen.
+     */
     public function show()
     {                   
         $progressBar = new TElement('div');

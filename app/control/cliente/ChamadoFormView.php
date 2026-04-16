@@ -137,7 +137,6 @@ class ChamadoFormView extends TPage
         $tab_detalhes->appendPage("Anexos");
 
         $this->arquivo_chamado_chamado_id_list = new TQuickGrid;
-        $this->arquivo_chamado_chamado_id_list->disableHtmlConversion();
         $this->arquivo_chamado_chamado_id_list->style = 'width:100%';
         $this->arquivo_chamado_chamado_id_list->disableDefaultClick();
 

@@ -11,7 +11,10 @@ use Adianti\Widget\Container\THBox;
 use Adianti\Widget\Util\TImage;
 
 /**
- * Image uploader with cropper
+ * Image uploader with cropping capabilities
+ *
+ * This class provides an image upload field with cropping functionalities, 
+ * supporting file handling, base64 encoding, and webcam capture.
  *
  * @version    7.5
  * @package    widget
@@ -51,6 +54,13 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     const CROPPER_RATIO_1_1 = 1/1;
     const CROPPER_RATIO_2_3 = 2/3;
     
+    /**
+     * Class constructor
+     *
+     * Initializes the image cropper field, setting default values and configurations.
+     *
+     * @param string $name Field name
+     */
     public function __construct($name)
     {
         parent::__construct($name);
@@ -85,9 +95,11 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set image placeholder
+     * Set the image placeholder
      *
-     * @param TImage $image image placeholder
+     * Defines a placeholder image to be displayed when no image is selected.
+     *
+     * @param TImage $image The placeholder image
      */
     public function setImagePlaceholder(TImage $image)
     {
@@ -97,9 +109,11 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set window title
+     * Set the window title
      *
-     * @param String $title Window title
+     * Defines the title of the cropping modal window.
+     *
+     * @param string $title The window title
      */
     public function setWindowTitle($title)
     {
@@ -107,9 +121,11 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set text button crop
+     * Set the crop button label
      *
-     * @param String $text Text button confirm
+     * Defines the text displayed on the confirmation button in the cropping modal.
+     *
+     * @param string $text The button label
      */
     public function setButtonLabel($text)
     {
@@ -117,31 +133,41 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Define initial aspect ratio
+     * Define the aspect ratio for cropping
      *
-     * @param double $aspectRatio Aspect ratio crop image
-     * @return void
-     */
+     * Specifies the aspect ratio to be maintained during cropping.
+     *
+     * @param float $aspectRatio The desired aspect ratio (e.g., 16/9, 4/3)
+    */
     public function setAspectRatio($aspectRatio)
     {
         $this->aspectRatio = $aspectRatio;
     }
 
     /**
-     * Define usage base64
+     * Enable base64 encoding
+     *
+     * Configures the cropper to return the image in base64 format instead of a file.
      */
     public function enableBase64()
     {
         $this->base64 = true;
     }
     
+    /**
+     * Enable webcam support
+     *
+     * Allows users to capture an image using their webcam before cropping.
+     */
     public function enableWebCam()
     {
         $this->webcam = true;
     }
 
     /**
-     * Define to file handling
+     * Enable file handling
+     *
+     * Enables file handling for the uploaded images, allowing file-based storage.
      */
     public function enableFileHandling()
     {
@@ -149,7 +175,9 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Disable buttons drag move | resize
+     * Disable drag functionality
+     *
+     * Prevents users from dragging the image within the cropping area.
      */
     public function disableButtonsDrag()
     {
@@ -157,7 +185,9 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Disable buttons zoom
+     * Disable zoom functionality
+     *
+     * Disables the zoom in and zoom out buttons in the cropping modal.
      */
     public function disableButtonsZoom()
     {
@@ -165,7 +195,9 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Disable buttons scale
+     * Disable scaling functionality
+     *
+     * Prevents users from scaling the image horizontally or vertically.
      */
     public function disableButtonsScale()
     {
@@ -173,7 +205,9 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Disable button reset
+     * Disable reset button
+     *
+     * Removes the reset button from the cropping modal.
      */
     public function disableButtonReset()
     {
@@ -181,7 +215,9 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Disable buttons rotates
+     * Disable rotation buttons
+     *
+     * Prevents users from rotating the image.
      */
     public function disableButtonsRotate()
     {
@@ -189,15 +225,18 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Define image initial
+     * Set the initial image value
      *
-     * @param String $data Image url or image base64
+     * Defines the image to be displayed initially, either as a URL or base64 string.
+     * Handles file-based images when file handling is enabled.
+     *
+     * @param string $value The image URL or base64-encoded image data
      */
     public function setValue($value)
     {
         if ($this->fileHandling && $value)
         {
-            if (strpos($value, '%7B') === false)
+            if (substr( (string) $value, 0, 3) !== '%7B')
             {
                 if (!empty($value))
                 {
@@ -227,7 +266,11 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the allowed extensions
+     * Define allowed file extensions
+     *
+     * Specifies which file extensions are permitted for image uploads.
+     *
+     * @param array $extensions An array of allowed file extensions (e.g., ['jpg', 'png'])
      */
     public function setAllowedExtensions($extensions)
     {
@@ -235,7 +278,11 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Get the allowed extensions
+     * Get the allowed file extensions
+     *
+     * Returns the list of permitted file extensions for image uploads.
+     *
+     * @return array The array of allowed file extensions
      */
     public function getAllowedExtensions()
     {
@@ -243,7 +290,11 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the service class for response
+     * Define the upload service class
+     *
+     * Sets the service class responsible for handling file uploads.
+     *
+     * @param string $service The name of the uploader service class
      */
     public function setService($service)
     {
@@ -251,9 +302,12 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the Field's width
-     * @param double $width Field's width in pixels
-     * @param double $height Field's heigth in pixels
+     * Set the field dimensions
+     *
+     * Defines the width and height of the image cropper field.
+     *
+     * @param string|int $width  The field width (in pixels or percentage)
+     * @param string|int|null $height The field height (in pixels or percentage)
      */
     public function setSize($width, $height = NULL)
     {
@@ -265,7 +319,11 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Returns the field sizes
+     * Get the field dimensions
+     *
+     * Returns the width and height of the image cropper field.
+     *
+     * @return array An array containing the width and height
      */
     public function getSize()
     {
@@ -276,11 +334,12 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set image size after crop
+     * Set the crop dimensions
      *
-     * @param px $width
-     * @param px $height
-     * @return void
+     * Defines the width and height for the cropped image.
+     *
+     * @param int $width  The crop width in pixels
+     * @param int $height The crop height in pixels
      */
     public function setCropSize($width, $height)
     {
@@ -291,7 +350,12 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Return component specific options
+     * Get the component options
+     *
+     * Returns the configuration options for the cropper, including aspect ratio
+     * and enabled buttons.
+     *
+     * @return string A JSON-encoded string containing the cropper options
      */
     public function getOptions()
     {
@@ -319,7 +383,10 @@ class TImageCropper extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Show
+     * Render the component
+     *
+     * Generates and outputs the HTML structure for the image cropper field,
+     * including buttons and image previews.
      */
     public function show()
     {

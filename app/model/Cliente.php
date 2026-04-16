@@ -6,8 +6,8 @@ class Cliente extends TRecord
     const PRIMARYKEY = 'id';
     const IDPOLICY   =  'serial'; // {max, serial}
 
-    private $segmento;
-    private $system_user;
+    private Segmento $segmento;
+    private SystemUsers $system_user;
 
     
 
@@ -66,11 +66,15 @@ class Cliente extends TRecord
      */
     public function get_system_user()
     {
-        TTransaction::open('permission');
+        try{
+        TTransaction::openFake('permission');
         // loads the associated object
         if (empty($this->system_user))
             $this->system_user = new SystemUsers($this->system_user_id);
         TTransaction::close();
+        }catch(Exception $e){
+            TTransaction::close();
+        }
         // returns the associated object
         return $this->system_user;
     }

@@ -9,6 +9,9 @@ use Adianti\Widget\Base\TElement;
 /**
  * Calendar Widget
  *
+ * This class represents a calendar component that can display a specific month and year,
+ * highlight weekends, select specific days, and execute an action when clicking a date.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage util
@@ -29,6 +32,9 @@ class TCalendar extends TElement
     
     /**
      * Class Constructor
+     *
+     * Initializes the calendar with default settings, including width, height,
+     * month names, and weekend highlight settings.
      */
     public function __construct()
     {
@@ -43,7 +49,9 @@ class TCalendar extends TElement
     }
     
     /**
-     * highglight weekend
+     * Enable weekend highlighting
+     *
+     * This method enables a visual highlight for weekends in the calendar.
      */
     public function highlightWeekend()
     {
@@ -51,9 +59,12 @@ class TCalendar extends TElement
     }
     
     /**
-     * Define the calendar's size
-     * @param  $width  Window's width
-     * @param  $height Window's height
+     * Set the calendar's dimensions
+     *
+     * Defines the width and height of the calendar display.
+     *
+     * @param int $width  The width of the calendar in pixels
+     * @param int $height The height of the calendar in pixels
      */
     public function setSize($width, $height)
     {
@@ -62,8 +73,11 @@ class TCalendar extends TElement
     }
     
     /**
-     * Define the current month to display
-     * @param  $month Month to display
+     * Set the current month to display
+     *
+     * Defines which month should be displayed in the calendar.
+     *
+     * @param int $month The month to display (1-12)
      */
     public function setMonth($month)
     {
@@ -71,8 +85,11 @@ class TCalendar extends TElement
     }
     
     /**
-     * Define the current year to display
-     * @param  $year Year to display
+     * Set the current year to display
+     *
+     * Defines which year should be displayed in the calendar.
+     *
+     * @param int $year The year to display (e.g., 2025)
      */
     public function setYear($year)
     {
@@ -80,7 +97,11 @@ class TCalendar extends TElement
     }
     
     /**
-     * Return the current month
+     * Get the current month
+     *
+     * Returns the currently set month in the calendar.
+     *
+     * @return int|null The current month (1-12) or null if not set
      */
     public function getMonth()
     {
@@ -88,7 +109,11 @@ class TCalendar extends TElement
     }
     
     /**
-     * Return the current year
+     * Get the current year
+     *
+     * Returns the currently set year in the calendar.
+     *
+     * @return int|null The current year or null if not set
      */
     public function getYear()
     {
@@ -96,8 +121,11 @@ class TCalendar extends TElement
     }
     
     /**
-     * Define the action when click at some day
-     * @param  $action TAction object
+     * Set the action for date selection
+     *
+     * Defines an action to be executed when a specific day is clicked.
+     *
+     * @param TAction $action The action to be executed
      */
     public function setAction(TAction $action)
     {
@@ -105,8 +133,11 @@ class TCalendar extends TElement
     }
     
     /**
-     * Select a collection of days
-     * @param  $days Collection of days
+     * Select specific days
+     *
+     * Marks a collection of days as selected.
+     *
+     * @param array $days An array of integers representing the days to be selected (e.g., [1, 5, 10])
      */
     public function selectDays(array $days)
     {
@@ -114,7 +145,11 @@ class TCalendar extends TElement
     }
     
     /**
-     * Show the calendar
+     * Render the calendar
+     *
+     * Generates the calendar HTML structure, applies styles, and sets up interactions.
+     * Displays the selected month and year, highlights weekends if enabled,
+     * and executes the assigned action when a day is clicked.
      */
     public function show()
     {

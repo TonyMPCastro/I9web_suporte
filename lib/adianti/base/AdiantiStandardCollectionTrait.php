@@ -23,6 +23,10 @@ use DomDocument;
 /**
  * Standard Collection Trait
  *
+ * This trait provides standard functionalities for managing collections of database records,
+ * including filtering, ordering, pagination, and callbacks for transformation and post-processing.
+ * It is designed to be used in conjunction with Adianti Framework's components.
+ *
  * @version    7.5
  * @package    base
  * @author     Pablo Dall'Oglio
@@ -49,8 +53,9 @@ trait AdiantiStandardCollectionTrait
     use AdiantiStandardControlTrait;
     
     /**
-     * method setLimit()
-     * Define the record limit
+     * Sets the record limit.
+     *
+     * @param int $limit The maximum number of records to be retrieved.
      */
     public function setLimit($limit)
     {
@@ -58,7 +63,9 @@ trait AdiantiStandardCollectionTrait
     }
     
     /**
-     * Set list widget
+     * Sets the collection object (datagrid).
+     *
+     * @param object $object The collection object (typically a datagrid).
      */
     public function setCollectionObject($object)
     {
@@ -66,7 +73,10 @@ trait AdiantiStandardCollectionTrait
     }
     
     /**
-     * Set order command
+     * Sets a custom order command for a specific column.
+     *
+     * @param string $order_column  The name of the column.
+     * @param string $order_command The SQL command to be executed for ordering.
      */
     public function setOrderCommand($order_column, $order_command)
     {
@@ -79,9 +89,10 @@ trait AdiantiStandardCollectionTrait
     }
     
     /**
-     * Define the default order
-     * @param $order The order field
-     * @param $directiont the order direction (asc, desc)
+     * Defines the default order for records.
+     *
+     * @param string $order     The field name to be used for ordering.
+     * @param string $direction The order direction ('asc' or 'desc'). Defaults to 'asc'.
      */
     public function setDefaultOrder($order, $direction = 'asc')
     {
@@ -90,9 +101,10 @@ trait AdiantiStandardCollectionTrait
     }
     
     /**
-     * method setFilterField()
-     * Define wich field will be used for filtering
-     * PS: Just for Backwards compatibility
+     * Sets a filter field for backward compatibility.
+     *
+     * @param string $filterField The field name to be used for filtering.
+     * @deprecated Use addFilterField() instead.
      */
     public function setFilterField($filterField)
     {
@@ -100,9 +112,10 @@ trait AdiantiStandardCollectionTrait
     }
     
     /**
-     * method setOperator()
-     * Define the filtering operator
-     * PS: Just for Backwards compatibility
+     * Sets a filtering operator for backward compatibility.
+     *
+     * @param string $operator The comparison operator (e.g., '=', 'like', '>', '<').
+     * @deprecated Use addFilterField() instead.
      */
     public function setOperator($operator)
     {
@@ -110,10 +123,13 @@ trait AdiantiStandardCollectionTrait
     }
     
     /**
-     * method addFilterField()
-     * Add a field that will be used for filtering
-     * @param $filterField Field name
-     * @param $operator Comparison operator
+     * Adds a filter field for searching records.
+     *
+     * @param string $filterField              The field name to be used for filtering.
+     * @param string $operator                 The comparison operator (default: 'like').
+     * @param string|null $formFilter          The form field name associated with the filter (default: same as filterField).
+     * @param callable|null $filterTransformer A function to transform the filter value before applying.
+     * @param string $logic_operator           The logical operator ('AND' or 'OR'). Default: 'AND'.
      */
     public function addFilterField($filterField, $operator = 'like', $formFilter = NULL, $filterTransformer = NULL, $logic_operator = TExpression::AND_OPERATOR)
     {
@@ -125,8 +141,9 @@ trait AdiantiStandardCollectionTrait
     }
     
     /**
-     * method setCriteria()
-     * Define the criteria
+     * Sets the criteria for filtering records.
+     *
+     * @param TCriteria $criteria The filtering criteria.
      */
     public function setCriteria($criteria)
     {
@@ -134,8 +151,9 @@ trait AdiantiStandardCollectionTrait
     }
 
     /**
-     * Define a callback method to transform objects
-     * before load them into datagrid
+     * Defines a callback function to transform objects before loading them into the datagrid.
+     *
+     * @param callable $callback The transformation callback function.
      */
     public function setTransformer($callback)
     {
@@ -143,8 +161,9 @@ trait AdiantiStandardCollectionTrait
     }
     
     /**
-     * Define a callback method to transform objects
-     * before load them into datagrid
+     * Defines a callback function to be executed after loading records into the datagrid.
+     *
+     * @param callable $callback The callback function.
      */
     public function setAfterLoadCallback($callback)
     {
@@ -152,8 +171,9 @@ trait AdiantiStandardCollectionTrait
     }
     
     /**
-     * Define a callback method to transform objects
-     * after search action
+     * Defines a callback function to be executed after performing a search action.
+     *
+     * @param callable $callback The callback function.
      */
     public function setAfterSearchCallback($callback)
     {
@@ -161,7 +181,9 @@ trait AdiantiStandardCollectionTrait
     }
     
     /**
-     * Register the filter in the session
+     * Performs a search and stores the filters in the session.
+     *
+     * @param array|null $param Parameters for the search action.
      */
     public function onSearch( $param = null )
     {
@@ -238,7 +260,7 @@ trait AdiantiStandardCollectionTrait
     }
     
     /**
-     * clear Filters
+     * Clears all filters stored in the session and resets the search form.
      */
     public function clearFilters()
     {
@@ -259,7 +281,11 @@ trait AdiantiStandardCollectionTrait
     }
     
     /**
-     * Load the datagrid with the database objects
+     * Reloads the datagrid with records from the database.
+     *
+     * @param array|null $param Optional parameters for reloading data.
+     *
+     * @return array|null Returns the list of loaded objects or null if an error occurs.
      */
     public function onReload($param = NULL)
     {
@@ -378,7 +404,9 @@ trait AdiantiStandardCollectionTrait
     }
     
     /**
-     * Ask before deletion
+     * Prompts the user with a confirmation dialog before deleting a record.
+     *
+     * @param array $param Parameters containing the record key.
      */
     public function onDelete($param)
     {
@@ -391,7 +419,9 @@ trait AdiantiStandardCollectionTrait
     }
     
     /**
-     * Delete a record
+     * Deletes a record from the database.
+     *
+     * @param array $param Parameters containing the record key.
      */
     public function Delete($param)
     {
@@ -428,8 +458,7 @@ trait AdiantiStandardCollectionTrait
     }
     
     /**
-     * method show()
-     * Shows the page
+     * Displays the page, ensuring that the datagrid is loaded.
      */
     public function show()
     {

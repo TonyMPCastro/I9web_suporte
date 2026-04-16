@@ -12,6 +12,10 @@ use stdClass;
 /**
  * FullCalendar Widget
  *
+ * This class represents a calendar widget based on FullCalendar.
+ * It allows setting various options such as event actions, time ranges,
+ * enabled days, popovers, and resizable/movable events.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage util
@@ -42,8 +46,11 @@ class TFullCalendar extends TElement
 
     /**
      * Class Constructor
-     * @param $current_date Current date of calendar
-     * @param $default_view Default view (month, agendaWeek, agendaDay, listWeeky)
+     *
+     * Initializes the FullCalendar widget with a specific date and view.
+     *
+     * @param string|null $current_date  The initial date of the calendar (format: YYYY-MM-DD).
+     * @param string $default_view       The default calendar view (month, agendaWeek, agendaDay, listWeek).
      */
     public function __construct($current_date = NULL, $default_view = 'month')
     {
@@ -63,7 +70,11 @@ class TFullCalendar extends TElement
     }
     
     /**
-     * Set extra datepicker options (ex: autoclose, startDate, daysOfWeekDisabled, datesDisabled)
+     * Set an extra option for the FullCalendar widget.
+     *
+     * @param string $option  The option name.
+     * @param mixed $value    The value to assign to the option.
+     *
      * @link https://fullcalendar.io/docs/view-specific-options
      */
     public function setOption($option, $value)
@@ -72,7 +83,9 @@ class TFullCalendar extends TElement
     }
     
     /**
-     * Define use full height
+     * Enable or disable full height mode.
+     *
+     * @param bool $full_height Whether to enable full height mode (default: TRUE).
      */
     public function enableFullHeight($full_height = TRUE)
     {
@@ -80,7 +93,9 @@ class TFullCalendar extends TElement
     }
 
     /**
-     * Define height
+     * Set the calendar height.
+     *
+     * @param int $height The height value in pixels.
      */
     public function setHeight($height)
     {
@@ -89,7 +104,10 @@ class TFullCalendar extends TElement
     }
 
     /**
-     * Define the time range
+     * Define the allowed time range for the calendar.
+     *
+     * @param string $min_time The minimum time (format: HH:MM:SS).
+     * @param string $max_time The maximum time (format: HH:MM:SS).
      */
     public function setTimeRange($min_time, $max_time)
     {
@@ -98,7 +116,9 @@ class TFullCalendar extends TElement
     }
     
     /**
-     * Enable these days
+     * Enable specific days of the week in the calendar.
+     *
+     * @param array $days An array of enabled days (0 = Sunday, 6 = Saturday).
      */
     public function enableDays($days)
     {
@@ -106,8 +126,9 @@ class TFullCalendar extends TElement
     }
     
     /**
-     * Set the current date of calendar
-     * @param $date Current date of calendar
+     * Set the current date of the calendar.
+     *
+     * @param string $date The new current date (format: YYYY-MM-DD).
      */
     public function setCurrentDate($date)
     {
@@ -115,8 +136,9 @@ class TFullCalendar extends TElement
     }
     
     /**
-     * Set the current view of calendar
-     * @param $view Current view of calendar (month, agendaWeek, agendaDay, listWeek)
+     * Set the default view of the calendar.
+     *
+     * @param string $view The calendar view (month, agendaWeek, agendaDay, listWeek).
      */
     public function setCurrentView($view)
     {
@@ -124,8 +146,9 @@ class TFullCalendar extends TElement
     }
     
     /**
-     * Define the reload action
-     * @param $action reload action
+     * Define the action to reload the calendar.
+     *
+     * @param TAction $action The reload action.
      */
     public function setReloadAction(TAction $action)
     {
@@ -133,8 +156,9 @@ class TFullCalendar extends TElement
     }
     
     /**
-     * Define the event click action
-     * @param $action event click action
+     * Define the action triggered when an event is clicked.
+     *
+     * @param TAction $action The event click action.
      */
     public function setEventClickAction(TAction $action)
     {
@@ -142,8 +166,9 @@ class TFullCalendar extends TElement
     }
     
     /**
-     * Define the day click action
-     * @param $action day click action
+     * Define the action triggered when a day is clicked.
+     *
+     * @param TAction $action The day click action.
      */
     public function setDayClickAction(TAction $action)
     {
@@ -151,8 +176,9 @@ class TFullCalendar extends TElement
     }
     
     /**
-     * Define the event update action
-     * @param $action event updaet action
+     * Define the action triggered when an event is updated.
+     *
+     * @param TAction $action The event update action.
      */
     public function setEventUpdateAction(TAction $action)
     {
@@ -160,9 +186,10 @@ class TFullCalendar extends TElement
     }
     
     /**
-     * Enable popover
-     * @param $title Title
-     * @param $content Content
+     * Enable popover for event details.
+     *
+     * @param string $title    The popover title.
+     * @param string $content  The popover content.
      */
     public function enablePopover($title, $content)
     {
@@ -172,7 +199,7 @@ class TFullCalendar extends TElement
     }
     
     /**
-     * Disable event resize
+     * Disable event resizing in the calendar.
      */
     public function disableResizing()
     {
@@ -180,15 +207,15 @@ class TFullCalendar extends TElement
     }
     
     /**
-     * Disable event dragging
+     * Disable event dragging in the calendar.
      */
     public function disableDragging()
     {
         $this->movable = FALSE;
     }
 
-     /**
-     * Set disable view weekend
+    /**
+     * Disable viewing events on weekends.
      */
     public function disableWeekend()
     {
@@ -197,13 +224,15 @@ class TFullCalendar extends TElement
 
     
     /**
-     * Add an event
-     * @param $id Event id
-     * @param $title Event title
-     * @param $start Event start time
-     * @param $end Event end time
-     * @param $url Event url
-     * @param $color Event color
+     * Add an event to the calendar.
+     *
+     * @param string $id       The event ID.
+     * @param string $title    The event title.
+     * @param string $start    The event start time (format: YYYY-MM-DD HH:MM:SS).
+     * @param string|null $end The event end time (optional, format: YYYY-MM-DD HH:MM:SS).
+     * @param string|null $url The event URL (optional).
+     * @param string|null $color The event color (optional, CSS color format).
+     * @param mixed|null $object An optional object for popover data replacement.
      */
     public function addEvent($id, $title, $start, $end = NULL, $url = NULL, $color = NULL, $object = NULL)
     {
@@ -229,10 +258,13 @@ class TFullCalendar extends TElement
     }
     
     /**
-     * Render title popover
-     * @param $title Event title
-     * @param $poptitle Popover Title
-     * @param $popcontent Popover Content
+     * Render an event title with a popover.
+     *
+     * @param string $title      The event title.
+     * @param string $poptitle   The popover title.
+     * @param string $popcontent The popover content.
+     *
+     * @return string The formatted HTML string with popover attributes.
      */
     public static function renderPopover($title, $poptitle, $popcontent)
     {
@@ -240,7 +272,7 @@ class TFullCalendar extends TElement
     }
     
     /**
-     * Show the callendar and execute required scripts
+     * Render and display the calendar, executing the required scripts.
      */
     public function show()
     {

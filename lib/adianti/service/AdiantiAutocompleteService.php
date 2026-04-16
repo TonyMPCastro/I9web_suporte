@@ -13,6 +13,9 @@ use Exception;
 /**
  * Autocomplete backend
  *
+ * This service performs a search based on a given query string inside a specific database model,
+ * applying filters, sorting, and returning suggestions in JSON format.
+ *
  * @version    7.5
  * @package    service
  * @author     Pablo Dall'Oglio
@@ -22,7 +25,25 @@ use Exception;
 class AdiantiAutocompleteService
 {
     /**
-     * Search by the given word inside a model
+     * Searches for a query string within a specified database model.
+     *
+     * This method validates the provided parameters, connects to the database, applies filters,
+     * retrieves matching records, formats them, and returns the results as JSON.
+     *
+     * @param array|null $param An associative array containing the search parameters:
+     *                          - 'database' (string): The database connection name.
+     *                          - 'model' (string): The model class name to perform the search.
+     *                          - 'column' (string): The column in the database table to search in.
+     *                          - 'query' (string): The search term entered by the user.
+     *                          - 'mask' (string): A formatting mask for the result values.
+     *                          - 'hash' (string): A security hash to validate the request.
+     *                          - 'orderColumn' (string): The column name used for ordering results.
+     *                          - 'operator' (string, optional): The comparison operator (default is 'like' or 'ilike' for PostgreSQL).
+     *                          - 'criteria' (string, optional): A serialized and base64-encoded filter criteria.
+     *
+     * @return void Outputs a JSON response containing:
+     *              - 'query' (string): The search query term.
+     *              - 'suggestions' (array|null): An array of search suggestions or an error message.
      */
 	public static function onSearch($param = null)
 	{

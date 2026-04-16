@@ -31,3 +31,14 @@
         border-radius         : 3px;
     }
 }
+
+.no-results-wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    padding: 8px;
+}
+
+.no-results-wrapper input{
+    min-width: 0;
+}

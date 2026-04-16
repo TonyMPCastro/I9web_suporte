@@ -10,8 +10,9 @@ class BuilderTemplateParser
      */
     public static function parse($content, $theme = 'theme3')
     {
-        $ini       = AdiantiApplicationConfig::get();
-        
+        $ini = AdiantiApplicationConfig::get();
+        $preferences = SystemPreferenceService::getPreferences();
+
         if ((TSession::getValue('login') == 'admin') && !empty($ini['general']['token']) && file_exists("app/templates/{$theme}/builder-menu.html"))
         {
             $builder_menu = file_get_contents("app/templates/{$theme}/builder-menu.html");
@@ -19,21 +20,18 @@ class BuilderTemplateParser
         }
         else
         {
-            $content = str_replace('<!--[IFADMIN]-->',  '<!--',  $content);
-            $content = str_replace('<!--[/IFADMIN]-->', '-->',   $content);
-            
-            $content = str_replace('<!--[IFADMIN-LEFT-MENU]-->',  '<!--',  $content);
-            $content = str_replace('<!--[/IFADMIN-LEFT-MENU]-->', '-->',   $content);
+            $content  = self::removeContentBeetwenTag($content, '<!--[IFADMIN]-->', '<!--[/IFADMIN]-->');
+            $content  = self::removeContentBeetwenTag($content, '<!--[IFADMIN-LEFT-MENU]-->', '<!--[/IFADMIN-LEFT-MENU]-->');
         }
         
         if (!isset($ini['permission']['user_register']) OR $ini['permission']['user_register'] !== '1')
         {
-            $content = str_replace(['<!--[CREATE-ACCOUNT]-->', '<!--[CREATE-ACCOUNT]-->'], ['<!--', '-->'], $content);
+            $content  = self::removeContentBeetwenTag($content, '<!--[CREATE-ACCOUNT]-->', '<!--[/CREATE-ACCOUNT]-->');
         }
         
         if (!isset($ini['permission']['reset_password']) OR $ini['permission']['reset_password'] !== '1')
         {
-            $content = str_replace(['<!--[RESET-PASSWORD]-->', '<!--[RESET-PASSWORD]-->'], ['<!--', '-->'], $content);
+            $content  = self::removeContentBeetwenTag($content, '<!--[RESET-PASSWORD]-->', '<!--[/RESET-PASSWORD]-->');
         }
         
         $use_tabs = $ini['general']['use_tabs'] ?? 0;
@@ -61,8 +59,8 @@ class BuilderTemplateParser
         }
         elseif (!isset($ini['general']['left_menu']) || $ini['general']['left_menu'] == '0')
         {
-            $content = str_replace(['<!--[IF-LEFT-MENU]-->', '<!--[/IF-LEFT-MENU]-->'], ['<!--', '-->'], $content);
-            $content = str_replace(['<!--[IFADMIN-LEFT-MENU]-->', '<!--[/IFADMIN-LEFT-MENU]-->'], ['<!--', '-->'], $content);
+            $content  = self::removeContentBeetwenTag($content, '<!--[IF-LEFT-MENU]-->', '<!--[/IF-LEFT-MENU]-->');
+            $content  = self::removeContentBeetwenTag($content, '<!--[IFADMIN-LEFT-MENU]-->', '<!--[/IFADMIN-LEFT-MENU]-->');
         }
         elseif(isset($ini['general']['left_menu']) && $ini['general']['left_menu'] == '1')
         {
@@ -73,14 +71,12 @@ class BuilderTemplateParser
         if (isset($ini['general']['top_menu']) && $ini['general']['top_menu'] == '1')
         {
             $content = str_replace(['<!--[IF-TOP-MENU]-->', '<!--[/IF-TOP-MENU]-->'], ['', ''], $content);
-            $content = str_replace(['<!--[IF-NOT-TOP-MENU]-->', '<!--[/IF-NOT-TOP-MENU]-->'], ['/*', '*/'], $content);
             $has_top_menu = true;
             $top_menu_var = 'true';
         }
         else
         {
-            $content = str_replace(['<!--[IF-TOP-MENU]-->', '<!--[/IF-TOP-MENU]-->'], ['<!--', '-->'], $content);
-            $content = str_replace(['<!--[IF-NOT-TOP-MENU]-->', '<!--[/IF-NOT-TOP-MENU]-->'], ['', ''], $content);
+            $content  = self::removeContentBeetwenTag($content, '<!--[IF-TOP-MENU]-->', '<!--[/IF-TOP-MENU]-->');
         }
 
         if(!$has_left_menu)
@@ -120,6 +116,7 @@ class BuilderTemplateParser
         $dialog_box_type = $ini['general']['dialog_box_type'] ?? 'bootstrap';
         $multiunit = $ini['general']['multiunit'] ?? 0;
         $change_unit = $ini['general']['change_unit'] ?? 0;
+        $single_tab_mode = !empty($preferences['single_tab_mode']) && $preferences['single_tab_mode'] == 'T' ? "true" : "false";
 
         if ($use_mdi_windows) {
             $use_tabs = 1;
@@ -163,7 +160,7 @@ class BuilderTemplateParser
         }
         else
         {
-            $content = str_replace(['<!--[CHANGE-UNIT]-->', '<!--[/CHANGE-UNIT]-->'], ['<!--', '-->'], $content);
+            $content  = self::removeContentBeetwenTag($content, '<!--[CHANGE-UNIT]-->', '<!--[/CHANGE-UNIT]-->');
         }
         
         $css       = TPage::getLoadedCSS();
@@ -183,6 +180,50 @@ class BuilderTemplateParser
         $content = str_replace('{store_tabs}', $store_tabs, $content);
         $content = str_replace('{use_mdi_windows}', $use_mdi_windows, $content);
         $content = str_replace('{application}', $ini['general']['application'], $content);
+        $content = str_replace('{single_tab_mode}', $single_tab_mode, $content);
+
+        if(TSession::getValue('logged') && SystemChatService::isEnabled())
+        {
+            TTransaction::open('permission');
+            $users = json_encode(SystemChatService::getUserItems());
+            TTransaction::close();
+            $content = str_replace('{firebase_token}', BuilderFirebaseService::createUserToken(), $content);
+            $content = str_replace('{firebase_config}', SystemPreferenceService::getFirebaseConfig(), $content);
+            $content = str_replace('{user_id}', TSession::getValue('userid'), $content);
+            $content = str_replace('{login}', TSession::getValue('login'), $content);
+            $content = str_replace('{users}', $users, $content);
+            $content = str_replace('{chat_enabled}', 'true', $content);
+
+            $content = str_replace(['<!--[IF-CHAT]-->', '<!--[/IF-CHAT]-->'], ['', ''], $content);
+        }
+        elseif(TSession::getValue('logged') && SystemPreferenceService::hasFirebaseConfigured())
+        {
+            $content = str_replace('{firebase_config}', SystemPreferenceService::getFirebaseConfig(), $content);
+            $content = str_replace('{firebase_token}', BuilderFirebaseService::createUserToken(), $content);
+            $content = str_replace('{user_id}', TSession::getValue('userid'), $content);
+            $content = str_replace('{login}', TSession::getValue('login'), $content);
+            $content = str_replace('{users}', 'null', $content);
+            $content = str_replace('{chat_enabled}', 'false', $content);
+
+            $content  = self::removeContentBeetwenTag($content, '<!--[IF-CHAT]-->', '<!--[/IF-CHAT]-->');
+        }
+        else
+        {
+            $content  = self::removeContentBeetwenTag($content, '<!--[IF-CHAT]-->', '<!--[/IF-CHAT]-->');
+            $content = str_replace('{firebase_token}', 'false', $content);
+            $content = str_replace('{user_id}', 'false', $content);
+            $content = str_replace('{login}', 'false', $content);
+            $content = str_replace('{users}', 'null', $content);
+            $content = str_replace('{chat_enabled}', 'false', $content);
+            $content = str_replace('{firebase_config}', 'false', $content);
+        }
+
+        $mad_debug_console = 'false';
+        if(MadLogService::isDebugConsoleEnabled()){
+            $mad_debug_console = 'true';
+        }
+    
+        $content = str_replace('{mad_debug_console}', $mad_debug_console, $content);
 
         // Remove all comments
         $content = preg_replace('/<!--.*?-->/s', '', $content);
@@ -192,6 +233,7 @@ class BuilderTemplateParser
 
     public static function init($layoutName)
     {
+        ob_start();
         $ini        = AdiantiApplicationConfig::get();
         $theme      = $ini['general']['theme'];
         $publicName = 'public';
@@ -240,6 +282,10 @@ class BuilderTemplateParser
             {
                 $content = file_get_contents("app/templates/{$theme}/{$publicName}.html");
             }
+            elseif (is_file("app/templates/{$theme}/{$layoutName}.html") && $layoutName != 'layout')
+            {
+                $content = file_get_contents("app/templates/{$theme}/{$layoutName}.html");
+            }
             else
             {
                 $content = file_get_contents("app/templates/{$theme}/{$loginName}.html");
@@ -247,6 +293,22 @@ class BuilderTemplateParser
         }
 
         $content = self::parse($content, $theme);
+        $content .= ob_get_clean();
+
         return $content;
     }
+
+    public static function removeContentBeetwenTag($content, $tag1, $tag2)
+    {
+        // Escapa caracteres especiais das tags para uso em regex
+        $tag1 = preg_quote($tag1, '/');
+        $tag2 = preg_quote($tag2, '/');
+        
+        // Cria o padrão de regex para encontrar o conteúdo entre as tags (incluindo as tags)
+        $pattern = '/' . $tag1 . '.*?' . $tag2 . '/s';
+        
+        // Remove todo o conteúdo entre as tags (incluindo as tags)
+        return preg_replace($pattern, '', $content);
+    }
+
 }

@@ -13,6 +13,9 @@ use Adianti\Widget\Form\AdiantiWidgetInterface;
 /**
  * Bootstrap form decorator for Adianti Framework
  *
+ * This class acts as a wrapper for `TQuickForm`, applying Bootstrap styling to the form.
+ * It ensures that the form elements are properly structured using Bootstrap classes.
+ *
  * @version    7.5
  * @package    wrapper
  * @author     Pablo Dall'Oglio
@@ -28,6 +31,11 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     
     /**
      * Constructor method
+     *
+     * Initializes the BootstrapFormWrapper with a given form and applies Bootstrap styles.
+     *
+     * @param TQuickForm $form  The form instance to be decorated.
+     * @param string     $class CSS class to be applied to the form (default: 'form-horizontal').
      */
     public function __construct(TQuickForm $form, $class = 'form-horizontal')
     {
@@ -44,7 +52,9 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     }
     
     /**
-     * Turn on/off client validation
+     * Enable or disable client-side validation
+     *
+     * @param bool $bool If true, enables client validation; if false, disables it.
      */
     public function setClientValidation($bool)
     {
@@ -59,7 +69,9 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     }
     
     /**
-     * Return render element
+     * Get the rendered form element
+     *
+     * @return TElement The form element wrapped in a Bootstrap-styled container.
      */
     public function getElement()
     {
@@ -67,7 +79,14 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     }
     
     /**
-     * Redirect calls to decorated object
+     * Magic method to redirect calls to the decorated form
+     *
+     * This method allows calling methods of `TQuickForm` directly on this wrapper.
+     *
+     * @param string $method     The method name being called.
+     * @param array  $parameters The parameters passed to the method.
+     *
+     * @return mixed The result of the called method.
      */
     public function __call($method, $parameters)
     {
@@ -75,7 +94,10 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     }
     
     /**
-     * Redirect assigns to decorated object
+     * Magic method to assign properties to the decorated form
+     *
+     * @param string $property The property name.
+     * @param mixed  $value    The value to be assigned.
      */
     public function __set($property, $value)
     {
@@ -83,7 +105,9 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     }
     
     /**
-     * Set form name
+     * Set the form name
+     *
+     * @param string $name The name to be set for the form.
      */
     public function setName($name)
     {
@@ -91,7 +115,9 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     }
     
     /**
-     * Get form name
+     * Get the form name
+     *
+     * @return string The name of the form.
      */
     public function getName()
     {
@@ -99,7 +125,9 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     }
     
     /**
-     * Add form field
+     * Add a field to the form
+     *
+     * @param AdiantiWidgetInterface $field The field to be added.
      */
     public function addField(AdiantiWidgetInterface $field)
     {
@@ -107,7 +135,9 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     }
     
     /**
-     * Del form field
+     * Remove a field from the form
+     *
+     * @param AdiantiWidgetInterface $field The field to be removed.
      */
     public function delField(AdiantiWidgetInterface $field)
     {
@@ -115,7 +145,9 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     }
     
     /**
-     * Set form fields
+     * Set multiple fields in the form
+     *
+     * @param array $fields An array of form fields.
      */
     public function setFields($fields)
     {
@@ -123,7 +155,11 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     }
     
     /**
-     * Return form field
+     * Retrieve a field from the form by name
+     *
+     * @param string $name The name of the field.
+     *
+     * @return AdiantiWidgetInterface|null The requested field, or null if not found.
      */
     public function getField($name)
     {
@@ -131,7 +167,9 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     }
     
     /**
-     * Return form fields
+     * Get all fields in the form
+     *
+     * @return array An array of `AdiantiWidgetInterface` fields.
      */
     public function getFields()
     {
@@ -139,7 +177,7 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     }
     
     /**
-     * Clear form
+     * Clear all data from the form
      */
     public function clear()
     {
@@ -148,6 +186,8 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     
     /**
      * Set form data
+     *
+     * @param object $object An object containing data to populate the form fields.
      */
     public function setData($object)
     {
@@ -156,6 +196,10 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     
     /**
      * Get form data
+     *
+     * @param string $class The class name to instantiate for returning the data (default: 'StdClass').
+     *
+     * @return object An instance of the specified class populated with form data.
      */
     public function getData($class = 'StdClass')
     {
@@ -163,7 +207,10 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     }
     
     /**
-     * Validate form data
+     * Validate the form data
+     *
+     * @return void Throws an exception if validation fails.
+     * @throws Exception If validation fails.
      */
     public function validate()
     {
@@ -171,7 +218,9 @@ class BootstrapFormWrapper implements AdiantiFormInterface
     }
     
     /**
-     * Shows the decorated form
+     * Render and display the decorated form
+     *
+     * This method applies Bootstrap styling to the form and renders it.
      */
     public function show()
     {

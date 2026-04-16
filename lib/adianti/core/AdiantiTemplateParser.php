@@ -9,6 +9,9 @@ use Exception;
 /**
  * Template parser
  *
+ * This class processes a given template string, replacing placeholders with values
+ * obtained from session data, application configuration, and system parameters.
+ *
  * @version    7.5
  * @package    core
  * @author     Pablo Dall'Oglio
@@ -18,8 +21,16 @@ use Exception;
 class AdiantiTemplateParser
 {
     /**
-     * Parse template and replace basic system variables
-     * @param $content raw template
+     * Parses a template string and replaces system variables with actual values.
+     *
+     * This method retrieves various system settings, user session data, and configuration
+     * parameters to replace placeholders in the given template content. It also processes
+     * conditional template elements, such as admin-only sections and user permissions.
+     *
+     * @param string $content The raw template content to be processed.
+     *
+     * @return string The parsed template with replaced variables.
+     * @throws Exception If an error occurs during parsing.
      */
     public static function parse($content)
     {

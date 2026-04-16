@@ -10,6 +10,9 @@ use PDO;
 /**
  * Provides an Interface to create an INSERT statement
  *
+ * Provides an interface to create an INSERT statement.
+ * This class allows building and executing SQL INSERT queries dynamically.
+ *
  * @version    7.5
  * @package    database
  * @author     Pablo Dall'Oglio
@@ -23,7 +26,8 @@ class TSqlInsert extends TSqlStatement
     private $preparedVars;
     
     /**
-     * Constructor method
+     * Initializes the TSqlInsert object.
+     * Sets up storage for column values and prepared variables.
      */
     public function __construct()
     {
@@ -32,9 +36,10 @@ class TSqlInsert extends TSqlStatement
     }
     
     /**
-     * Assign values to the database columns
-     * @param $column   Name of the database column
-     * @param $value    Value for the database column
+     * Assigns values to the specified database column.
+     *
+     * @param string $column The name of the database column.
+     * @param mixed $value The value to be inserted into the column. Only scalar values and null are allowed.
      */
     public function setRowData($column, $value)
     {
@@ -45,8 +50,9 @@ class TSqlInsert extends TSqlStatement
     }
     
     /**
-     * Unset row data
-     * @param $column   Name of the database column
+     * Removes a previously assigned value from a specified database column.
+     *
+     * @param string $column The name of the database column to unset.
      */
     public function unsetRowData($column)
     {
@@ -57,11 +63,13 @@ class TSqlInsert extends TSqlStatement
     }
     
     /**
-     * Transform the value according to its PHP type
-     * before send it to the database
-     * @param $value    Value to be transformed
-     * @param $prepared If the value will be prepared
-     * @return       Transformed Value
+     * Transforms the given value according to its PHP type before sending it to the database.
+     * This method ensures proper quoting and type conversion.
+     *
+     * @param mixed $value The value to be transformed.
+     * @param bool $prepared Whether to use a prepared statement parameter instead of direct value substitution.
+     *
+     * @return mixed The transformed value or a prepared statement placeholder.
      */
     private function transform($value, $prepared = FALSE)
     {
@@ -123,9 +131,11 @@ class TSqlInsert extends TSqlStatement
     }
     
     /**
-     * this method doesn't exist in this class context
-     * @param $criteria A TCriteria object, specifiyng the filters
-     * @exception       Exception in any case
+     * Throws an exception since criteria are not applicable to INSERT statements.
+     *
+     * @param TCriteria $criteria A TCriteria object specifying the filters (not used in INSERT statements).
+     *
+     * @throws Exception Always throws an exception because criteria cannot be applied to an INSERT query.
      */
     public function setCriteria(TCriteria $criteria)
     {
@@ -133,7 +143,9 @@ class TSqlInsert extends TSqlStatement
     }
     
     /**
-     * Return the prepared vars
+     * Retrieves the prepared variables used in the INSERT statement.
+     *
+     * @return array An associative array where keys are placeholders and values are actual data.
      */
     public function getPreparedVars()
     {
@@ -141,8 +153,11 @@ class TSqlInsert extends TSqlStatement
     }
     
     /**
-     * Returns the INSERT plain statement
-     * @param $prepared Return a prepared Statement
+     * Generates and returns the SQL INSERT statement.
+     *
+     * @param bool $prepared Whether to return a prepared statement with placeholders instead of actual values.
+     *
+     * @return string The SQL INSERT statement.
      */
     public function getInstruction( $prepared = FALSE )
     {

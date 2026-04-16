@@ -8,7 +8,10 @@ use Adianti\Widget\Form\TEntry;
 use Adianti\Control\TAction;
 
 /**
- * Color Widget
+ * Icon Widget
+ *
+ * A form widget that allows users to select icons.
+ * It extends TEntry and implements AdiantiWidgetInterface.
  *
  * @version    7.5
  * @package    widget
@@ -23,10 +26,14 @@ class TIcon extends TEntry implements AdiantiWidgetInterface
     protected $changeFunction;
     protected $formName;
     protected $name;
+    protected $changeAction;
     
     /**
      * Class Constructor
-     * @param $name Name of the widget
+     *
+     * Initializes the icon widget, sets a unique ID, and disables autocomplete.
+     *
+     * @param string $name Name of the widget
      */
     public function __construct($name)
     {
@@ -37,8 +44,11 @@ class TIcon extends TEntry implements AdiantiWidgetInterface
     
     /**
      * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     *
+     * Enables a specific form field identified by its name.
+     *
+     * @param string $form_name Name of the form
+     * @param string $field Name of the field to be enabled
      */
     public static function enableField($form_name, $field)
     {
@@ -47,8 +57,11 @@ class TIcon extends TEntry implements AdiantiWidgetInterface
     
     /**
      * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     *
+     * Disables a specific form field identified by its name.
+     *
+     * @param string $form_name Name of the form
+     * @param string $field Name of the field to be disabled
      */
     public static function disableField($form_name, $field)
     {
@@ -57,6 +70,10 @@ class TIcon extends TEntry implements AdiantiWidgetInterface
     
     /**
      * Set change function
+     *
+     * Defines a JavaScript function to be executed when the icon selection changes.
+     *
+     * @param string $function JavaScript function to be executed
      */
     public function setChangeFunction($function)
     {
@@ -64,7 +81,35 @@ class TIcon extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Shows the widget at the screen
+     * Define the action to be executed when the user changes the icon
+     *
+     * Sets a TAction that will be triggered when the icon selection is changed.
+     * The action must be static.
+     *
+     * @param TAction $action Action to be executed
+     *
+     * @throws Exception If the action is not static
+     */
+    public function setChangeAction(TAction $action)
+    {
+        if ($action->isStatic())
+        {
+            $this->changeAction = $action;
+        }
+        else
+        {
+            $string_action = $action->toString();
+            throw new Exception(AdiantiCoreTranslator::translate('Action (^1) must be static to be used in ^2', $string_action, __METHOD__));
+        }
+    }
+
+    /**
+     * Shows the widget on the screen
+     *
+     * Renders the icon selection widget, applies any defined actions,
+     * and initializes JavaScript behavior.
+     *
+     * @throws Exception If the form containing the field is not set in TForm::setFields()
      */
     public function show()
     {
@@ -73,7 +118,27 @@ class TIcon extends TEntry implements AdiantiWidgetInterface
         $span = new TElement('span');
         $span->{'class'} = 'input-group-addon';
         
-        if (!empty($this->exitAction))
+        if (isset($this->exitAction))
+        {
+            if (!TForm::getFormByName($this->formName) instanceof TForm)
+            {
+                throw new Exception(AdiantiCoreTranslator::translate('You must pass the ^1 (^2) as a parameter to ^3', __CLASS__, $this->name, 'TForm::setFields()') );
+            }
+            $string_action = $this->exitAction->serialize(FALSE);
+            $this->setProperty('exitaction', "__adianti_post_lookup('{$this->formName}', '{$string_action}', '{$this->id}', 'callback')");
+        }
+
+        if (isset($this->changeAction))
+        {
+            if (!TForm::getFormByName($this->formName) instanceof TForm)
+            {
+                throw new Exception(AdiantiCoreTranslator::translate('You must pass the ^1 (^2) as a parameter to ^3', __CLASS__, $this->name, 'TForm::setFields()') );
+            }
+            $string_action = $this->changeAction->serialize(FALSE);
+            $this->setProperty('changeAction', "__adianti_post_lookup('{$this->formName}', '{$string_action}', '{$this->id}', 'callback')");
+        }
+
+        if (!empty($this->exitAction) || !empty($this->changeAction))
         {
             $this->setChangeFunction( $this->changeFunction . "; tform_fire_field_actions('{$this->formName}', '{$this->name}'); " );
         }

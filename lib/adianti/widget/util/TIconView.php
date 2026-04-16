@@ -10,6 +10,10 @@ use stdClass;
 /**
  * TIconView Widget
  *
+ * This class represents an icon view widget, which displays a collection of items
+ * in an icon-based format. It supports features such as popovers, context menus, 
+ * item templates, and drag-and-drop functionality.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage util
@@ -39,7 +43,9 @@ class TIconView extends TElement
     protected $doubleClickEnabled;
     
     /**
-     * Constructor Method
+     * Constructor method
+     *
+     * Initializes the icon view with default settings and assigns a unique ID.
      */
     public function __construct()
     {
@@ -56,7 +62,9 @@ class TIconView extends TElement
     }
     
     /**
-     * Enable double click
+     * Enables double-click functionality
+     *
+     * When enabled, double-clicking an item will trigger its associated action.
      */
     public function enableDoubleClick()
     {
@@ -64,8 +72,11 @@ class TIconView extends TElement
     }
     
     /**
-     * Set item template for rendering
-     * @param  $template Template content
+     * Sets the item template for rendering
+     *
+     * Defines a template that will be used to render each item in the icon view.
+     *
+     * @param string $template The template content to be used for rendering items.
      */
     public function setItemTemplate($template)
     {
@@ -73,8 +84,11 @@ class TIconView extends TElement
     }
     
     /**
-     * Set template atribute for rendering
-     * @param  $attribute Template attribute
+     * Sets the template attribute for rendering
+     *
+     * Specifies the attribute that will be used as a template for rendering each item.
+     *
+     * @param string $attribute The name of the attribute containing the template.
      */
     public function setTemplateAttribute($attribute)
     {
@@ -82,9 +96,14 @@ class TIconView extends TElement
     }
     
     /**
-     * Enable popover
-     * @param $title Title
-     * @param $content Content
+     * Enables popover functionality
+     *
+     * Configures a popover that appears when an item is hovered over.
+     *
+     * @param string      $title       The title of the popover.
+     * @param string      $content     The content of the popover.
+     * @param string|null $popside     (Optional) The side where the popover should appear.
+     * @param callable|null $popcondition (Optional) A condition to determine when the popover should be displayed.
      */
     public function enablePopover($title, $content, $popside = null, $popcondition = null)
     {
@@ -96,9 +115,13 @@ class TIconView extends TElement
     }
     
     /**
-     * Enable move action
-     * @param $source_selector Source item selector
-     * @param $target_selector Target item selector
+     * Enables the move action functionality
+     *
+     * Allows items to be dragged and dropped between specified selectors.
+     *
+     * @param object $moveAction       The action to be triggered when an item is moved.
+     * @param string $source_selector  The selector for the source items to be dragged.
+     * @param string $target_selector  The selector for the target drop area.
      */
     public function enableMoveAction( $moveAction, $source_selector, $target_selector )
     {
@@ -109,7 +132,11 @@ class TIconView extends TElement
     }
     
     /**
-     * Set info fields
+     * Sets the information fields for items
+     *
+     * Defines additional attributes that will be stored in the item element for search or filtering purposes.
+     *
+     * @param array $fields An array of field names that should be included in the item's data attributes.
      */
     public function setInfoAttributes($fields)
     {
@@ -117,7 +144,13 @@ class TIconView extends TElement
     }
     
     /**
-     * Add object item with data
+     * Adds an item to the icon view
+     *
+     * Inserts an object into the list of displayed items.
+     *
+     * @param object $object The object representing the item.
+     *
+     * @return stdClass Returns an object where additional properties can be set for the item.
      */
     public function addItem($object)
     {
@@ -129,7 +162,11 @@ class TIconView extends TElement
     }
     
     /**
-     * Define the field that will identify the icon
+     * Sets the icon attribute
+     *
+     * Defines the attribute that will be used to retrieve the icon for each item.
+     *
+     * @param string $iconField The name of the attribute containing the icon path or identifier.
      */
     public function setIconAttribute( $iconField )
     {
@@ -137,7 +174,11 @@ class TIconView extends TElement
     }
     
     /**
-     * Define the field that will identify the label
+     * Sets the label attribute
+     *
+     * Defines the attribute that will be used as the label for each item.
+     *
+     * @param string $labelField The name of the attribute containing the label text.
      */
     public function setLabelAttribute( $labelField )
     {
@@ -145,7 +186,14 @@ class TIconView extends TElement
     }
     
     /**
-     * Add a context menu option
+     * Adds an option to the context menu
+     *
+     * Defines an item in the right-click context menu of each icon.
+     *
+     * @param string        $label            The label of the menu option.
+     * @param object|null   $action           (Optional) The action to execute when the option is selected.
+     * @param string|null   $icon             (Optional) The icon to display in the menu option.
+     * @param callable|null $displayCondition (Optional) A function that determines whether the option should be displayed.
      */
     public function addContextMenuOption($label, $action = null, $icon = null, /*Callable*/ $displayCondition = null)
     {
@@ -153,7 +201,9 @@ class TIconView extends TElement
     }
     
     /**
-     * Show iconview items
+     * Displays the icon view
+     *
+     * Renders the items, applying templates, icons, labels, popovers, and context menus.
      */
     public function show()
     {

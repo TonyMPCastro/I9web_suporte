@@ -20,6 +20,10 @@
         <icon>fas:align-justify fa-fw </icon>
         <action>ChamadoList#method=onShow</action>
       </menuitem>
+      <menuitem label="TEste">
+        <icon>far:circle fa-fw </icon>
+        <action>AtendenteQRCode#method=onShow</action>
+      </menuitem>
     </menu>
   </menuitem>
   <menuitem label="Gerencial">
@@ -103,6 +107,14 @@
         <icon>fas:user fa-fw</icon>
         <action>SystemUserList</action>
       </menuitem>
+      <menuitem label="_t{User monitoring}">
+        <icon>fas:binoculars fa-fw</icon>
+        <action>SystemUserMonitorHeaderList</action>
+      </menuitem>
+      <menuitem label="_t{Data importing}">
+        <icon>fas:cloud-upload-alt fa-fw</icon>
+        <action>SystemDataImportForm#method=onShow</action>
+      </menuitem>
       <menuitem label="_t{Database explorer}">
         <icon>fas:database fa-fw</icon>
         <action>SystemDatabaseExplorer</action>
@@ -114,10 +126,6 @@
       <menuitem label="_t{Menu editor}">
         <icon>far:edit fa-fw</icon>
         <action>SystemMenuEditor</action>
-      </menuitem>
-      <menuitem label="_t{Files diff}">
-        <icon>fas:file-medical-alt fa-fw</icon>
-        <action>SystemFilesDiff</action>
       </menuitem>
       <menuitem label="PHP Info">
         <icon>fas:info-circle fa-fw</icon>

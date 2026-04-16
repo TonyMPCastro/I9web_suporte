@@ -11,7 +11,13 @@ class ApplicationAuthenticationService
     {
         $ini  = AdiantiApplicationConfig::get();
         
-        TTransaction::open('permission');
+        $transactionClose = false;
+        if(!TTransaction::isOpen('permission'))
+        {
+            $transactionClose = true;
+            TTransaction::openFake('permission');
+        }
+        
         $user = SystemUsers::validate( $login );
         
         // call loaders to made available this attrs outside transactions
@@ -35,12 +41,17 @@ class ApplicationAuthenticationService
                 self::loadSessionVars($user);
             }
             
-            TTransaction::close();
-            
+            if ($transactionClose)
+            {
+                TTransaction::close();
+            }
             return $user;
         }
-        
-        TTransaction::close();
+
+        if ($transactionClose)
+        {
+            TTransaction::close();
+        }
     }
     
     /**
@@ -53,9 +64,14 @@ class ApplicationAuthenticationService
         
         if (!empty($ini['general']['multiunit']) && $ini['general']['multiunit'] == '1' && !empty($unit_id))
         {
-            TTransaction::openFake('permission');
+            $transactionClose = false;
+            if(!TTransaction::isOpen('permission'))
+            {
+                $transactionClose = true;
+                TTransaction::openFake('permission');
+            }
+            
             $is_valid = in_array($unit_id, SystemUsers::newFromLogin( TSession::getValue('login') )->getSystemUserUnitIds());
-            TTransaction::close();
             
             if (!$is_valid)
             {
@@ -68,6 +84,11 @@ class ApplicationAuthenticationService
             if (!empty($ini['general']['multi_database']) and $ini['general']['multi_database'] == '1')
             {
                 TSession::setValue('unit_database', SystemUnit::findInTransaction('permission', $unit_id)->connection_name );
+            }
+
+            if($transactionClose)
+            {
+                TTransaction::close();
             }
         }
     }
@@ -103,7 +124,8 @@ class ApplicationAuthenticationService
         TSession::setValue('usermail', $user->email);
         TSession::setValue('frontpage', '');
         TSession::setValue('programs',$programs);
-        
+        TSession::setValue('programs_actions', $user->getProgramsActions());
+
         if (!empty($user->unit) && $reloadunit)
         {
             TSession::setValue('userunitid',$user->unit->id);

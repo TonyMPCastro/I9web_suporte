@@ -10,7 +10,9 @@ use Adianti\Core\AdiantiCoreTranslator;
 use Exception;
 
 /**
- * Color Widget
+ * Color Picker Widget
+ *
+ * This widget provides a color picker input field with various customization options.
  *
  * @version    7.5
  * @package    widget
@@ -36,7 +38,10 @@ class TColor extends TEntry implements AdiantiWidgetInterface
     
     /**
      * Class Constructor
-     * @param $name Name of the widget
+     *
+     * Initializes the color picker widget, setting its default properties and options.
+     *
+     * @param string $name The name of the widget
      */
     public function __construct($name)
     {
@@ -72,12 +77,15 @@ class TColor extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Set extra option TColor
+     * Set an extra option for the color picker
      *
-     * @see Component documentation https://github.com/Simonwep/pickr#options
+     * Allows setting additional configuration options for the color picker.
+     * Refer to the component documentation for available options.
      *
-     * @param $option Key name option
-     * @param $value Option value
+     * @see https://github.com/Simonwep/pickr#options
+     *
+     * @param string $option The name of the option to set
+     * @param mixed  $value  The value of the option (can be an array for merging)
      */
     public function setOption($option, $value)
     {
@@ -92,7 +100,9 @@ class TColor extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Get options TColor
+     * Get all options of the color picker
+     *
+     * @return array The current configuration options of the widget
      */
     public function getOptions()
     {
@@ -100,8 +110,11 @@ class TColor extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Get option TColor
-     * 
+     * Get a specific option from the color picker
+     *
+     * @param string $option The name of the option to retrieve
+     *
+     * @return mixed|null The value of the option if set, otherwise null
      */
     public function getOption($option)
     {
@@ -114,7 +127,11 @@ class TColor extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Set theme
+     * Set the theme for the color picker
+     *
+     * Changes the visual appearance of the color picker based on predefined themes.
+     *
+     * @param string $theme The theme to be applied (classic, nano, or monolith)
      */
     public function setTheme($theme)
     {
@@ -127,9 +144,12 @@ class TColor extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Enable a form field
+     *
+     * Allows interaction with the color picker field in a given form.
+     *
+     * @param string $form_name The name of the form
+     * @param string $field The name of the field to enable
      */
     public static function enableField($form_name, $field)
     {
@@ -137,9 +157,12 @@ class TColor extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Disable a form field
+     *
+     * Prevents user interaction with the color picker field in a given form.
+     *
+     * @param string $form_name The name of the form
+     * @param string $field The name of the field to disable
      */
     public static function disableField($form_name, $field)
     {
@@ -147,7 +170,11 @@ class TColor extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Set change function
+     * Set a JavaScript function to execute when the color changes
+     *
+     * This function will be triggered when the user selects a different color.
+     *
+     * @param string $function The JavaScript function code
      */
     public function setChangeFunction($function)
     {
@@ -155,8 +182,11 @@ class TColor extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the action to be executed when the user changes the content
-     * @param $action TAction object
+     * Set an action to be executed when the color value changes
+     *
+     * Defines a server-side action that is triggered when the user changes the color.
+     *
+     * @param TAction $action The action to execute on change
      */
     public function setChangeAction(TAction $action)
     {
@@ -164,7 +194,12 @@ class TColor extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Shows the widget at the screen
+     * Render the color picker widget on the screen
+     *
+     * Generates the HTML and JavaScript required for the color picker to function,
+     * applying configurations, event handlers, and displaying the widget.
+     *
+     * @throws Exception If the form is not properly set when using change actions
      */
     public function show()
     {

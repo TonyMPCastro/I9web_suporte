@@ -8,6 +8,9 @@ use Exception;
 /**
  * Basic HTTP Client request
  *
+ * This class provides a static method to perform HTTP requests using cURL.
+ * It supports various HTTP methods, including GET, POST, PUT, and DELETE.
+ *
  * @version    7.5
  * @package    http
  * @author     Pablo Dall'Oglio
@@ -17,11 +20,19 @@ use Exception;
 class AdiantiHttpClient
 {
     /**
-     * Execute a HTTP request
+     * Executes an HTTP request using cURL.
      *
-     * @param $url URL
-     * @param $method method type (GET,PUT,DELETE,POST)
-     * @param $params request body
+     * This method supports GET, POST, PUT, and DELETE methods.
+     * If a request body is provided, it will be sent as JSON.
+     * Throws an exception if the response is not a valid JSON or contains an error message.
+     *
+     * @param string $url The target URL for the request.
+     * @param string $method The HTTP method to use (GET, POST, PUT, DELETE). Default is 'POST'.
+     * @param array $params The request parameters to be sent. If used with GET/DELETE, they will be appended as query parameters.
+     * @param string|null $authorization Optional authorization token to be included in the request headers.
+     *
+     * @throws Exception If the cURL request fails or the response is not a valid JSON.
+     * @return array The decoded JSON response, or the 'data' field if available.
      */
     public static function request($url, $method = 'POST', $params = [], $authorization = null)
     {

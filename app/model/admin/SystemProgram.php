@@ -25,6 +25,7 @@ class SystemProgram extends TRecord
         parent::__construct($id);
         parent::addAttribute('name');
         parent::addAttribute('controller');
+        parent::addAttribute('actions');
     }
     
     /**

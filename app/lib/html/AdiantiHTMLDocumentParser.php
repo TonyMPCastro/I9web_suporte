@@ -34,7 +34,7 @@ class AdiantiHTMLDocumentParser
      */
     public function __construct($file = null)
     {
-        if (file_exists($file))
+        if (file_exists((string) $file))
         {
             $this->file     = $file;
             $this->content  = file_get_contents($file);
@@ -229,8 +229,15 @@ class AdiantiHTMLDocumentParser
                                 $new_row = str_replace('min({$'.$attribute.'})',    $this->totals[$model][$attribute]['min'], $new_row);
                                 $new_row = str_replace('max({{'.$attribute.'}})',   $this->totals[$model][$attribute]['max'], $new_row);
                                 $new_row = str_replace('max({$'.$attribute.'})',    $this->totals[$model][$attribute]['max'], $new_row);
-                                $new_row = str_replace('avg({{'.$attribute.'}})',   $this->totals[$model][$attribute]['sum'] / $this->totals[$model][$attribute]['count'] ?? 1, $new_row);
-                                $new_row = str_replace('avg({$'.$attribute.'})',    $this->totals[$model][$attribute]['sum'] / $this->totals[$model][$attribute]['count'] ?? 1, $new_row);
+                                // $new_row = str_replace('avg({{'.$attribute.'}})',   $this->totals[$model][$attribute]['sum'] / $this->totals[$model][$attribute]['count'] ?? 1, $new_row);
+                                // $new_row = str_replace('avg({$'.$attribute.'})',    $this->totals[$model][$attribute]['sum'] / $this->totals[$model][$attribute]['count'] ?? 1, $new_row);
+
+                                $average = $this->totals[$model][$attribute]['count'] > 0 
+                                    ? $this->totals[$model][$attribute]['sum'] / $this->totals[$model][$attribute]['count'] 
+                                    : 0;
+
+                                $new_row = str_replace('avg({{'.$attribute.'}})', $average, $new_row);
+                                $new_row = str_replace('avg({$'.$attribute.'})', $average, $new_row);
                             }
                             
                             $footer->html($new_row);

@@ -33,7 +33,7 @@ class SystemRegistrationForm extends TPage
         $password   = new TPassword('password');
         $repassword = new TPassword('repassword');
         
-        $this->form->addAction( _t('Save'),  new TAction([$this, 'onSave']), 'far:save')->{'class'} = 'btn btn-sm btn-primary';
+        $this->form->addAction( _t('Save'),  new TAction([$this, 'onSave'], ['static'=>1]), 'far:save')->{'class'} = 'btn btn-sm btn-primary';
         $this->form->addAction( _t('Clear'), new TAction([$this, 'onClear']), 'fa:eraser red' );
         //$this->form->addActionLink( _t('Back'),  new TAction(['LoginForm','onReload']), 'far:arrow-alt-circle-left blue' );
         
@@ -49,12 +49,25 @@ class SystemRegistrationForm extends TPage
         $password->setSize('100%');
         $repassword->setSize('100%');
         $email->setSize('100%');
+
+        if(SystemPreferenceService::isStrongPasswordEnabled())
+        {
+            $password->enableStrongPasswordValidation(_t('Password'));
+            $password->addValidation("Password", new TRequiredValidator()); 
+            $repassword->enableStrongPasswordValidation(_t('Password confirmation'));
+            $repassword->addValidation(_t('Password confirmation'), new TRequiredValidator()); 
+        }
         
-        $this->form->addFields( [new TLabel(_t('Login'), 'red')],    [$login] );
-        $this->form->addFields( [new TLabel(_t('Name'), 'red')],     [$name] );
-        $this->form->addFields( [new TLabel(_t('Email'), 'red')],    [$email] );
-        $this->form->addFields( [new TLabel(_t('Password'), 'red')], [$password] );
-        $this->form->addFields( [new TLabel(_t('Password confirmation'), 'red')], [$repassword] );
+        $row = $this->form->addFields( [new TLabel(_t('Login'), 'red', null, null, '100%'), $login] );
+        $row->layout = ['col-sm-12'];
+        $row = $this->form->addFields( [new TLabel(_t('Name'), 'red', null, null, '100%'), $name] );
+        $row->layout = ['col-sm-12'];
+        $row = $this->form->addFields( [new TLabel(_t('Email'), 'red', null, null, '100%'), $email] );
+        $row->layout = ['col-sm-12'];
+        $row = $this->form->addFields( [new TLabel(_t('Password'), 'red', null, null, '100%'), $password] );
+        $row->layout = ['col-sm-12'];
+        $row = $this->form->addFields( [new TLabel(_t('Password confirmation'), 'red', null, null, '100%'), $repassword] );
+        $row->layout = ['col-sm-12'];
         
         // add the container to the page
         $wrapper = new TElement('div');
@@ -78,7 +91,7 @@ class SystemRegistrationForm extends TPage
      * method onSave()
      * Executed whenever the user clicks at the save button
      */
-    public static function onSave($param)
+    public function onSave($param)
     {
         try
         {
@@ -88,33 +101,9 @@ class SystemRegistrationForm extends TPage
                 throw new Exception( _t('The user registration is disabled') );
             }
             
+            $this->form->validate();
             // open a transaction with database 'permission'
             TTransaction::open('permission');
-            
-            if( empty($param['login']) )
-            {
-                throw new Exception(TAdiantiCoreTranslator::translate('The field ^1 is required', _t('Login')));
-            }
-            
-            if( empty($param['name']) )
-            {
-                throw new Exception(TAdiantiCoreTranslator::translate('The field ^1 is required', _t('Name')));
-            }
-            
-            if( empty($param['email']) )
-            {
-                throw new Exception(TAdiantiCoreTranslator::translate('The field ^1 is required', _t('Email')));
-            }
-            
-            if( empty($param['password']) )
-            {
-                throw new Exception(TAdiantiCoreTranslator::translate('The field ^1 is required', _t('Password')));
-            }
-            
-            if( empty($param['repassword']) )
-            {
-                throw new Exception(TAdiantiCoreTranslator::translate('The field ^1 is required', _t('Password confirmation')));
-            }
             
             if (SystemUsers::newFromLogin($param['login']) instanceof SystemUsers)
             {

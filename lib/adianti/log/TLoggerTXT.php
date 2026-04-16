@@ -6,6 +6,9 @@ use Adianti\Log\TLogger;
 /**
  * Register LOG in TXT files
  *
+ * Logger that registers log messages in a plain text file.
+ * Messages are appended to the file with timestamps.
+ *
  * @version    7.5
  * @package    log
  * @author     Pablo Dall'Oglio
@@ -15,8 +18,10 @@ use Adianti\Log\TLogger;
 class TLoggerTXT extends TLogger
 {
     /**
-     * Writes an message in the LOG file
-     * @param  $message Message to be written
+     * Writes a log message to the text file.
+     * Messages are appended to the file with a timestamp.
+     *
+     * @param string $message The message to be recorded.
      */
     public function write($message)
     {

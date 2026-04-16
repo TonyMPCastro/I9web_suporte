@@ -8,7 +8,10 @@ use Adianti\Widget\Form\TEntry;
 use Adianti\Control\TAction;
 
 /**
- * BarCode Widget
+ * Barcode Widget
+ *
+ * This widget extends TEntry and provides a barcode input reader component. 
+ * It allows users to scan barcodes and process the input through change functions or actions.
  *
  * @version    7.5
  * @package    widget
@@ -29,7 +32,10 @@ class TBarCodeInputReader extends TEntry implements AdiantiWidgetInterface
 
     /**
      * Class Constructor
-     * @param $name Name of the widget
+     *
+     * Initializes a barcode input reader with a unique identifier and default HTML attributes.
+     *
+     * @param string $name Name of the widget
      */
     public function __construct($name)
     {
@@ -41,7 +47,9 @@ class TBarCodeInputReader extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Set change function
+     * Set a JavaScript function to be executed when the input content changes.
+     *
+     * @param string $function JavaScript function name or inline script
      */
     public function setChangeFunction($function)
     {
@@ -49,8 +57,11 @@ class TBarCodeInputReader extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the action to be executed when the user changes the content
-     * @param $action TAction object
+     * Define an action to be executed when the input content changes.
+     *
+     * @param TAction $action A TAction object representing the action to execute
+     *
+     * @throws Exception If the form associated with the widget is not properly set
      */
     public function setChangeAction(TAction $action)
     {
@@ -58,7 +69,12 @@ class TBarCodeInputReader extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Shows the widget at the screen
+     * Render the barcode input reader widget on the screen.
+     *
+     * This method wraps the input field inside a styled div and adds an icon for barcode scanning.
+     * If a change action or function is set, it applies the respective JavaScript handlers.
+     *
+     * @throws Exception If the form name is not set and an action is defined
      */
     public function show()
     {

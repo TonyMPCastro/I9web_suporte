@@ -13,7 +13,10 @@ use Exception;
 use ReflectionClass;
 
 /**
- * Wrapper class to deal with forms
+ * Represents a form and provides methods to manage its fields, properties, and data.
+ *
+ * This class allows adding, removing, and manipulating form fields, setting properties,
+ * and handling form data operations such as validation and retrieval.
  *
  * @version    7.5
  * @package    widget
@@ -33,8 +36,11 @@ class TForm implements AdiantiFormInterface
     private static $forms;
     
     /**
-     * Class Constructor
-     * @param $name Form Name
+     * Class constructor.
+     *
+     * Initializes a new form with the given name and sets up its basic properties.
+     *
+     * @param string|null $name The form name. Default is 'my_form'.
      */
     public function __construct($name = 'my_form')
     {
@@ -48,7 +54,9 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Change tag name
+     * Sets the tag name for the form element.
+     *
+     * @param string $name The new tag name.
      */
     public function setTagName($name)
     {
@@ -56,9 +64,13 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Intercepts whenever someones assign a new property's value
-     * @param $name     Property Name
-     * @param $value    Property Value
+     * Magic method to intercept property assignments.
+     *
+     * If the class is TForm, TQuickForm, or TQuickNotebookForm, scalar values are assigned
+     * to the element properties. Otherwise, they are assigned as normal properties.
+     *
+     * @param string $name  The property name.
+     * @param mixed  $value The property value.
      */
     public function __set($name, $value)
     {
@@ -81,7 +93,9 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Silent field
+     * Marks a field as silent, meaning it will not be included in form data processing.
+     *
+     * @param string $name The field name to be marked as silent.
      */
     public function silentField($name)
     {
@@ -89,9 +103,11 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Define a form property
-     * @param $name  Property Name
-     * @param $value Property Value
+     * Defines a form property.
+     *
+     * @param string  $name    The property name.
+     * @param mixed   $value   The property value.
+     * @param bool    $replace Whether to replace the existing value or append to it (default: true).
      */
     public function setProperty($name, $value, $replace = TRUE)
     {
@@ -117,7 +133,9 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Unset form property
+     * Removes a property from the form.
+     *
+     * @param string $name The property name to be removed.
      */
     public function unsetProperty($name)
     {
@@ -125,7 +143,11 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Returns the form object by its name
+     * Retrieves a form instance by its name.
+     *
+     * @param string $name The name of the form.
+     *
+     * @return TForm|null The form instance if found, otherwise null.
      */
     public static function getFormByName($name)
     {
@@ -134,10 +156,34 @@ class TForm implements AdiantiFormInterface
             return self::$forms[$name];
         }
     }
-    
+
     /**
-     * Define the form name
-     * @param $name A string containing the form name
+     * Retrieves a form instance that contains a specific field.
+     *
+     * @param string $fieldName The field name to search for.
+     *
+     * @return TForm|false The form instance if found, otherwise false.
+     */
+    public static function getFormByField($fieldName)
+    {
+        if(self::$forms)
+        {
+            foreach (self::$forms as $form)
+            {
+                if (!empty($form->fields[$fieldName]))
+                {
+                    return $form;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Sets the name of the form.
+     *
+     * @param string $name The form name.
      */
     public function setName($name)
     {
@@ -147,7 +193,9 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Returns the form name
+     * Retrieves the form name.
+     *
+     * @return string The form name.
      */
     public function getName()
     {
@@ -155,9 +203,13 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Send data for a form located in the parent window
-     * @param $form_name  Form Name
-     * @param $object     An Object containing the form data
+     * Sends data to a form located in the parent window.
+     *
+     * @param string  $form_name  The form name.
+     * @param object  $object     The object containing form data.
+     * @param bool    $aggregate  Whether to aggregate values instead of replacing them (default: false).
+     * @param bool    $fireEvents Whether to trigger JavaScript events (default: true).
+     * @param int     $timeout    Timeout for sending data (default: 0).
      */
     public static function sendData($form_name, $object, $aggregate = FALSE, $fireEvents = TRUE, $timeout = 0)
     {
@@ -192,8 +244,9 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Define if the form will be editable
-     * @param $bool A Boolean
+     * Sets the form fields as editable or read-only.
+     *
+     * @param bool $bool Whether the fields should be editable.
      */
     public function setEditable($bool)
     {
@@ -207,8 +260,11 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Add a Form Field
-     * @param $field Object
+     * Adds a field to the form.
+     *
+     * @param AdiantiWidgetInterface $field The field object to be added.
+     *
+     * @throws Exception If a field with the same name already exists.
      */
     public function addField(AdiantiWidgetInterface $field)
     {
@@ -231,8 +287,9 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Remove a form field
-     * @param $field Object
+     * Removes a field from the form.
+     *
+     * @param AdiantiWidgetInterface $field The field object to be removed.
      */
     public function delField(AdiantiWidgetInterface $field)
     {
@@ -249,7 +306,7 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Remove all form fields
+     * Removes all fields from the form.
      */
     public function delFields()
     {
@@ -257,8 +314,11 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Define wich are the form fields
-     * @param $fields An array containing a collection of TField objects
+     * Sets the form fields.
+     *
+     * @param array $fields An array of AdiantiWidgetInterface objects representing form fields.
+     *
+     * @throws Exception If the parameter is not an array.
      */
     public function setFields($fields)
     {
@@ -279,9 +339,11 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Returns a form field by its name
-     * @param $name  A string containing the field's name
-     * @return       The Field object
+     * Retrieves a field from the form by its name.
+     *
+     * @param string $name The field name.
+     *
+     * @return AdiantiWidgetInterface|null The field object if found, otherwise null.
      */
     public function getField($name)
     {
@@ -292,8 +354,9 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Returns an array with the form fields
-     * @return Array of form fields
+     * Retrieves all form fields.
+     *
+     * @return array An array containing all form fields.
      */
     public function getFields()
     {
@@ -301,7 +364,9 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * clear the form Data
+     * Clears the form data.
+     *
+     * @param bool $keepDefaults Whether to keep default values (default: false).
      */
     public function clear($keepDefaults = FALSE)
     {
@@ -320,8 +385,9 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Define the data of the form
-     * @param $object An Active Record object
+     * Sets the form data.
+     *
+     * @param object $object The object containing form data.
      */
     public function setData($object)
     {
@@ -344,8 +410,12 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Returns the form POST data as an object
-     * @param $class A string containing the class for the returning object
+     * Retrieves the form POST data as an object.
+     *
+     * @param string $class The class name for the returned object (default: 'StdClass').
+     *
+     * @return object An instance of the specified class containing form data.
+     * @throws Exception If the class does not exist.
      */
     public function getData($class = 'StdClass')
     {
@@ -372,8 +442,13 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Returns the form start values as an object
-     * @param $class A string containing the class for the returning object
+     * Retrieves the initial form values as an object.
+     *
+     * @param string  $class      The class name for the returned object (default: 'StdClass').
+     * @param bool    $withOptions Whether to include options for selectable fields (default: false).
+     *
+     * @return object An instance of the specified class containing form values.
+     * @throws Exception If the class does not exist.
      */
     public function getValues($class = 'StdClass', $withOptions = false)
     {
@@ -420,7 +495,9 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Validate form
+     * Validates the form fields.
+     *
+     * @throws Exception If validation fails, an exception with the error messages is thrown.
      */
     public function validate()
     {
@@ -452,8 +529,9 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Add a container to the form (usually a table or panel)
-     * @param $object Any Object that implements the show() method
+     * Adds a child object to the form (typically a table or panel).
+     *
+     * @param object $object The object to be added. It must implement the show() method.
      */
     public function add($object)
     {
@@ -464,8 +542,9 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Pack a container to the form (usually a table or panel)
-     * @param mixed $object, ...Any Object that implements the show() method
+     * Packs multiple child objects into the form.
+     *
+     * @param mixed ...$objects The objects to be packed. Each must implement the show() method.
      */
     public function pack()
     {
@@ -473,7 +552,9 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Returns the child object
+     * Retrieves the first child object of the form.
+     *
+     * @return object|null The first child object if exists, otherwise null.
      */
     public function getChild()
     {
@@ -481,7 +562,9 @@ class TForm implements AdiantiFormInterface
     }
     
     /**
-     * Shows the form at the screen
+     * Displays the form.
+     *
+     * Configures the form properties and renders it, including any child elements.
      */
     public function show()
     {

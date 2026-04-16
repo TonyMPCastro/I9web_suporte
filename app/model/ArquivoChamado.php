@@ -6,7 +6,7 @@ class ArquivoChamado extends TRecord
     const PRIMARYKEY = 'id';
     const IDPOLICY   =  'serial'; // {max, serial}
 
-    private $chamado;
+    private Chamado $chamado;
 
     
 

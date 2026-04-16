@@ -14,6 +14,9 @@ use Exception;
 /**
  * DateTimePicker Widget
  *
+ * This class provides a date-time input field with a date picker.
+ * It extends TEntry and implements AdiantiWidgetInterface.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form
@@ -35,7 +38,10 @@ class TDateTime extends TEntry implements AdiantiWidgetInterface
 
     /**
      * Class Constructor
-     * @param $name Name of the widget
+     *
+     * Initializes a new instance of the TDateTime widget.
+     *
+     * @param string $name The name of the widget
      */
     public function __construct($name)
     {
@@ -59,7 +65,11 @@ class TDateTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Store the value inside the object
+     * Stores the value inside the object
+     *
+     * @param string|array $value The value to set (date-time string or an array of date-time strings)
+     *
+     * @return void
      */
     public function setValue($value)
     {
@@ -86,7 +96,11 @@ class TDateTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Return the post data
+     * Retrieves the posted value
+     *
+     * Converts the value to the database mask format if necessary.
+     *
+     * @return string The processed date-time value
      */
     public function getPostData()
     {
@@ -103,10 +117,13 @@ class TDateTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Convert from one mask to another
-     * @param $value original date
-     * @param $fromMask source mask
-     * @param $toMask target mask
+     * Converts a date-time string from one format to another
+     *
+     * @param string|array $value     The original date-time value
+     * @param string       $fromMask  The source date-time format
+     * @param string       $toMask    The target date-time format
+     *
+     * @return string|array           The formatted date-time value
      */
     public static function convertToMask($value, $fromMask, $toMask)
     {
@@ -122,10 +139,16 @@ class TDateTime extends TEntry implements AdiantiWidgetInterface
         else if ($value)
         {
             $value = substr($value,0,strlen($fromMask));
-
-            $phpFromMask = str_replace( ['dd','mm', 'yyyy', 'hh', 'ii', 'ss'], ['d','m','Y', 'H', 'i', 's'], $fromMask);
-            $phpToMask   = str_replace( ['dd','mm', 'yyyy', 'hh', 'ii', 'ss'], ['d','m','Y', 'H', 'i', 's'], $toMask);
-
+            if(preg_match('/A/i', $fromMask))
+            {
+                $phpToMask   = str_replace( ['dd','mm', 'yyyy', 'hh', 'ii', 'ss', 'AA'], ['d','m','Y', 'H', 'i', 's','A'], $toMask);
+                $phpFromMask = str_replace( ['dd','mm', 'yyyy', 'hh', 'ii', 'ss', 'AA'], ['d','m','Y', 'h', 'i', 's', 'A'], $fromMask);
+            }
+            else
+            {
+                $phpToMask   = str_replace( ['dd','mm', 'yyyy', 'hh', 'ii', 'ss'], ['d','m','Y', 'H', 'i', 's'], $toMask);
+                $phpFromMask = str_replace( ['dd','mm', 'yyyy', 'hh', 'ii', 'ss'], ['d','m','Y', 'H', 'i', 's'], $fromMask);
+            }
             $date = DateTime::createFromFormat($phpFromMask, $value);
             if ($date)
             {
@@ -137,7 +160,11 @@ class TDateTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Set change function
+     * Sets the JavaScript function to be executed when the field changes
+     *
+     * @param string $function JavaScript function name
+     *
+     * @return void
      */
     public function setChangeFunction($function)
     {
@@ -145,8 +172,11 @@ class TDateTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the action to be executed when the user changes the field
-     * @param $action TAction object
+     * Sets the action to be executed when the user leaves the field
+     *
+     * @param TAction $action The action object
+     *
+     * @return void
      */
     public function setExitAction(TAction $action)
     {
@@ -154,8 +184,12 @@ class TDateTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the action to be executed when the user changes the field
-     * @param $action TAction object
+     * Defines the action to be executed when the field value changes
+     *
+     * @param TAction $action The action object
+     *
+     * @throws Exception If the action is not static
+     * @return void
      */
     public function setChangeAction(TAction $action)
     {
@@ -171,8 +205,12 @@ class TDateTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the field's mask
-     * @param $mask  Mask for the field (dd-mm-yyyy)
+     * Defines the input mask for the field
+     *
+     * @param string $mask          The mask format (e.g., 'dd-mm-yyyy hh:ii')
+     * @param bool   $replaceOnPost Whether to replace the mask on post
+     *
+     * @return void
      */
     public function setMask($mask, $replaceOnPost = FALSE)
     {
@@ -191,7 +229,11 @@ class TDateTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Set the mask to be used to colect the data
+     * Defines the database mask for storing the value
+     *
+     * @param string $mask The database mask format
+     *
+     * @return void
      */
     public function setDatabaseMask($mask)
     {
@@ -199,8 +241,14 @@ class TDateTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Set extra datepicker options
+     * Sets additional options for the date-time picker
+     *
      * @link https://www.malot.fr/bootstrap-datetimepicker/
+     *
+     * @param string $option The option name
+     * @param mixed  $value  The option value
+     *
+     * @return void
      */
     public function setOption($option, $value)
     {
@@ -208,9 +256,12 @@ class TDateTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Enables the field
+     *
+     * @param string $form_name The form name
+     * @param string $field     The field name
+     *
+     * @return void
      */
     public static function enableField($form_name, $field)
     {
@@ -218,9 +269,12 @@ class TDateTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Disables the field
+     *
+     * @param string $form_name The form name
+     * @param string $field     The field name
+     *
+     * @return void
      */
     public static function disableField($form_name, $field)
     {
@@ -228,7 +282,12 @@ class TDateTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Shows the widget at the screen
+     * Displays the widget on the screen
+     *
+     * Initializes the JavaScript date-time picker and applies configurations.
+     *
+     * @throws Exception If the change action requires a form context
+     * @return void
      */
     public function show()
     {

@@ -8,11 +8,17 @@ use Adianti\Widget\Base\TElement;
 use Adianti\Widget\Base\TScript;
 use Adianti\Widget\Form\TForm;
 use Adianti\Widget\Form\TField;
+use Adianti\Widget\Util\TImage;
+use Mad\Util\Crypt;
 
 use Exception;
 
 /**
- * Select Widget
+ * TSelect is a multi-selection dropdown widget.
+ *
+ * This class represents a select input field with support for multiple selections,
+ * search functionality, and dynamic item reloading. It extends TField and implements
+ * the AdiantiWidgetInterface.
  *
  * @version    7.5
  * @package    widget
@@ -35,10 +41,22 @@ class TSelect extends TField implements AdiantiWidgetInterface
     protected $separator;
     protected $value;
     protected $withTitles;
+    protected $noResultsButtonAction;
+    protected $noResultsButtonActionLabel;
+    protected $noResultsButtonActionIcon;
+    protected $noResultsButtonActionBtnClass;
+    protected $noResultsQuickRegisterAction;
+    protected $noResultsQuickRegisterActionLabel;
+    protected $noResultsQuickRegisterActionIcon;
+    protected $noResultsQuickRegisterActionBtnClass;
+    protected $noResultsMessage;
     
     /**
-     * Class Constructor
-     * @param  $name widget's name
+     * Class Constructor.
+     *
+     * Initializes the select widget, sets a unique ID, and configures default properties.
+     *
+     * @param string $name The name of the widget.
      */
     public function __construct($name)
     {
@@ -56,7 +74,9 @@ class TSelect extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Enable search
+     * Enables search functionality for the select widget.
+     *
+     * Removes the default CSS class and marks the widget as searchable.
      */
     public function enableSearch()
     {
@@ -65,7 +85,9 @@ class TSelect extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable multiple selection
+     * Disables multiple selection.
+     *
+     * Removes the 'multiple' attribute from the select field and sets its size to 3.
      */
     public function disableMultiple()
     {
@@ -74,21 +96,29 @@ class TSelect extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Disable option titles
+     * Disables option titles.
+     *
+     * Prevents titles from being displayed in the option elements.
      */
     public function disableTitles()
     {
         $this->withTitles = false;
     }
     
+    /**
+     * Sets the default option for the select widget.
+     *
+     * @param string $option The default option text.
+     */
     public function setDefaultOption($option)
     {
         $this->defaultOption = $option;
     }
     
     /**
-     * Add items to the select
-     * @param $items An indexed array containing the combo options
+     * Adds items to the select widget.
+     *
+     * @param array $items An associative array where keys are option values and values are option labels.
      */
     public function addItems($items)
     {
@@ -99,7 +129,9 @@ class TSelect extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the items
+     * Retrieves the list of items in the select widget.
+     *
+     * @return array|null The array of items or null if no items are set.
      */
     public function getItems()
     {
@@ -107,9 +139,10 @@ class TSelect extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the Field's width
-     * @param $width Field's width in pixels
-     * @param $height Field's height in pixels
+     * Sets the dimensions of the select widget.
+     *
+     * @param int|string $width  The width in pixels or percentage.
+     * @param int|string|null $height The height in pixels or percentage (optional).
      */
     public function setSize($width, $height = NULL)
     {
@@ -118,8 +151,9 @@ class TSelect extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Returns the size
-     * @return array(width, height)
+     * Retrieves the size of the select widget.
+     *
+     * @return array An array containing the width and height.
      */
     public function getSize()
     {
@@ -127,8 +161,9 @@ class TSelect extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's separator
-     * @param $sep A string containing the field's separator
+     * Sets the value separator for multi-selection.
+     *
+     * @param string $sep The separator string.
      */
     public function setValueSeparator($sep)
     {
@@ -136,8 +171,11 @@ class TSelect extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's value
-     * @param $value A string containing the field's value
+     * Sets the selected value(s) for the select widget.
+     *
+     * If a separator is set, the value is converted into an array.
+     *
+     * @param string|array|null $value The selected value(s).
      */
     public function setValue($value)
     {
@@ -159,7 +197,9 @@ class TSelect extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the post data
+     * Retrieves the posted data for the select widget.
+     *
+     * @return array|string The selected value(s) from the POST request.
      */
     public function getPostData()
     {
@@ -188,8 +228,11 @@ class TSelect extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the action to be executed when the user changes the combo
-     * @param $action TAction object
+     * Sets an action to be executed when the select value changes.
+     *
+     * @param TAction $action The action object.
+     *
+     * @throws Exception If the action is not static.
      */
     public function setChangeAction(TAction $action)
     {
@@ -205,19 +248,213 @@ class TSelect extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Set change function
+     * Sets a JavaScript function to be executed when the select value changes.
+     *
+     * @param string $function The JavaScript function name.
      */
     public function setChangeFunction($function)
     {
         $this->changeFunction = $function;
     }
+/**
+     * Configures a create action button that appears when no results are found in the combo search
+     * 
+     * This method sets up a button that will be displayed when the user's search in the combo
+     * returns no results. This allows users to quickly create a new item when they can't find
+     * what they're looking for in the existing options.
+     * 
+     * @param TAction $action The action to be executed when the create button is clicked
+     * @param string $label The text label to be displayed on the create button
+     * @param string $icon The icon to be shown on the button (e.g., 'fa fa-plus')
+     * @param string $btnClass The CSS class for styling the button (e.g., 'btn btn-primary')
+     * 
+     * @return void
+     */
+    public function configureNoResultsCreateButton(TAction $action, $label, $icon, $btnClass)
+    {
+        $this->noResultsButtonAction = $action;
+        $this->noResultsButtonActionLabel = $label;
+        $this->noResultsButtonActionIcon = $icon;
+        $this->noResultsButtonActionBtnClass = $btnClass;
+    }
+
+    /**
+     * Configures the quick register functionality when there are no results.
+     * This feature allows adding a new element through an input field,
+     * executing the configured action when the user clicks the adjacent button.
+     * 
+     * @param TAction $createAction Action to be executed when clicking the confirmation button
+     * @param string|null $confirmButtonLabel Confirmation button text (optional)
+     * @param string|null $confirmButtonIcon Confirmation button icon (optional)
+     * @param string|null $confirmButtonClass Confirmation button CSS classes (optional)
+     * 
+     * @return void
+     */
+    public function configureNoResultsQuickRegister(TAction $createAction, $confirmButtonLabel = null, $confirmButtonIcon = null, $confirmButtonClass = null)
+    {
+        $this->noResultsQuickRegisterAction = $createAction;
+        $this->noResultsQuickRegisterActionLabel = $confirmButtonLabel;
+        $this->noResultsQuickRegisterActionIcon = $confirmButtonIcon;
+        $this->noResultsQuickRegisterActionBtnClass = $confirmButtonClass;
+    }
+
+    /**
+     * Sets the message to be displayed when no results are found.
+     * 
+     * @param string $noResultsMessage Message to be shown when the search returns no results
+     * 
+     * @return void
+     */
+    public function setNoResultsMessage($noResultsMessage)
+    {
+        $this->noResultsMessage = $noResultsMessage;
+    }
+
+    public function getNoResultsButtonAction()
+    {
+        return $this->noResultsButtonAction;
+    }
+
+    public function getNoResultsQuickRegisterAction()
+    {
+        return $this->noResultsQuickRegisterAction;
+    }
+
+    public function prepareNoResultsActions()
+    {
+        if (isset($this->noResultsButtonAction) && !$this->noResultsButtonAction->isHidden() && !$this->noResultsButtonAction->isDisabled())
+        {
+            if (!TForm::getFormByName($this->formName) instanceof TForm)
+            {
+                throw new Exception(AdiantiCoreTranslator::translate('You must pass the ^1 (^2) as a parameter to ^3', __CLASS__, $this->name, 'TForm::setFields()') );
+            }
+
+            $this->noResultsButtonAction->setParameter('_form_name', $this->formName);
+            $this->noResultsButtonAction->setParameter('_field_name', $this->name);
+            // get the action as URL
+            $url = $this->noResultsButtonAction->serialize(FALSE);
+
+            $url = htmlspecialchars($url);
+            $wait_message = AdiantiCoreTranslator::translate('Loading');
+
+            $obj = new \stdClass;
+            $obj->model = $this->model;
+            $obj->database = $this->database;
+            $obj->key = $this->key;
+            $obj->column = $this->mask ?? $this->column;
+            $obj->orderColumn = $this->dorderColumn;
+            $obj->criteria = $this->criteria;
+            $obj->field_name = $this->name;
+            $obj->field_id = $this->id;
+            $obj->field_form = $this->formName;
+
+            $obj->component = explode('\\', get_called_class());
+            $obj->component = end($obj->component);
+
+            $action = "\$('.select2').prev().select2('close'); Adianti.waitMessage = '$wait_message';";
+            $action.= "__adianti_post_page_lookup('{$this->formName}', '{$url}', this);";
+            $action.= "return false;";
+            
+            $this->setProperty('noresultsbtnaction', $action);
+            
+            $image = new TImage($this->noResultsButtonActionIcon);
+            $image = $image->getContents();
+
+            $btn = new TElement('span');
+            $btn->add("{$image} {$this->noResultsButtonActionLabel}");
+            $btn->onClick = $action;
+            $btn->class = 'btn '. $this->noResultsButtonActionBtnClass;
+            $btn->id = $this->id.'_btn';
+            $btn->{"data-noresultsbtnprops"} = Crypt::encryptString( base64_encode(serialize($obj)));
+
+            $noResultsButtonActionProperties = [
+                'icon' => $this->noResultsButtonActionIcon,
+                'label' => $this->noResultsButtonActionLabel,
+                'btnClass' => $this->noResultsButtonActionBtnClass,
+                'btn' => $btn->getContents(),
+                'noResultsMessage' => $this->noResultsMessage
+            ];
+
+            $this->setProperty('noresultsbtnprops', base64_encode(json_encode($noResultsButtonActionProperties)));
+        }
+
+        if (isset($this->noResultsQuickRegisterAction) && !$this->noResultsQuickRegisterAction->isHidden() && !$this->noResultsQuickRegisterAction->isDisabled())
+        {
+            if (!TForm::getFormByName($this->formName) instanceof TForm)
+            {
+                throw new Exception(AdiantiCoreTranslator::translate('You must pass the ^1 (^2) as a parameter to ^3', __CLASS__, $this->name, 'TForm::setFields()') );
+            }
+
+            $this->noResultsQuickRegisterAction->setParameter('b_from_form', $this->formName);
+            $this->noResultsQuickRegisterAction->setParameter('b_from_field', $this->name);
+            // get the action as URL
+            $url = $this->noResultsQuickRegisterAction->serialize(FALSE);
+            if ($this->noResultsQuickRegisterAction->isStatic())
+            {
+                $url .= '&static=1';
+            }
+            $url = htmlspecialchars($url);
+            $wait_message = AdiantiCoreTranslator::translate('Loading');
+
+            $obj = new \stdClass;
+            $obj->model = $this->model;
+            $obj->database = $this->database;
+            $obj->key = $this->key;
+            $obj->column = $this->mask ?? $this->column;
+            $obj->orderColumn = $this->dorderColumn;
+            $obj->criteria = $this->criteria;
+            $obj->field_name = $this->name;
+            $obj->field_id = $this->id;
+            $obj->field_form = $this->formName;
+            
+            $obj->component = explode('\\', get_called_class());
+            $obj->component = end($obj->component);
+
+            $action = "Adianti.waitMessage = '$wait_message';";
+            $action.= "__adianti_post_lookup('{$this->formName}', '{$url}', this);";
+            $action.= "\$('.select2').prev().select2('close');return false;";
+            
+            $string_action = $this->noResultsQuickRegisterAction->serialize(FALSE);
+            $this->setProperty('createaction', $action);
+            
+            $image = new TImage($this->noResultsQuickRegisterActionIcon);
+            $image = $image->getContents();
+
+            $btn = new TElement('span');
+            $btn->add("{$image} {$this->noResultsQuickRegisterActionLabel}");
+            $btn->onClick = $action;
+            $btn->class = 'btn '. $this->noResultsQuickRegisterActionBtnClass;
+            $btn->{"data-noresultsbtnprops"} = Crypt::encryptString( base64_encode(serialize($obj)));
+            $btn->{"data-quick_register_value"} = '';
+            $btn->id = $this->id.'_btn';
+            $btn->name = $this->name;
+
+            $input = new TEntry($this->name.'_quickregister');
+            $input->id = $this->id.'_quickregister';
+            $input->class = 'quickregister';
+            $input->oninput = "tcombo_set_quick_register_value(this, '{$this->id}')";
+            $input->setSize('100%');
+
+            $noResultsQuickRegisterActionProperties = [
+                'icon' => $this->noResultsQuickRegisterActionIcon,
+                'label' => $this->noResultsQuickRegisterActionLabel,
+                'btnClass' => $this->noResultsQuickRegisterActionBtnClass,
+                'btn' => $btn->getContents(),
+                'input' => $input->getContents(),
+                'noResultsMessage' => $this->noResultsMessage
+            ];
+
+            $this->setProperty('noresultsquickregisterprops', base64_encode(json_encode($noResultsQuickRegisterActionProperties)));
+        }
+    }
     
     /**
-     * Reload combobox items after it is already shown
-     * @param $formname form name (used in gtk version)
-     * @param $name field name
-     * @param $items array with items
-     * @param $startEmpty ...
+     * Dynamically reloads the select widget options.
+     *
+     * @param string  $formname    The name of the form containing the widget.
+     * @param string  $name        The name of the widget.
+     * @param array   $items       The new list of items.
+     * @param boolean $startEmpty  Whether to start with an empty option.
      */
     public static function reload($formname, $name, $items, $startEmpty = FALSE)
     {
@@ -240,9 +477,10 @@ class TSelect extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Enables the select widget field.
+     *
+     * @param string $form_name The name of the form.
+     * @param string $field     The name of the field to enable.
      */
     public static function enableField($form_name, $field)
     {
@@ -250,9 +488,10 @@ class TSelect extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Disables the select widget field.
+     *
+     * @param string $form_name The name of the form.
+     * @param string $field     The name of the field to disable.
      */
     public static function disableField($form_name, $field)
     {
@@ -260,9 +499,10 @@ class TSelect extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Clear the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Clears the select widget field.
+     *
+     * @param string $form_name The name of the form.
+     * @param string $field     The name of the field to clear.
      */
     public static function clearField($form_name, $field)
     {
@@ -270,7 +510,9 @@ class TSelect extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Render items
+     * Renders the select widget options.
+     *
+     * @param boolean $with_titles Whether to include option titles.
      */
     protected function renderItems( $with_titles = true )
     {
@@ -330,9 +572,14 @@ class TSelect extends TField implements AdiantiWidgetInterface
             }
         }
     }
-    
+
     /**
-     * Shows the widget
+     * Displays the select widget.
+     *
+     * Configures HTML attributes, applies properties, renders options, and
+     * applies JavaScript enhancements if necessary.
+     *
+     * @throws Exception If the widget is not assigned to a valid form.
      */
     public function show()
     {

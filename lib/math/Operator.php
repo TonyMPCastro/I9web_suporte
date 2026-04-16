@@ -3,7 +3,10 @@
 namespace Math;
 
 /**
- * Value object representing one operator of mathematical expression.
+ * Represents a mathematical operator as a token.
+ *
+ * Extends Token and includes additional properties such as priority and associativity.
+ * Supports left, right, and non-associative operators.
  *
  * @author Adrean Boyadzhiev (netforce) <adrean.boyadzhiev@gmail.com>
  */
@@ -17,12 +20,13 @@ class Operator extends Token
     protected $associativity;
 
     /**
-     * Create new "Value object" which represent one mathematical operator.
-     * 
-     * @param string $value string representation of this operator
-     * @param integer $priority priority value of this token
-     * @param integer $associativity one of Operator associative constants
-     * @throws \InvalidArgumentException
+     * Creates a new operator token.
+     *
+     * @param string $value The string representation of the operator.
+     * @param int $priority The priority level of the operator.
+     * @param int $associativity The associativity of the operator (left, right, or none).
+     *
+     * @throws \InvalidArgumentException If an invalid associativity value is provided.
      */
     public function __construct($value, $priority, $associativity)
     {
@@ -36,9 +40,9 @@ class Operator extends Token
     }
     
     /**
-     * Return associativity of this operator.
-     * 
-     * @return integer
+     * Gets the associativity of the operator.
+     *
+     * @return int Associativity constant (O_LEFT_ASSOCIATIVE, O_NONE_ASSOCIATIVE, or O_RIGHT_ASSOCIATIVE).
      */
     public function getAssociativity()
     {
@@ -46,9 +50,9 @@ class Operator extends Token
     }
 
     /**
-     * Return priority of this operator.
-     * 
-     * @return integer
+     * Gets the priority of the operator.
+     *
+     * @return int The priority value of the operator.
      */
     public function getPriority()
     {
@@ -56,10 +60,11 @@ class Operator extends Token
     }
 
     /**
-     * Return true if this operator has lower priority of operator $o.
-     * 
-     * @param \Math\Operator $o
-     * @return boolean
+     * Determines whether this operator has a lower priority than another operator.
+     *
+     * @param Operator $o The operator to compare against.
+     *
+     * @return bool True if this operator has lower priority, false otherwise.
      */
     public function hasLowerPriority(Operator $o)
     {

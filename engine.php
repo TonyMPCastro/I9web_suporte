@@ -3,6 +3,7 @@ require_once 'init.php';
 
 // AdiantiCoreApplication::setRouter(array('AdiantiRouteTranslator', 'translate'));
 
+
 class TApplication extends AdiantiCoreApplication
 {
     public static function run($debug = null)
@@ -30,25 +31,32 @@ class TApplication extends AdiantiCoreApplication
             $ini = AdiantiApplicationConfig::get();
             
             $class  = isset($_REQUEST['class']) ? $_REQUEST['class'] : '';
+            $method  = isset($_REQUEST['method']) ? $_REQUEST['method'] : '';
             $public = in_array($class, $ini['permission']['public_classes']);
             $public_mobile = in_array($class, array_keys($ini['user_public_pages']??[]));
             $debug  = is_null($debug)? $ini['general']['debug'] : $debug;
+
             if (TSession::getValue('logged')) // logged
             {
                 $programs = (array) TSession::getValue('programs'); // programs with permission
                 $programs = array_merge($programs, self::getDefaultPermissions());
+                $programs_actions = TSession::getValue('programs_actions');
                 
-                if( isset($programs[$class]) OR $public OR $public_mobile)
+                if($public || $public_mobile)
                 {
                     parent::run($debug);
                 }
-                else
+                elseif( (isset($programs_actions[$class][$method]) && $programs_actions[$class][$method] == false) || !isset($programs[$class]) )
                 {
                     http_response_code(401);
-                    new TMessage('error', _t('Permission denied') );
+                    new TMessage('error', _t('Permission denied'));
+                }
+                elseif( isset($programs[$class]) )
+                {
+                    parent::run($debug);
                 }
             }
-            else if ($class == 'LoginForm' OR $public )
+            else if ($class == 'LoginForm' || $public )
             {
                 parent::run($debug);
             }
@@ -93,7 +101,12 @@ class TApplication extends AdiantiCoreApplication
                      'SystemPageBatchUpdate' => TRUE,
                      'SystemPermissionUpdate' => TRUE,
                      'SystemMenuUpdate' => TRUE,
-                     'SystemChangeUnitForm' => TRUE);
+                     'SystemChangeUnitForm' => TRUE,
+                     'System2FAEmailForm' => TRUE,
+                     'System2FAForm' => TRUE,
+                     'System2FAGoogleForm' => TRUE,
+                     'BuilderService' => TRUE
+                    );
     } 
 }
 

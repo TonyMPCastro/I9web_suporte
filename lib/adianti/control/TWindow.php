@@ -12,6 +12,10 @@ use Exception;
 /**
  * Window Container (JQueryDialog wrapper)
  *
+ * This class represents a modal window component using the TJQueryDialog widget.
+ * It provides functionalities to set properties such as title, size, modal behavior, 
+ * position, and close actions, allowing dynamic window management in web applications.
+ *
  * @version    7.5
  * @package    control
  * @author     Pablo Dall'Oglio
@@ -22,6 +26,17 @@ class TWindow extends TPage
 {
     private $wrapper;
     
+    /**
+     * TWindow constructor.
+     *
+     * Initializes a new window instance with default properties, including:
+     * - A `TJQueryDialog` wrapper.
+     * - Default size (1000x500).
+     * - Modal behavior enabled.
+     * - Randomized unique ID for the window.
+     *
+     * The window is added as a child of the current page.
+     */
     public function __construct()
     {
         parent::__construct();
@@ -41,7 +56,13 @@ class TWindow extends TPage
     }
     
     /**
+     * Throws an exception if a target container is set.
      *
+     * Windows do not support target containers.
+     *
+     * @param string $container Target container name.
+     *
+     * @throws Exception If attempting to set a target container.
      */
     public function setTargetContainer($container)
     {
@@ -50,7 +71,9 @@ class TWindow extends TPage
     
     
     /**
-     * Returns ID
+     * Returns the ID of the window.
+     *
+     * @return string Window ID.
      */
     public function getId()
     {
@@ -58,7 +81,14 @@ class TWindow extends TPage
     }
     
     /**
-     * Create a window
+     * Creates a new window instance.
+     *
+     * @param string  $title  Window title.
+     * @param int     $width  Window width.
+     * @param int     $height Window height.
+     * @param mixed   $params Optional parameters.
+     *
+     * @return TWindow The created window instance.
      */
     public static function create($title, $width, $height, $params = null)
     {
@@ -71,7 +101,7 @@ class TWindow extends TPage
     }
     
     /**
-     * Remove padding
+     * Removes the window's padding.
      */
     public function removePadding()
     {
@@ -79,7 +109,7 @@ class TWindow extends TPage
     }
     
     /**
-     * Remove titlebar
+     * Removes the title bar from the window.
      */
     public function removeTitleBar()
     {
@@ -87,8 +117,9 @@ class TWindow extends TPage
     }
     
     /**
-     * Set Dialog class
-     * @param $class Class name
+     * Sets a CSS class for the dialog.
+     *
+     * @param string $class CSS class name.
      */
     public function setDialogClass($class)
     {
@@ -96,8 +127,9 @@ class TWindow extends TPage
     }
     
     /**
-     * Define the stack order (zIndex)
-     * @param $order Stack order
+     * Defines the stack order (z-index) of the window.
+     *
+     * @param int $order Stack order value.
      */
     public function setStackOrder($order)
     {
@@ -105,8 +137,9 @@ class TWindow extends TPage
     }
     
     /**
-     * Define the window's title
-     * @param  $title Window's title
+     * Sets the title of the window.
+     *
+     * @param string $title Window title.
      */
     public function setTitle($title)
     {
@@ -114,8 +147,9 @@ class TWindow extends TPage
     }
     
     /**
-     * Turn on/off modal
-     * @param $modal Boolean
+     * Enables or disables modal mode for the window.
+     *
+     * @param bool $modal Whether the window should be modal.
      */
     public function setModal($modal)
     {
@@ -123,7 +157,7 @@ class TWindow extends TPage
     }
     
     /**
-     * Disable Escape
+     * Disables the escape key for closing the window.
      */
     public function disableEscape()
     {
@@ -131,7 +165,7 @@ class TWindow extends TPage
     }
     
     /**
-     * Disable scrolling
+     * Disables scrolling within the window.
      */
     public function disableScrolling()
     {
@@ -139,9 +173,10 @@ class TWindow extends TPage
     }
     
     /**
-     * Define the window's size
-     * @param  $width  Window's width
-     * @param  $height Window's height
+     * Sets the size of the window.
+     *
+     * @param int $width  Window width.
+     * @param int $height Window height.
      */
     public function setSize($width, $height)
     {
@@ -149,9 +184,10 @@ class TWindow extends TPage
     }
     
     /**
-     * Define the window's min width between percent and absolute
-     * @param  $percent width
-     * @param  $absolute width
+     * Sets the minimum width of the window.
+     *
+     * @param int $percent  Minimum width as a percentage.
+     * @param int $absolute Minimum absolute width.
      */
     public function setMinWidth($percent, $absolute)
     {
@@ -159,9 +195,10 @@ class TWindow extends TPage
     }
     
     /**
-     * Define the top corner positions
-     * @param $x left coordinate
-     * @param $y top  coordinate
+     * Sets the top-left position of the window.
+     *
+     * @param int $x X coordinate (left position).
+     * @param int $y Y coordinate (top position).
      */
     public function setPosition($x, $y)
     {
@@ -169,9 +206,10 @@ class TWindow extends TPage
     }
     
     /**
-     * Define the Property value
-     * @param $property Property name
-     * @param $value Property value
+     * Sets a custom property value for the window.
+     *
+     * @param string $property Property name.
+     * @param mixed  $value    Property value.
      */
     public function setProperty($property, $value)
     {
@@ -179,8 +217,9 @@ class TWindow extends TPage
     }
     
     /**
-     * Add some content to the window
-     * @param $content Any object that implements the show() method
+     * Adds content to the window.
+     *
+     * @param mixed $content Content to be added, must implement show() method.
      */
     public function add($content)
     {
@@ -188,8 +227,9 @@ class TWindow extends TPage
     }
     
     /**
-     * set close action
-     * @param $action close action
+     * Sets an action to be executed when the window is closed.
+     *
+     * @param TAction $action Action object to execute on close.
      */
     public function setCloseAction(TAction $action)
     {
@@ -197,7 +237,9 @@ class TWindow extends TPage
     }
     
     /**
-     * Block UI
+     * Blocks the user interface.
+     *
+     * @param int|null $timeout Optional timeout before blocking takes effect.
      */
     public static function blockUI($timeout = null)
     {
@@ -205,7 +247,9 @@ class TWindow extends TPage
     }
     
     /**
-     * Unblock UI
+     * Unblocks the user interface.
+     *
+     * @param int|null $timeout Optional timeout before unblocking takes effect.
      */
     public static function unBlockUI($timeout = null)
     {
@@ -213,7 +257,9 @@ class TWindow extends TPage
     }
     
     /**
-     * Close TJQueryDialog's
+     * Closes a window by its ID or the most recent one if no ID is provided.
+     *
+     * @param string|null $id ID of the window to close.
      */
     public static function closeWindow($id = null)
     {
@@ -228,7 +274,7 @@ class TWindow extends TPage
     }
     
     /**
-     * Close all windows
+     * Closes all open windows.
      */
     public static function closeAll()
     {
@@ -236,7 +282,9 @@ class TWindow extends TPage
     }
     
     /**
-     * Close window by name of controller
+     * Closes a window by its controller name.
+     *
+     * @param string $name Name of the window to close.
      */
     public static function closeWindowByName($name)
     {

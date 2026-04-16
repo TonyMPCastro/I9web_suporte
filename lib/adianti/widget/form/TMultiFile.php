@@ -15,7 +15,10 @@ use Adianti\Service\AdiantiUploaderService;
 use Exception;
 
 /**
- * FileChooser widget
+ * TMultiFile widget
+ *
+ * This widget provides a multi-file input field with support for file handling,
+ * image galleries, popovers, file size limits, and custom upload services.
  *
  * @version    7.5
  * @package    widget
@@ -44,7 +47,11 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Constructor method
-     * @param $name input name
+     *
+     * Initializes the TMultiFile widget with a unique identifier, default configurations,
+     * and seed for security purposes.
+     *
+     * @param string $name The name of the input field
      */
     public function __construct($name)
     {
@@ -62,6 +69,11 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Enable image gallery view
+     *
+     * This method enables the image gallery display for uploaded images.
+     *
+     * @param int|null $width  The width of the gallery (optional)
+     * @param int      $height The height of the gallery (default: 100)
      */
     public function enableImageGallery($width = null, $height = 100)
     {
@@ -72,8 +84,11 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Enable popover
-     * @param $title Title
-     * @param $content Content
+     *
+     * This method enables a popover when hovering over the file input field.
+     *
+     * @param string|null $title   The title of the popover (optional)
+     * @param string      $content The content of the popover (default: empty string)
      */
     public function enablePopover($title = null, $content = '')
     {
@@ -83,7 +98,9 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the service class for response
+     * Define the service class for handling file uploads
+     *
+     * @param string $service The name of the upload service class
      */
     public function setService($service)
     {
@@ -91,7 +108,11 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the allowed extensions
+     * Define the allowed file extensions
+     *
+     * Sets the file types that can be uploaded through this widget.
+     *
+     * @param array $extensions An array of allowed file extensions (e.g., ['jpg', 'png', 'pdf'])
      */
     public function setAllowedExtensions($extensions)
     {
@@ -100,7 +121,9 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define to file handling
+     * Enable file handling
+     *
+     * Enables internal processing of uploaded files.
      */
     public function enableFileHandling()
     {
@@ -109,6 +132,8 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Disable file handling
+     *
+     * Disables internal processing of uploaded files.
      */
     public function disableFileHandling()
     {
@@ -117,6 +142,11 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Set field size
+     *
+     * Defines the width of the file input field.
+     *
+     * @param int|string $width  The width in pixels or percentage
+     * @param int|null   $height The height of the field (optional, unused)
      */
     public function setSize($width, $height = NULL)
     {
@@ -125,6 +155,10 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Set field height
+     *
+     * Defines the height of the file input field.
+     *
+     * @param int|string $height The height in pixels or percentage
      */
     public function setHeight($height)
     {
@@ -132,7 +166,11 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the post data
+     * Retrieve the posted data
+     *
+     * Returns the file input values submitted via POST.
+     *
+     * @return array|null The posted file data or null if not set
      */
     public function getPostData()
     {
@@ -146,7 +184,10 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
 
     /**
      * Define upload size limit
-     * @param $limit Size limit MBs
+     *
+     * Sets a maximum file upload size.
+     *
+     * @param int $limit The maximum size in megabytes (MB)
      */
     public function setLimitUploadSize($limit)
     {
@@ -154,7 +195,9 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Define upload size limit
+     * Define upload size limit based on PHP configuration
+     *
+     * Sets the maximum upload file size to the PHP-defined limit.
      */
     public function enablePHPFileUploadLimit()
     {
@@ -162,7 +205,12 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Set field value
+     * Set the field value
+     *
+     * Assigns the provided value to the input field. Handles encoding and processing of file data
+     * if file handling is enabled.
+     *
+     * @param mixed $value The value to set (can be a string, array, or JSON-encoded object)
      */
     public function setValue($value)
     {
@@ -178,7 +226,7 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
                     {
                         $new_value[] = urlencode(json_encode($item));
                     }
-                    else if (is_scalar($item) and (strpos($item, '%7B') === false))
+                    elseif (is_scalar($item) && substr( (string) $item, 0, 3) !== '%7B')
                     {
                         if (!empty($item))
                         {
@@ -211,7 +259,12 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Show the widget at the screen
+     * Render the widget
+     *
+     * Displays the multi-file input field and initializes JavaScript behaviors,
+     * including file handling, image gallery display, and popover settings.
+     *
+     * @throws Exception If the form associated with the complete action is not set
      */
     public function show()
     {
@@ -293,8 +346,13 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the action to be executed when the user leaves the form field
-     * @param $action TAction object
+     * Define the action to be executed when the user leaves the field
+     *
+     * Sets a callback action to be triggered upon completion.
+     *
+     * @param TAction $action The action to be executed
+     *
+     * @throws Exception If the action is not static
      */
     function setCompleteAction(TAction $action)
     {
@@ -311,8 +369,11 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     *
+     * Allows user interaction with the specified form field.
+     *
+     * @param string $form_name The name of the form
+     * @param string $field     The name of the field to enable
      */
     public static function enableField($form_name, $field)
     {
@@ -321,8 +382,11 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     *
+     * Disables user interaction with the specified form field.
+     *
+     * @param string $form_name The name of the form
+     * @param string $field     The name of the field to disable
      */
     public static function disableField($form_name, $field)
     {
@@ -331,8 +395,11 @@ class TMultiFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Clear the field
-     * @param $form_name Form name
-     * @param $field Field name
+     *
+     * Removes any existing value from the specified form field.
+     *
+     * @param string $form_name The name of the form
+     * @param string $field     The name of the field to clear
      */
     public static function clearField($form_name, $field)
     {

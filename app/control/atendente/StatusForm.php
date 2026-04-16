@@ -2,7 +2,7 @@
 
 class StatusForm extends TPage
 {
-    protected $form;
+    protected BootstrapFormBuilder $form;
     private $formFields = [];
     private static $database = 'chamado';
     private static $activeRecord = 'Status';
@@ -136,7 +136,6 @@ class StatusForm extends TPage
         }
         catch (Exception $e) // in case of exception
         {
-            //</catchAutoCode> 
 
             new TMessage('error', $e->getMessage()); // shows the exception error message
             $this->form->setData( $this->form->getData() ); // keep form data

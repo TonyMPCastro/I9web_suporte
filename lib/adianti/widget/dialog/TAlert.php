@@ -4,7 +4,8 @@ namespace Adianti\Widget\Dialog;
 use Adianti\Widget\Base\TElement;
 
 /**
- * Alert
+ * Class representing an alert message.
+ * This class creates a dismissible alert box with a message.
  *
  * @version    7.5
  * @package    widget
@@ -16,9 +17,11 @@ use Adianti\Widget\Base\TElement;
 class TAlert extends TElement
 {
     /**
-     * Class Constructor
-     * @param $type    Type of the alert (success, info, warning, danger)
-     * @param $message Message to be shown
+     * TAlert constructor.
+     * Initializes an alert message with a specified type and message.
+     *
+     * @param string $type    The type of the alert (success, info, warning, danger).
+     * @param string $message The message to be displayed inside the alert.
      */
     public function __construct($type, $message)
     {

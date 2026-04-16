@@ -1,12 +1,13 @@
 <?php
 namespace Adianti\Database;
 
+use Adianti\Core\AdiantiCoreApplication;
 use Adianti\Core\AdiantiCoreTranslator;
 use Adianti\Database\TRecord;
 use Adianti\Database\TCriteria;
 use Adianti\Database\TFilter;
 use Adianti\Database\TSqlSelect;
-
+use Adianti\Widget\Util\TExceptionView;
 use PDO;
 use Exception;
 use ReflectionMethod;
@@ -14,6 +15,10 @@ use ReflectionClass;
 
 /**
  * Implements the Repository Pattern to deal with collections of Active Records
+ *
+ * This class provides a fluent interface for building queries using criteria, 
+ * filtering, sorting, and grouping data. It also includes methods for retrieving, 
+ * updating, and deleting records while supporting soft-deletion.
  *
  * @version    7.5
  * @package    database
@@ -29,10 +34,19 @@ class TRepository
     protected $setValues;
     protected $columns;
     protected $aggregates;
+    protected $withoutGlobalScopes = [];
+    protected $onlyGlobalScopes = [];
+    protected $defaultFiltersApplied = [];
     
     /**
      * Class Constructor
-     * @param $class = Active Record class name
+     *
+     * Initializes a repository for the specified Active Record class.
+     *
+     * @param string $class The Active Record class name.
+     * @param bool $withTrashed Whether to include soft-deleted records.
+     *
+     * @throws Exception If the class does not exist or is not a subclass of TRecord.
      */
     public function __construct($class, $withTrashed = FALSE)
     {
@@ -43,6 +57,8 @@ class TRepository
                 $this->class = $class;
                 $this->trashed = $withTrashed;
                 $this->criteria = new TCriteria;
+
+                $this->applyGlobalScopes($this->criteria);
             }
             else
             {
@@ -56,9 +72,73 @@ class TRepository
         
         $this->aggregates = [];
     }
+
+    /**
+     * Disables specified global scopes for this repository instance.
+     *
+     * This method allows you to temporarily disable global scopes that would normally
+     * be applied to all queries. If no scopes are specified, all global scopes will be disabled.
+     *
+     * @param array|string|null $scopes Optional. The names of specific scopes to disable.
+     *                                  If null, all global scopes will be disabled.
+     *                                  Can be a string for a single scope or an array for multiple scopes.
+     *
+     * @return $this Returns the repository instance for method chaining.
+     */
+    public function withoutGlobalScopes($scopes = null)
+    {
+        // Implementation for disabling global scopes
+        if (is_null($scopes)) {
+            $this->withoutGlobalScopes = ['*'];
+        } else {
+            $this->withoutGlobalScopes = is_array($scopes) ? $scopes : [$scopes];
+        }
+        
+        return $this;
+    }
     
     /**
-     * Set criteria
+     * Applies global scope filters to the given criteria.
+     *
+     * This method automatically applies all registered global scopes to the criteria,
+     * except for those that have been explicitly disabled via withoutGlobalScopes().
+     * It ensures that global scopes are applied only once per criteria instance.
+     *
+     * @param TCriteria $criteria The criteria object to which global scopes will be applied.
+     *
+     * @return void
+     */
+    protected function applyGlobalScopes(TCriteria $criteria)
+    {
+        $class = $this->class ?? static::class;
+        $globalScopes = $class::getGlobalScopes();
+        
+        if (in_array('*', $this->withoutGlobalScopes)) {
+             return; // Do not apply any global filters
+        }
+
+        $criteriaId = spl_object_id($criteria);
+        
+        if (!isset($this->defaultFiltersApplied[$criteriaId]))
+        {
+            $this->defaultFiltersApplied[$criteriaId] = true;
+            
+            foreach ($globalScopes as $name => $filter) 
+            {
+                if (!in_array($name, $this->withoutGlobalScopes)) 
+                {
+                    $criteria->add($filter);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Set the filtering criteria for the repository.
+     *
+     * @param TCriteria $criteria The criteria object to apply to queries.
+     *
+     * @return void
      */
     public function setCriteria(TCriteria $criteria)
     {
@@ -66,7 +146,9 @@ class TRepository
     }
 
     /**
-     * Set withTrashed using fluent interfaces
+     * Include soft-deleted records in the query.
+     *
+     * @return TRepository Returns the current object for method chaining.
      */
     public function withTrashed()
     {
@@ -75,8 +157,9 @@ class TRepository
     }
 
     /**
-     * Returns the name of database entity
-     * @return A String containing the name of the entity
+     * Get the database entity name associated with the Active Record.
+     *
+     * @return string The entity name in the database.
      */
     protected function getEntity()
     {  
@@ -86,7 +169,9 @@ class TRepository
     }
     
     /**
-     * Get attribute list from entity
+     * Retrieve the list of attributes for the entity.
+     *
+     * @return string A comma-separated list of entity attributes.
      */
     protected function getAttributeList()
     {
@@ -102,7 +187,11 @@ class TRepository
     }
     
     /**
-     * Define columns list
+     * Define the columns to be selected in the query.
+     *
+     * @param array $columns Array of column names to be retrieved.
+     *
+     * @return TRepository Returns the current object for method chaining.
      */
     public function select($columns)
     {
@@ -111,13 +200,14 @@ class TRepository
     }
     
     /**
-     * Add a run time criteria using fluent interfaces
-     * 
-     * @param  $variable = variable
-     * @param  $operator = comparison operator (>,<,=)
-     * @param  $value    = value to be compared
-     * @param  $logicOperator = logical operator (TExpression::AND_OPERATOR, TExpression::OR_OPERATOR)
-     * @return A TRepository object
+     * Add a filtering condition to the query.
+     *
+     * @param string $variable Database column name.
+     * @param string $operator Comparison operator (>, <, =, LIKE, IN, IS, etc.).
+     * @param mixed $value Value to be compared.
+     * @param string $logicOperator Logical operator (TExpression::AND_OPERATOR, TExpression::OR_OPERATOR).
+     *
+     * @return TRepository Returns the current object for method chaining.
      */
     public function where($variable, $operator, $value, $logicOperator = TExpression::AND_OPERATOR)
     {
@@ -127,11 +217,12 @@ class TRepository
     }
     
     /**
-     * Assign values to the database columns
-     * 
-     * @param  $column = column name
-     * @param  $value  = column value
-     * @return A TRepository object
+     * Assign a value to a database column.
+     *
+     * @param string $column Database column name.
+     * @param mixed $value Value to be assigned to the column.
+     *
+     * @return TRepository Returns the current object for method chaining.
      */
     public function set($column, $value)
     {
@@ -144,12 +235,13 @@ class TRepository
     }
     
     /**
-     * Add a run time OR criteria using fluent interfaces
-     * 
-     * @param  $variable = variable
-     * @param  $operator = comparison operator (>,<,=)
-     * @param  $value    = value to be compared
-     * @return A TRepository object
+     * Add an OR filtering condition to the query.
+     *
+     * @param string $variable Database column name.
+     * @param string $operator Comparison operator (>, <, =, LIKE, IN, IS, etc.).
+     * @param mixed $value Value to be compared.
+     *
+     * @return TRepository Returns the current object for method chaining.
      */
     public function orWhere($variable, $operator, $value)
     {
@@ -159,11 +251,12 @@ class TRepository
     }
     
     /**
-     * Define the ordering for criteria using fluent interfaces
-     * 
-     * @param  $order = Order column
-     * @param  $direction = Order direction (asc, desc)
-     * @return A TRepository object
+     * Define the ordering criteria for the query.
+     *
+     * @param string $order Column name to order by.
+     * @param string $direction Order direction ('asc' or 'desc').
+     *
+     * @return TRepository Returns the current object for method chaining.
      */
     public function orderBy($order, $direction = 'asc')
     {
@@ -174,10 +267,11 @@ class TRepository
     }
     
     /**
-     * Define the group for criteria using fluent interfaces
-     * 
-     * @param  $group Group column
-     * @return A TRepository object
+     * Define the grouping criteria for the query.
+     *
+     * @param string $group Column name to group by.
+     *
+     * @return TRepository Returns the current object for method chaining.
      */
     public function groupBy($group)
     {
@@ -187,10 +281,11 @@ class TRepository
     }
     
     /**
-     * Define the LIMIT criteria using fluent interfaces
-     * 
-     * @param  $limit = Limit
-     * @return A TRepository object
+     * Limit the number of records returned by the query.
+     *
+     * @param int $limit Maximum number of records to return.
+     *
+     * @return TRepository Returns the current object for method chaining.
      */
     public function take($limit)
     {
@@ -200,10 +295,11 @@ class TRepository
     }
     
     /**
-     * Define the OFFSET criteria using fluent interfaces
-     * 
-     * @param  $offset = Offset
-     * @return A TRepository object
+     * Skip a number of records before returning results.
+     *
+     * @param int $offset Number of records to skip.
+     *
+     * @return TRepository Returns the current object for method chaining.
      */
     public function skip($offset)
     {
@@ -213,16 +309,23 @@ class TRepository
     }
     
     /**
-     * Load a collection       of objects from database using a criteria
-     * @param $criteria        An TCriteria object, specifiyng the filters
-     * @param $callObjectLoad  If load() method from Active Records must be called to load object parts
-     * @return                 An array containing the Active Records
+     * Load a collection of Active Record objects based on criteria.
+     *
+     * @param TCriteria|null $criteria Optional criteria object specifying filters.
+     * @param bool $callObjectLoad Whether to call the load() method on retrieved objects.
+     *
+     * @return array An array of Active Record objects.
+     * @throws Exception If there is no active transaction.
      */
-    public function load(TCriteria $criteria = NULL, $callObjectLoad = TRUE)
+    public function load(?TCriteria $criteria = NULL, $callObjectLoad = TRUE)
     {
         if (!$criteria)
         {
             $criteria = isset($this->criteria) ? $this->criteria : new TCriteria;
+        }
+        else
+        {
+            $this->applyGlobalScopes($criteria);
         }
         
         $class = $this->class;
@@ -243,62 +346,78 @@ class TRepository
         // get the connection of the active transaction
         if ($conn = TTransaction::get())
         {
-            // register the operation in the LOG file
-            TTransaction::log($sql->getInstruction());
-            $dbinfo = TTransaction::getDatabaseInfo(); // get dbinfo
-            if (isset($dbinfo['prep']) AND $dbinfo['prep'] == '1') // prepared ON
+            try
             {
-                $result = $conn-> prepare ( $sql->getInstruction( TRUE ) , array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-                $result-> execute ( $criteria->getPreparedVars() );
-            }
-            else
-            {
-                // execute the query
-                $result= $conn-> query($sql->getInstruction());
-            }
-            $results = array();
-            
-            $class = $this->class;
-            $callback = array($class, 'load'); // bypass compiler
-            
-            // Discover if load() is overloaded
-            $rm = new ReflectionMethod($class, $callback[1]);
-            
-            if ($result)
-            {
-                // iterate the results as objects
-                while ($raw = $result-> fetchObject())
+                // register the operation in the LOG file
+                TTransaction::log($sql->getInstruction());
+                $dbinfo = TTransaction::getDatabaseInfo(); // get dbinfo
+                if (isset($dbinfo['prep']) AND $dbinfo['prep'] == '1') // prepared ON
                 {
-                    $object = new $this->class;
-                    if (method_exists($object, 'onAfterLoadCollection'))
+                    $result = $conn-> prepare ( $sql->getInstruction( TRUE ) , array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
+                    $result-> execute ( $criteria->getPreparedVars() );
+                }
+                else
+                {
+                    // execute the query
+                    $result= $conn-> query($sql->getInstruction());
+                }
+
+                TTransaction::logExecutionTime();
+                $results = array();
+                
+                $class = $this->class;
+                $callback = array($class, 'load'); // bypass compiler
+                
+                // Discover if load() is overloaded
+                $rm = new ReflectionMethod($class, $callback[1]);
+                
+                if ($result)
+                {
+                    // iterate the results as objects
+                    while ($raw = $result-> fetchObject())
                     {
-                        $object->onAfterLoadCollection($raw);
-                    }
-                    $object->fromArray( (array) $raw);
-                    
-                    if ($callObjectLoad)
-                    {
-                        // reload the object because its load() method may be overloaded
-                        if ($rm->getDeclaringClass()-> getName () !== 'Adianti\Database\TRecord')
+                        $object = new $this->class;
+                        if (method_exists($object, 'onAfterLoadCollection'))
                         {
-                            $object->reload();
+                            $object->onAfterLoadCollection($raw);
                         }
-                    }
-                    
-                    if ( ($cache = $object->getCacheControl()) && empty($this->columns))
-                    {
-                        $pk = $object->getPrimaryKey();
-                        $record_key = $class . '['. $object->$pk . ']';
-                        if ($cache::setValue( $record_key, $object->toArray() ))
+                        $object->fromArray( (array) $raw);
+                        
+                        if ($callObjectLoad)
                         {
-                            TTransaction::log($record_key . ' stored in cache');
+                            // reload the object because its load() method may be overloaded
+                            if ($rm->getDeclaringClass()-> getName () !== 'Adianti\Database\TRecord')
+                            {
+                                $object->reload();
+                            }
                         }
+                        
+                        if ( ($cache = $object->getCacheControl()) && empty($this->columns))
+                        {
+                            $pk = $object->getPrimaryKey();
+                            $record_key = $class . '['. $object->$pk . ']';
+                            if ($cache::setValue( $record_key, $object->toArray() ))
+                            {
+                                TTransaction::log($record_key . ' stored in cache');
+                            }
+                        }
+                        // store the object in the $results array
+                        $results[] = $object;
                     }
-                    // store the object in the $results array
-                    $results[] = $object;
+                }
+                return $results;
+            }
+            catch(Exception $e)
+            {
+                if(AdiantiCoreApplication::getDebugMode())
+                {
+                    new TExceptionView($e);
+                }
+                else
+                {
+                    throw $e;
                 }
             }
-            return $results;
         }
         else
         {
@@ -308,7 +427,9 @@ class TRepository
     }
     
     /**
-     * Load with no aggregates
+     * Load a collection of objects without calling their load() method.
+     *
+     * @return array An array of Active Record objects loaded statically.
      */
     public function loadStatic()
     {
@@ -316,7 +437,13 @@ class TRepository
     }
     
     /**
-     * Return a indexed array
+     * Retrieve an associative array using column values as indexes.
+     *
+     * @param string $indexColumn Column name to use as the key.
+     * @param string|null $valueColumn Column name to use as the value (defaults to $indexColumn).
+     * @param TCriteria|null $criteria Optional filtering criteria.
+     *
+     * @return array An associative array where keys are from $indexColumn and values from $valueColumn.
      */
     public function getIndexedArray($indexColumn, $valueColumn = NULL, $criteria = NULL)
     {
@@ -348,14 +475,25 @@ class TRepository
     }
     
     /**
-     * Update values in the repository
+     * Update values in the repository based on criteria.
+     *
+     * @param array|null $setValues Associative array of column-value pairs to update.
+     * @param TCriteria|null $criteria Optional criteria to filter which records to update.
+     *
+     * @return int The number of affected rows.
+     * @throws Exception If there is no active transaction.
      */
-    public function update($setValues = NULL, TCriteria $criteria = NULL)
+    public function update($setValues = NULL, ?TCriteria $criteria = NULL)
     {
         if (!$criteria)
         {
             $criteria = isset($this->criteria) ? $this->criteria : new TCriteria;
         }
+        else
+        {
+            $this->applyGlobalScopes($criteria);
+        }
+
         $class = $this->class;
         $deletedat = $class::getDeletedAtColumn();
         
@@ -440,6 +578,8 @@ class TRepository
                 }
             }
             
+            TTransaction::logExecutionTime();
+
             return $result;
         }
         else
@@ -450,15 +590,23 @@ class TRepository
     }
     
     /**
-     * Delete a collection of Active Records from database
-     * @param $criteria  An TCriteria object, specifiyng the filters
-     * @return           The affected rows
+     * Delete records from the repository based on criteria.
+     *
+     * @param TCriteria|null $criteria Optional filtering criteria.
+     * @param bool $callObjectLoad Whether to call the delete() method on each object.
+     *
+     * @return int The number of affected rows.
+     * @throws Exception If there is no active transaction.
      */
-    public function delete(TCriteria $criteria = NULL, $callObjectLoad = FALSE)
+    public function delete(?TCriteria $criteria = NULL, $callObjectLoad = FALSE)
     {
         if (!$criteria)
         {
             $criteria = isset($this->criteria) ? $this->criteria : new TCriteria;
+        }
+        else
+        {
+            $this->applyGlobalScopes($criteria);
         }
 
         $class = $this->class;
@@ -575,15 +723,22 @@ class TRepository
     }
     
     /**
-     * Return the amount of objects that satisfy a given criteria
-     * @param $criteria  An TCriteria object, specifiyng the filters
-     * @return           An Integer containing the amount of objects that satisfy the criteria
+     * Count the number of records that satisfy the given criteria.
+     *
+     * @param TCriteria|null $criteria Optional filtering criteria.
+     *
+     * @return int The number of records matching the criteria.
+     * @throws Exception If there is no active transaction.
      */
-    public function count(TCriteria $criteria = NULL)
+    public function count(?TCriteria $criteria = NULL)
     {
         if (!$criteria)
         {
             $criteria = isset($this->criteria) ? $this->criteria : new TCriteria;
+        }
+        else
+        {
+            $this->applyGlobalScopes($criteria);
         }
         
         $class = $this->class;
@@ -618,6 +773,8 @@ class TRepository
                 // executes the SELECT statement
                 $result= $conn-> query($sql->getInstruction());
             }
+
+            TTransaction::logExecutionTime();
             
             if ($result)
             {
@@ -633,9 +790,12 @@ class TRepository
     }
     
     /**
-     * Count distinct aggregate
-     * @param $column  Column to be aggregated
-     * @return         An array of objects or the total value (if does not have group by)
+     * Count the distinct values of a column.
+     *
+     * @param string $column Column to be counted distinctly.
+     * @param string|null $alias Optional alias for the column.
+     *
+     * @return mixed The total distinct count or an array of results if group by is used.
      */
     public function countDistinctBy($column, $alias = null)
     {
@@ -644,10 +804,12 @@ class TRepository
     }
     
     /**
-     * Count aggregate
-     * @param $column  Column to be aggregated
-     * @param $alias   Column alias
-     * @return         An array of objects or the total value (if does not have group by)
+     * Count the occurrences of a specific column.
+     *
+     * @param string $column Column to be counted.
+     * @param string|null $alias Optional alias for the column.
+     *
+     * @return mixed The total count or an array of results if group by is used.
      */
     public function countBy($column, $alias = null)
     {
@@ -656,9 +818,11 @@ class TRepository
     
     /**
      * Count aggregate and do another aggregate after
-     * @param $column  Column to be aggregated
-     * @param $alias   Column alias
-     * @return         self object
+     *
+     * @param string $column Column to be aggregated
+     * @param string $alias Column alias
+     *
+     * @return TRepository Returns the current object for chain operations
      */
     public function countByAnd($column, $alias = null)
     {
@@ -667,10 +831,12 @@ class TRepository
     }
     
     /**
-     * Sum aggregate
-     * @param $column  Column to be aggregated
-     * @param $alias   Column alias
-     * @return         An array of objects or the total value (if does not have group by)
+     * Calculate the sum of a column's values.
+     *
+     * @param string $column Column to be summed.
+     * @param string|null $alias Optional alias for the column.
+     *
+     * @return mixed The sum value or an array of results if group by is used.
      */
     public function sumBy($column, $alias = null)
     {
@@ -678,10 +844,12 @@ class TRepository
     }
     
     /**
-     * Sum aggregate and do another aggregate after
-     * @param $column  Column to be aggregated
-     * @param $alias   Column alias
-     * @return         self object
+     * Add a sum aggregate function for a column and allow additional aggregates.
+     *
+     * @param string $column Column to be summed.
+     * @param string|null $alias Optional alias for the column.
+     *
+     * @return TRepository Returns the current object for method chaining.
      */
     public function sumByAnd($column, $alias = null)
     {
@@ -690,10 +858,12 @@ class TRepository
     }
     
     /**
-     * Average aggregate
-     * @param $column  Column to be aggregated
-     * @param $alias   Column alias
-     * @return         An array of objects or the total value (if does not have group by)
+     * Calculate the average value of a column.
+     *
+     * @param string $column Column to be averaged.
+     * @param string|null $alias Optional alias for the column.
+     *
+     * @return mixed The average value or an array of results if group by is used.
      */
     public function avgBy($column, $alias = null)
     {
@@ -701,10 +871,12 @@ class TRepository
     }
     
     /**
-     * Average aggregate and do another aggregate after
-     * @param $column  Column to be aggregated
-     * @param $alias   Column alias
-     * @return         self object
+     * Add an average aggregate function for a column and allow additional aggregates.
+     *
+     * @param string $column Column to be averaged.
+     * @param string|null $alias Optional alias for the column.
+     *
+     * @return TRepository Returns the current object for method chaining.
      */
     public function avgByAnd($column, $alias = null)
     {
@@ -713,10 +885,12 @@ class TRepository
     }
     
     /**
-     * Min aggregate
-     * @param $column  Column to be aggregated
-     * @param $alias   Column alias
-     * @return         An array of objects or the total value (if does not have group by)
+     * Retrieve the minimum value of a column.
+     *
+     * @param string $column Column to find the minimum value from.
+     * @param string|null $alias Optional alias for the column.
+     *
+     * @return mixed The minimum value or an array of results if group by is used.
      */
     public function minBy($column, $alias = null)
     {
@@ -724,10 +898,12 @@ class TRepository
     }
     
     /**
-     * Min aggregate and do another aggregate after
-     * @param $column  Column to be aggregated
-     * @param $alias   Column alias
-     * @return         self object
+     * Add a minimum aggregate function for a column and allow additional aggregates.
+     *
+     * @param string $column Column to find the minimum value from.
+     * @param string|null $alias Optional alias for the column.
+     *
+     * @return TRepository Returns the current object for method chaining.
      */
     public function minByAnd($column, $alias = null)
     {
@@ -736,10 +912,12 @@ class TRepository
     }
     
     /**
-     * Max aggregate
-     * @param $column  Column to be aggregated
-     * @param $alias   Column alias
-     * @return         An array of objects or the total value (if does not have group by)
+     * Retrieve the maximum value of a column.
+     *
+     * @param string $column Column to find the maximum value from.
+     * @param string|null $alias Optional alias for the column.
+     *
+     * @return mixed The maximum value or an array of results if group by is used.
      */
     public function maxBy($column, $alias = null)
     {
@@ -747,10 +925,12 @@ class TRepository
     }
     
     /**
-     * Max aggregate and do another aggregate after
-     * @param $column  Column to be aggregated
-     * @param $alias   Column alias
-     * @return         self object
+     * Add a maximum aggregate function for a column and allow additional aggregates.
+     *
+     * @param string $column Column to find the maximum value from.
+     * @param string|null $alias Optional alias for the column.
+     *
+     * @return TRepository Returns the current object for method chaining.
      */
     public function maxByAnd($column, $alias = null)
     {
@@ -759,9 +939,14 @@ class TRepository
     }
     
     /**
-     * Aggregate column
-     * @param $function Aggregate function (count, sum, min, max, avg)
-     * @return          An array of objects or the total value (if does not have group by)
+     * Perform an aggregate function (count, sum, min, max, avg) on a column.
+     *
+     * @param string $function Aggregate function name.
+     * @param string $column Column to be aggregated.
+     * @param string|null $alias Optional alias for the column.
+     *
+     * @return mixed The aggregate result or an array of objects if group by is used.
+     * @throws Exception If there is no active transaction.
      */
     protected function aggregate($function, $column, $alias = null)
     {
@@ -816,6 +1001,8 @@ class TRepository
                 $result= $conn-> query($sql->getInstruction());
             }
             
+            TTransaction::logExecutionTime();
+            
             $results = [];
             
             if ($result)
@@ -849,15 +1036,24 @@ class TRepository
     }
     
     /**
-     * Alias for load()
+     * Alias for load(), retrieves a collection of Active Record objects.
+     *
+     * @param TCriteria|null $criteria Optional criteria object.
+     * @param bool $callObjectLoad Whether to call the load() method on retrieved objects.
+     *
+     * @return array An array of Active Record objects.
      */
-    public function get(TCriteria $criteria = NULL, $callObjectLoad = TRUE)
+    public function get(?TCriteria $criteria = NULL, $callObjectLoad = TRUE)
     {
         return $this->load($criteria, $callObjectLoad);
     }
     
     /**
-     * Returns the first collection item
+     * Retrieve the first record from the collection.
+     *
+     * @param bool $callObjectLoad Whether to call the load() method on retrieved objects.
+     *
+     * @return object|null The first object in the collection or NULL if empty.
      */
     public function first($callObjectLoad = TRUE)
     {
@@ -869,7 +1065,11 @@ class TRepository
     }
     
     /**
-     * Returns the last collection item
+     * Retrieve the last record from the collection.
+     *
+     * @param bool $callObjectLoad Whether to call the load() method on retrieved objects.
+     *
+     * @return object|null The last object in the collection or NULL if empty.
      */
     public function last($callObjectLoad = TRUE)
     {
@@ -884,7 +1084,12 @@ class TRepository
     }
     
     /**
-     * Returns transformed collection
+     * Apply a transformation to each record in the collection.
+     *
+     * @param callable $callback Callback function to transform each object.
+     * @param bool $callObjectLoad Whether to call the load() method on retrieved objects.
+     *
+     * @return array The transformed collection of Active Record objects.
      */
     public function transform( Callable $callback, $callObjectLoad = TRUE)
     {
@@ -902,7 +1107,12 @@ class TRepository
     }
     
     /**
-     * Returns filtered collection
+     * Filter the collection based on a callback function.
+     *
+     * @param callable $callback Callback function to test each object.
+     * @param bool $callObjectLoad Whether to call the load() method on retrieved objects.
+     *
+     * @return array The filtered collection of Active Record objects.
      */
     public function filter( Callable $callback, $callObjectLoad = TRUE)
     {
@@ -924,9 +1134,13 @@ class TRepository
     }
     
     /**
-     * Dump Criteria
+     * Output the SQL criteria for debugging purposes.
+     *
+     * @param bool $prepared Whether to return criteria with prepared variables.
+     *
+     * @return string|null The SQL criteria as a string or NULL if no criteria is set.
      */
-	public function dump($prepared = FALSE)
+    public function dump($prepared = FALSE)
     {
         if (isset($this->criteria) AND $this->criteria)
         {

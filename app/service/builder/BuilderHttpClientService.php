@@ -26,26 +26,6 @@ class BuilderHttpClientService
     public static function request($url, $method = 'POST', $params = [], $authorization = null, $customHeaders = [], $customOptions = [], $jsonPayload = true)
     {
         $ch = curl_init();
-        
-        if ($method == 'POST' || $method == 'PUT')
-        {
-            if($jsonPayload)
-            {
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
-            }
-            else
-            {
-                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
-            }
-            
-            curl_setopt($ch, CURLOPT_POST, true);
-     
-        }
-        else if ( ($method == 'GET' || $method == 'DELETE') && $params)
-        {
-            $url .= '?'.http_build_query($params);
-        }
-       
         $defaults = [
             CURLOPT_URL => $url,
             CURLOPT_HEADER => false,
@@ -55,6 +35,28 @@ class BuilderHttpClientService
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_CONNECTTIMEOUT => 10
         ];
+        
+        if ($method == 'POST' || $method == 'PUT')
+        {
+            if($jsonPayload)
+            {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+                
+                $defaults[CURLOPT_HTTPHEADER][] = 'Content-Type: application/json';
+            }
+            else
+            {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+            }
+            
+            curl_setopt($ch, CURLOPT_POST, true);
+        }
+        else if ( ($method == 'GET' || $method == 'DELETE') && $params)
+        {
+            $url .= '?'.http_build_query($params);
+
+            $defaults[CURLOPT_URL] = $url;
+        }
         
         if($customOptions)
         {

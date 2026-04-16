@@ -2,23 +2,50 @@ loading = true;
 
 Application = {};
 Application.translation = {
-    'en' : {
-        'loading' : 'Loading',
-        'close'   : 'Close',
-        'insert'  : 'Insert',
-        'open_new_tab' : 'Open on a new tab'
+    'en': {
+        'loading': 'Loading',
+        'close': 'Close',
+        'insert': 'Insert',
+        'open_new_tab': 'Open on a new tab',
+        'type_message': 'Type a message...',
+        'send': 'Send',
+        'attention': 'Attention!',
+        'tab_warning_message': 'You already have a system tab open in your browser.<br>For better performance and security, please use only one tab at a time.',
+        'close_this_tab': 'Close this tab',
+        'visible_columns': 'Visible columns',
+        'apply': 'Apply',
+        'cancel': 'Cancel',
+        'reset': 'Reset'
     },
-    'pt' : {
-        'loading' : 'Carregando',
-        'close'   : 'Fechar',
-        'insert'  : 'Inserir',
-        'open_new_tab' : 'Abrir em uma nova aba'
+    'pt': {
+        'loading': 'Carregando',
+        'close': 'Fechar',
+        'insert': 'Inserir',
+        'open_new_tab': 'Abrir em uma nova aba',
+        'type_message': 'Digite uma mensagem...',
+        'send': 'Enviar',
+        'attention': 'Atenção!',
+        'tab_warning_message': 'Você já possui uma aba do sistema aberta em seu navegador.<br>Para melhor performance e segurança, por favor, utilize apenas uma aba por vez.',
+        'close_this_tab': 'Fechar esta aba',
+        'visible_columns': 'Colunas visíveis',
+        'apply': 'Aplicar',
+        'cancel': 'Cancelar',
+        'reset': 'Redefinir'
     },
-    'es' : {
-        'loading' : 'Cargando',
-        'close'   : 'Cerrar',
-        'insert'  : 'Insertar',
-        'open_new_tab' : 'Abrir en una nueva pestaña'
+    'es': {
+        'loading': 'Cargando',
+        'close': 'Cerrar',
+        'insert': 'Insertar',
+        'open_new_tab': 'Abrir en una nueva pestaña',
+        'type_message': 'Digite una mensaje...',
+        'send': 'Enviar',
+        'attention': '¡Atención!',
+        'tab_warning_message': 'Ya tienes una pestaña del sistema abierta en tu navegador.<br>Para un mejor rendimiento y seguridad, por favor, utiliza solo una pestaña a la vez.',
+        'close_this_tab': 'Cerrar esta pestaña',
+        'visible_columns': 'Columnas visibles',
+        'apply': 'Aplicar',
+        'cancel': 'Cancelar',
+        'reset': 'Restablecer'
     }
 };
 
@@ -53,7 +80,7 @@ Adianti.onBeforeLoad = function(url)
 
     loading = true; 
     setTimeout(function(){showLoading()}, 400);
-    if (url.indexOf('&static=1') == -1) {
+    if (!url.includes('&static=1') && !url.includes('&auto_scroll=0')) {
         $("html, body").animate({ scrollTop: 0 }, "fast");
     }
 };

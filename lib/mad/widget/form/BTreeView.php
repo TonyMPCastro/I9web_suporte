@@ -10,6 +10,13 @@ use Adianti\Widget\Form\TButton;
 use Adianti\Widget\Form\TField;
 use Adianti\Widget\Util\TImage;
 
+/**
+ * @version    4.0
+ * @package    widget
+ * @author     Matheus Agnes Dias
+ * @copyright  Copyright (c) 2025 Mad Solutions Ltd. (http://www.madbuilder.com.br)
+ */
+
 class BTreeView extends TField implements AdiantiWidgetInterface
 {
     private $items;
@@ -26,6 +33,14 @@ class BTreeView extends TField implements AdiantiWidgetInterface
     private $iconOpened;
     private $iconClosed;
     
+    /**
+     * Class BTreeView
+     *
+     * This class represents a hierarchical tree view component for forms.
+     * It extends TField and implements AdiantiWidgetInterface.
+     *
+     * @package Mad\Widget\Form
+     */
     public function __construct($name)
     {
         parent::__construct($name);
@@ -53,82 +68,152 @@ class BTreeView extends TField implements AdiantiWidgetInterface
         $this->iconClosed = new TImage('fa:plus');
     }
     
+    /**
+     * Sets the icons for opened and closed states.
+     *
+     * @param TImage $opened The icon for an opened group.
+     * @param TImage $closed The icon for a closed group.
+     */
     public function setIcons(TImage $opened, TImage $closed)
     {
         $this->iconOpened = $opened;
         $this->iconClosed = $closed;
     }
     
+    /**
+     * Sets the name of the tree view.
+     *
+     * @param string $name The name of the tree view.
+     */
     public function setName($name)
     {
         $this->name = $name;    
     }
     
+    /**
+     * Gets the name of the tree view.
+     *
+     * @return string The name of the tree view.
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * Sets the value of the tree view.
+     *
+     * @param mixed $value The value to set.
+     */
     public function setValue($value)
     {
         $this->value = $value;    
     }
     
+    /**
+     * Gets the value of the tree view.
+     *
+     * @return mixed The value of the tree view.
+     */
     public function getValue()
     {
         return $this->value;
     }
     
+    /**
+     * Enables the checkbox functionality for items.
+     */
     public function enableCheck()
     {
         $this->check = true;
     }
     
+    /**
+     * Disables the checkbox functionality for items.
+     */
     public function disableCheck()
     {
         $this->check = false;
     }
     
+    /**
+     * Checks if the checkbox functionality is enabled.
+     *
+     * @return bool True if enabled, false otherwise.
+     */
     public function isCheck()
     {
         return $this->check;
     }
     
+    /**
+     * Enables the expander functionality for groups.
+     */
     public function enableExpander()
     {
         $this->expand = true;
     }
     
+    /**
+     * Disables the expander functionality for groups.
+     */
     public function disableExpander()
     {
         $this->expand = false;
     }
     
+    /**
+     * Checks if the expander functionality is enabled.
+     *
+     * @return bool True if enabled, false otherwise.
+     */
     public function isExpand()
     {
         return $this->expand;
     }
     
+    /**
+     * Enables the container mode.
+     */
     public function enableContainer()
     {
         $this->container = true;
     }
     
+    /**
+     * Disables the container mode.
+     */
     public function disableContainer()
     {
         $this->container = false;
     }
     
+    /**
+     * Checks if the container mode is enabled.
+     *
+     * @return bool True if enabled, false otherwise.
+     */
     public function isContainer()
     {
         return $this->container;
     }
     
+    /**
+     * Defines whether the tree should start opened.
+     *
+     * @param bool $open True to start opened, false otherwise.
+     */
     public function setStartOpened($open = true)
     {
         $this->startOpened = $open;
     }
     
+    /**
+     * Sets the size of the tree view.
+     *
+     * @param string|int $width The width of the tree view.
+     * @param string|int $height The height of the tree view (default is '100%').
+     */
     public function setSize($width, $height = '100%')
     {
         $width = (strstr($width, '%') !== FALSE) ? $width : "{$width}px";
@@ -138,63 +223,132 @@ class BTreeView extends TField implements AdiantiWidgetInterface
         $this->height = $height;        
     }
     
+    /**
+     * Sets a transformation function for group labels.
+     *
+     * @param callable $callable A function to transform the group label.
+     */
     public function setGroupTransformer($callable)
     {
         $this->group_transformer = $callable;
     }
     
+    /**
+     * Sets a transformation function for item labels.
+     *
+     * @param callable $callable A function to transform the item label.
+     */
     public function setItemTransformer($callable)
     {
         $this->item_transformer = $callable;
     }
     
+    /**
+     * Gets the size of the tree view.
+     *
+     * @return array An array containing width and height.
+     */
     public function getSize()
     {
         return [$this->width, $this->height];
     }
     
+    /**
+     * Adds an action to a group.
+     *
+     * @param TAction $action The action to add.
+     * @param string $label The label of the action.
+     * @param string $icon The icon associated with the action.
+     *
+     * @return TAction The added action.
+     */
     public function addGroupAction(TAction $action, $label, $icon)
     {
         $this->group_action[] = [$action, $label, $icon];
         return $action;
     }
     
+    /**
+     * Adds an action to an item.
+     *
+     * @param TAction $action The action to add.
+     * @param string $label The label of the action.
+     * @param string $icon The icon associated with the action.
+     *
+     * @return TAction The added action.
+     */
     public function addItemAction(TAction $action, $label, $icon)
     {
         $this->item_action[] = [$action, $label, $icon];
         return $action;
     }
     
+    /**
+     * Gets the actions assigned to items.
+     *
+     * @return array An array of item actions.
+     */
     public function getItemAction()
     {
         return $this->item_action;
     }
     
+    /**
+     * Gets the actions assigned to groups.
+     *
+     * @return array An array of group actions.
+     */
     public function getGroupAction()
     {
         return $this->group_action;
     }
     
+    /**
+     * Clears all item actions.
+     */
     public function clearItemAction()
     {
         $this->item_action = [];
     }
     
+    /**
+     * Clears all group actions.
+     */
     public function clearGroupAction()
     {
         $this->group_action = [];
     }
     
+    /**
+     * Sets the items of the tree view.
+     *
+     * @param array $items The array of items.
+     */
     public function setItems($items)
     {
         $this->items = $items;
     }
     
+    /**
+     * Gets the items of the tree view.
+     *
+     * @return array The array of items.
+     */
     public function getItems()
     {
         return $this->items;
     }
     
+    /**
+     * Creates action buttons for a given item or group.
+     *
+     * @param array $actions The actions to create buttons for.
+     * @param string $name The name of the item/group.
+     * @param array $items The related items.
+     * @param mixed $object An optional object for parameter preparation.
+     *
+     * @return array An array of TButton instances.
+     */
     private function makeActions($actions, $name, $items, $object)
     {
         if (empty($actions))
@@ -227,6 +381,16 @@ class BTreeView extends TField implements AdiantiWidgetInterface
         return $buttons;
     }
     
+    /**
+     * Creates the title element for a group.
+     *
+     * @param string $key The unique key of the group.
+     * @param string $name The name of the group.
+     * @param array $items The related items.
+     * @param mixed|null $object An optional object related to the group.
+     *
+     * @return TElement The generated title element.
+     */
     private function makeTitle($key, $name, $items, $object = null)
     {
         $this->iconOpened->class .= ' btreeview-icon-opened';
@@ -266,6 +430,17 @@ class BTreeView extends TField implements AdiantiWidgetInterface
         return $div;
     }
     
+    /**
+     * Creates a group element.
+     *
+     * @param string $key The unique key of the group.
+     * @param string $name The name of the group.
+     * @param array $items The related items.
+     * @param int $index The hierarchical index level.
+     * @param mixed|null $object An optional object related to the group.
+     *
+     * @return TElement The generated group element.
+     */
     private function makeGroup($key, $name, $items, $index = 1, $object = null)
     {
         $group = new TElement('div');
@@ -337,6 +512,9 @@ class BTreeView extends TField implements AdiantiWidgetInterface
         return $group; 
     }
     
+    /**
+     * Displays the tree view component.
+     */
     public function show()
     {
         if ($this->items)
@@ -368,6 +546,14 @@ class BTreeView extends TField implements AdiantiWidgetInterface
         TScript::create("btreeview_start('{$this->id}', {$expand})");
     }
     
+    /**
+     * Reloads the tree view with new data.
+     *
+     * @param string $formname The name of the form.
+     * @param string $name The name of the tree view.
+     * @param array $items The items to load.
+     * @param array $options Additional options such as expand, check, and size.
+     */
     public static function reload($formname, $name, $items, $options = [])
     {
         $field = new self($name);
@@ -436,6 +622,11 @@ class BTreeView extends TField implements AdiantiWidgetInterface
         TScript::create( " btreeview_reload('{$formname}', '{$name}', `{$content}`); " );
     }
     
+    /**
+     * Sorts the tree view items recursively.
+     *
+     * @param array &$array The array of items to be sorted.
+     */
     protected static function sort(&$array)
     {
         foreach ($array as &$value)

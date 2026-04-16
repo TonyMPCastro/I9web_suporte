@@ -30,6 +30,9 @@ use StdClass;
 /**
  * Standard Page controller for Seek buttons
  *
+ * This class provides a standard interface for searching and selecting records.
+ * It creates a search form, a datagrid for displaying results, and integrates with session-based filters.
+ *
  * @version    7.5
  * @package    base
  * @author     Pablo Dall'Oglio
@@ -47,7 +50,9 @@ class TStandardSeek extends TWindow
     
     /**
      * Constructor Method
-     * Creates the page, the search form and the listing
+     *
+     * Initializes the seek window, search form, datagrid, and pagination.
+     * Sets up the user interface with search fields and action buttons.
      */
     public function __construct()
     {
@@ -104,7 +109,9 @@ class TStandardSeek extends TWindow
     }
     
     /**
-     * Render datagrid
+     * Render the datagrid
+     *
+     * Configures the datagrid with columns, sorting actions, and selection actions.
      */
     public function render()
     {
@@ -142,7 +149,9 @@ class TStandardSeek extends TWindow
     }
     
     /**
-     * Fill datagrid
+     * Populate the datagrid with available items
+     *
+     * Clears the datagrid and fills it with available records from `$this->items`.
      */
     public function fill()
     {
@@ -157,7 +166,12 @@ class TStandardSeek extends TWindow
     }
     
     /**
-     * Search datagrid
+     * Perform search on the datagrid
+     *
+     * Retrieves user input from the search form, applies filtering criteria,
+     * and reloads the datagrid with matching records.
+     *
+     * @return void
      */
     public function onSearch()
     {
@@ -196,6 +210,13 @@ class TStandardSeek extends TWindow
     
     /**
      * Load the datagrid with objects
+     *
+     * Fetches records from the database based on session-stored filters and criteria.
+     * Supports pagination and ordering.
+     *
+     * @param array|null $param Optional parameters for ordering and pagination
+     *
+     * @return void
      */
     public function onReload($param = NULL)
     {
@@ -289,7 +310,13 @@ class TStandardSeek extends TWindow
     }
     
     /**
-     * Setup seek parameters
+     * Configure seek parameters
+     *
+     * Sets up session variables based on provided parameters and reloads the datagrid.
+     *
+     * @param array|null $param Array containing database, model, display field, and additional filters
+     *
+     * @return void
      */
     public function onSetup($param=NULL)
     {
@@ -320,7 +347,14 @@ class TStandardSeek extends TWindow
     }
     
     /**
-     * Send the selected register to parent form
+     * Send the selected record to the parent form
+     *
+     * Retrieves the selected record based on the given key, formats it, and sends it back
+     * to the parent form. Closes the seek window after selection.
+     *
+     * @param array $param Array containing key, database, receive key, receive field, and model parameters
+     *
+     * @return void
      */
     public static function onSelect($param)
     {
@@ -336,6 +370,11 @@ class TStandardSeek extends TWindow
         {
             TTransaction::open($database);
             
+            if(empty($param['key']))
+            {
+                throw new Exception;
+            }
+
             // load the active record
             $model = isset($param['model']) ? $param['model'] : TSession::getValue('standard_seek_model');
             $pk = constant("{$model}::PRIMARYKEY");
@@ -395,7 +434,9 @@ class TStandardSeek extends TWindow
     }
     
     /**
-     * Show page
+     * Display the page
+     *
+     * Executes necessary actions to render and display the seek window.
      */
     public function show()
     {

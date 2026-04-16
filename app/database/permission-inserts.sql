@@ -1,5 +1,6 @@
 INSERT INTO system_group (id,name) VALUES (1,'Admin');
 INSERT INTO system_group (id,name) VALUES (2,'Standard');
+INSERT INTO system_group (id,name) VALUES (3,'BChat Interno');
 
 INSERT INTO system_program (id, name, controller) VALUES (1,'System Group Form','SystemGroupForm');
 INSERT INTO system_program (id, name, controller) VALUES (2,'System Group List','SystemGroupList');
@@ -43,6 +44,11 @@ INSERT INTO system_program (id, name, controller) VALUES (39,'System Log Dashboa
 INSERT INTO system_program (id, name, controller) VALUES (40,'System Session dump','SystemSessionDumpView');
 INSERT INTO system_program (id, name, controller) VALUES (41,'System files diff','SystemFilesDiff');
 INSERT INTO system_program (id, name, controller) VALUES (42,'System Information','SystemInformationView');
+INSERT INTO system_program (id, name, controller) VALUES(43,'Form to add user to chat group','SystemAddUserGroupForm');
+INSERT INTO system_program (id, name, controller) VALUES(44,'Form to start a chat','SystemNewChatForm');
+INSERT INTO system_program (id, name, controller) VALUES(45,'Form to start a group chat','SystemNewChatGroupForm');
+INSERT INTO system_program (id, name, controller) VALUES(46,'System monitor online users list','SystemUserMonitorHeaderList');
+INSERT INTO system_program (id, name, controller) VALUES(47,'System Data Import','SystemDataImportForm');
 
 
 INSERT INTO system_users (id, name, login, password, email, frontpage_id, system_unit_id, active) VALUES (1,'Administrator','admin','21232f297a57a5a743894a0e4a801fc3','admin@admin.net',10,NULL,'Y');
@@ -51,6 +57,7 @@ INSERT INTO system_users (id, name, login, password, email, frontpage_id, system
 INSERT INTO system_user_group (id, system_user_id, system_group_id) VALUES (1,1,1);
 INSERT INTO system_user_group (id, system_user_id, system_group_id) VALUES (2,2,2);
 INSERT INTO system_user_group (id, system_user_id, system_group_id) VALUES (3,1,2);
+INSERT INTO system_user_group (id, system_user_id, system_group_id) VALUES (4,1,3);
 
 INSERT INTO system_group_program (id,system_group_id, system_program_id) VALUES (1,1,1);
 INSERT INTO system_group_program (id,system_group_id, system_program_id) VALUES (2,1,2);
@@ -93,6 +100,11 @@ INSERT INTO system_group_program (id,system_group_id, system_program_id) VALUES 
 INSERT INTO system_group_program (id,system_group_id, system_program_id) VALUES (40,1,40);
 INSERT INTO system_group_program (id,system_group_id, system_program_id) VALUES (41,1,41);
 INSERT INTO system_group_program (id,system_group_id, system_program_id) VALUES (42,1,42);
+INSERT INTO system_group_program (id, system_group_id, system_program_id) VALUES(43,1,46);
+INSERT INTO system_group_program (id, system_group_id, system_program_id) VALUES(44,1,47);
+INSERT INTO system_group_program (id, system_group_id, system_program_id) VALUES(45,3,43);
+INSERT INTO system_group_program (id, system_group_id, system_program_id) VALUES(46,3,44);
+INSERT INTO system_group_program (id, system_group_id, system_program_id) VALUES(47,3,45);
 
 INSERT INTO system_user_program (id, system_user_id, system_program_id) VALUES (1,2,7);
 

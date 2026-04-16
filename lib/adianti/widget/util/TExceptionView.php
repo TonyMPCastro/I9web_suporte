@@ -10,7 +10,9 @@ use Exception;
 use Throwable;
 
 /**
- * Exception visualizer
+ * Visual representation of an exception.
+ * This class captures exception details, including stack trace, and 
+ * displays them in a structured format using a table.
  *
  * @version    7.5
  * @package    widget
@@ -22,7 +24,13 @@ use Throwable;
 class TExceptionView
 {
     /**
-     * Constructor method
+     * Constructor method.
+     *
+     * Creates an exception visualization by capturing its details, 
+     * including message, file, line, and stack trace. The output 
+     * is displayed using a table inside a dialog message.
+     *
+     * @param Throwable $e The exception to be visualized.
      */
     function __construct(Throwable $e)
     {

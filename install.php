@@ -6,9 +6,12 @@ new TSession;
 
 $content = file_get_contents("install.html");
 
-$content = BuilderTemplateParser::parse($content);
+SystemPreferenceService::disable();
+
+$content = BuilderTemplateParser::parse($content, 'theme3', 'install');
 
 ob_start();
+
 
 if(!TSession::getValue('database_install_logged'))
 { 

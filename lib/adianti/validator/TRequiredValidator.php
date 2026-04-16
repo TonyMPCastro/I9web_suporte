@@ -6,7 +6,9 @@ use Adianti\Core\AdiantiCoreTranslator;
 use Exception;
 
 /**
- * Required field validation
+  * Validates a required field.
+ *
+ * Ensures that the provided value is not empty, null, or an array with empty content.
  *
  * @version    7.5
  * @package    validator
@@ -17,10 +19,15 @@ use Exception;
 class TRequiredValidator extends TFieldValidator
 {
     /**
-     * Validate a given value
-     * @param $label Identifies the value to be validated in case of exception
-     * @param $value Value to be validated
-     * @param $parameters aditional parameters for validation
+     * Validates a given value as required.
+     *
+     * Checks whether the value is null, an empty string, or an empty array.
+     *
+     * @param string $label Identifies the value to be validated in case of an exception.
+     * @param mixed $value Value to be validated.
+     * @param mixed|null $parameters Additional parameters for validation (not used).
+     *
+     * @throws Exception If the value is empty or null.
      */
     public function validate($label, $value, $parameters = NULL)
     {

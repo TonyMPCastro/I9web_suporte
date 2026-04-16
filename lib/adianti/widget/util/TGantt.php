@@ -15,8 +15,10 @@ use Exception;
 use stdClass;
 
 /**
- * TGantt
- * 
+ * TGantt Widget
+ *
+ * This class implements a Gantt chart widget, allowing event scheduling and visualization in different time modes.
+ *
  * @package    widget
  * @subpackage util
  * @author     Pablo Dall'Oglio
@@ -72,7 +74,14 @@ class TGantt extends TElement
     const ADJUST_MARGIN = ['xs' => 0, 'sm' => 2, 'md' => 4, 'lg' => 10];
     
     /**
-     * Constructor method
+     * Class Constructor
+     *
+     * Initializes the Gantt chart with a given view mode and size.
+     *
+     * @param string $view_mode The visualization mode (e.g., MODE_DAYS, MODE_MONTHS)
+     * @param string $size The size mode ('xs', 'sm', 'md', 'lg') (default: 'md')
+     *
+     * @throws Exception If an invalid interval is provided
      */
     public function __construct($view_mode, $size = 'md')
     {
@@ -95,7 +104,9 @@ class TGantt extends TElement
     }
     
     /**
-     * Change view mode
+     * Set the view mode of the Gantt chart.
+     *
+     * @param string $view_mode The desired view mode (e.g., MODE_DAYS, MODE_MONTHS)
      */
     public function setViewMode($view_mode)
     {
@@ -103,7 +114,9 @@ class TGantt extends TElement
     }
     
     /**
-     * Get view mode
+     * Get the current view mode of the Gantt chart.
+     *
+     * @return string The current view mode.
      */
     public function getViewMode()
     {
@@ -111,10 +124,13 @@ class TGantt extends TElement
     }
     
     /**
-     * Render title popover
-     * @param $title Event title
-     * @param $poptitle Popover Title
-     * @param $popcontent Popover Content
+     * Render an HTML popover with a title and content.
+     *
+     * @param string $title The main event title.
+     * @param string $poptitle The title of the popover.
+     * @param string $popcontent The content of the popover.
+     *
+     * @return string The rendered HTML string.
      */
     public static function renderPopover($title, $poptitle, $popcontent)
     {
@@ -122,9 +138,9 @@ class TGantt extends TElement
     }
 
     /**
-     * Define title of header gantt
-     * 
-     * @param $title String title header 
+     * Set the title for the Gantt chart header.
+     *
+     * @param string $title The title to be displayed.
      */
     public function setTitle($title)
     {
@@ -132,9 +148,11 @@ class TGantt extends TElement
     }
 
     /**
-     * Define view mode
-     * 
-     * @param $mode String mode
+     * Set the size mode of the Gantt chart.
+     *
+     * @param string $size The size mode ('xs', 'sm', 'md', 'lg').
+     *
+     * @throws Exception If an invalid size parameter is provided.
      */
     public function setSizeMode($size)
     {
@@ -147,7 +165,9 @@ class TGantt extends TElement
     }
     
     /**
-     * Get size mode
+     * Get the current size mode of the Gantt chart.
+     *
+     * @return string The current size mode.
      */
     public function getSizeMode()
     {
@@ -155,9 +175,9 @@ class TGantt extends TElement
     }
     
     /**
-     * Define transformer time title
-     * 
-     * $transformer callable (start, end, events)
+     * Set a custom transformer function for the time title.
+     *
+     * @param callable $transformer A callable function that takes (start, end, events) as parameters.
      */
     public function setTransformerTimeTitle(callable $transformer)
     {
@@ -165,9 +185,9 @@ class TGantt extends TElement
     }
 
     /**
-     * Define transformer event label
-     * 
-     * $transformer callable (object event, events, times)
+     * Set a custom transformer function for event labels.
+     *
+     * @param callable $transformEventLabel A callable function that takes (event object, events list, times) as parameters.
      */
     public function setTransformerEventLabel(callable $transformEventLabel)
     {
@@ -175,9 +195,9 @@ class TGantt extends TElement
     }
     
     /**
-     * Define date start gantt
-     * 
-     * @param $date String date 
+     * Set the start date of the Gantt chart.
+     *
+     * @param string $date The start date in 'Y-m-d' format.
      */
     public function setStartDate($date)
     {
@@ -186,7 +206,9 @@ class TGantt extends TElement
     }
 
     /**
-     * Return date start gantt
+     * Get the start date of the Gantt chart.
+     *
+     * @return string The start date in 'Y-m-d' format.
      */
     public function getStartDate()
     {
@@ -194,7 +216,9 @@ class TGantt extends TElement
     }
 
     /**
-     * Return date end gantt
+     * Get the end date of the Gantt chart.
+     *
+     * @return string The end date in 'Y-m-d' format.
      */
     public function getEndDate()
     {
@@ -202,9 +226,9 @@ class TGantt extends TElement
     }
 
     /**
-     * Define interval between dates
-     * 
-     * @param $interval String 1|2|4 number concat with type month|day|year e.g:  1 month, 10 days
+     * Set the interval between dates in the Gantt chart.
+     *
+     * @param string $interval A string representing the interval (e.g., '1 month', '10 days').
      */
     public function setInterval($interval = '1 month')
     {
@@ -224,7 +248,7 @@ class TGantt extends TElement
     }
     
     /**
-     * Remove spaces between events
+     * Remove spacing between events on the Gantt chart.
      */
     public function removeSpaceBetweenEvents()
     {
@@ -232,7 +256,7 @@ class TGantt extends TElement
     }
 
     /**
-     * Add background striped on columns
+     * Enable striped background on columns.
      */
     public function enableStripedMonths()
     {
@@ -240,7 +264,7 @@ class TGantt extends TElement
     }
 
     /**
-     * Add background striped on rows
+     * Enable striped background on rows.
      */
     public function enableStripedRows()
     {
@@ -248,7 +272,7 @@ class TGantt extends TElement
     }
 
     /**
-     * Enable hour when MODE_DAYS_WITH_HOUR 24h
+     * Enable 24-hour mode for the Gantt chart.
      */
     public function enableFullHours()
     {
@@ -257,9 +281,9 @@ class TGantt extends TElement
     }
 
     /**
-     * Define reload events action
-     * 
-     * @param $reloadAction TAction
+     * Set the reload action for the Gantt chart.
+     *
+     * @param TAction $reloadAction The action to reload events.
      */
     public function setReloadAction(TAction $reloadAction)
     {
@@ -267,8 +291,9 @@ class TGantt extends TElement
     }
 
     /**
-     * Define the day click action
-     * @param $action day click action
+     * Set the action triggered when a day is clicked.
+     *
+     * @param TAction $action The action to be executed.
      */
     public function setDayClickAction(TAction $action)
     {
@@ -277,11 +302,13 @@ class TGantt extends TElement
     }
 
     /**
-     * Define reload events action
-     * 
-     * @param $reloadAction TAction Button action click
-     * @param $label String Button label
-     * @param $icon TImage Button icon
+     * Add a header button action.
+     *
+     * @param TAction $action The action to be executed.
+     * @param string $label The button label (optional).
+     * @param TImage|null $icon The button icon (optional).
+     *
+     * @return TElement The generated button element.
      */
     public function addHeaderAction(TAction $action, $label = '', TImage $icon = null)
     {
@@ -302,8 +329,11 @@ class TGantt extends TElement
     }
     
     /**
-     * Add a form header widget
-     * @param $widget Widget
+     * Add a widget to the header.
+     *
+     * @param mixed $widget The widget element.
+     *
+     * @return mixed The added widget.
      */
     public function addHeaderWidget($widget)
     {
@@ -312,10 +342,10 @@ class TGantt extends TElement
     }
     
     /**
-     * Add new row 
-     * 
-     * @param $id any Key of row
-     * @param $title any Label of row
+     * Add a new row to the Gantt chart.
+     *
+     * @param mixed $id The row identifier.
+     * @param string $label The row label.
      */
     public function addRow( $id, $label )
     {
@@ -327,7 +357,7 @@ class TGantt extends TElement
     }
     
     /**
-     *
+     * Clear all events from the Gantt chart.
      */
     public function clearEvents()
     {
@@ -335,15 +365,15 @@ class TGantt extends TElement
     }
     
     /**
-     * Add new event on Gantt
-     * 
-     * @param $id any Key of event
-     * @param $rowId any Key of row
-     * @param $title String title
-     * @param $start_time String date start
-     * @param $end_time String date end
-     * @param $color String color background
-     * @param $percent float percent color
+     * Add a new event to the Gantt chart.
+     *
+     * @param mixed $id The event identifier.
+     * @param mixed $rowId The row ID where the event is placed.
+     * @param string $title The event title.
+     * @param string $start_time The event start time (Y-m-d H:i format).
+     * @param string $end_time The event end time (Y-m-d H:i format).
+     * @param string|null $color The event background color (optional).
+     * @param float|null $percent The event completion percentage (optional).
      */
     public function addEvent($id, $rowId, $title, $start_time, $end_time, $color = NULL, $percent = null)
     {
@@ -365,9 +395,9 @@ class TGantt extends TElement
     }
 
     /**
-     * Define click event action
-     * 
-     * @param $action TAction
+     * Set the action triggered when an event is clicked.
+     *
+     * @param TAction $action The action to be executed.
      */
     public function setEventClickAction( $action )
     {
@@ -376,9 +406,10 @@ class TGantt extends TElement
     }
     
     /**
-     * Define drag event action
-     * 
-     * @param $action TAction
+     * Enable drag-and-drop functionality for events.
+     *
+     * @param TAction $updateAction The action to execute when an event is moved.
+     * @param int $minutesStep The time step in minutes (default: 1440).
      */
     public function enableDragEvent( TAction $updateAction, $minutesStep = 1440)
     {
@@ -388,7 +419,11 @@ class TGantt extends TElement
     }
 
     /**
-     * Return dates into interval
+     * Get all dates within the defined interval.
+     *
+     * This method generates an array of DateTime objects representing the range of dates covered by the Gantt chart.
+     *
+     * @return DateTime[] An array of DateTime objects representing the date range.
      */
     private function getDates()
     {
@@ -413,7 +448,11 @@ class TGantt extends TElement
     }
 
     /**
-     * Return pixel value step minutes
+     * Get the pixel value corresponding to the minute step.
+     *
+     * This method calculates the pixel width for each time step based on the defined minute step and column size.
+     *
+     * @return float The pixel value per minute step.
      */
     private function getPixelValue()
     {
@@ -423,7 +462,9 @@ class TGantt extends TElement
     }
 
     /**
-     * Rerturn size column based into a zoom level
+     * Get the column size based on the zoom level and view mode.
+     *
+     * @return int The width of each column in pixels.
      */
     private function getColumnSize()
     {
@@ -443,7 +484,11 @@ class TGantt extends TElement
     }
 
     /**
-     * Return title gantt
+     * Get the title for the Gantt chart time range.
+     *
+     * This method formats the start and end time range for display. If a custom transformer is set, it applies that transformation.
+     *
+     * @return string The formatted time title.
      */
     private function geTimeTitle()
     {
@@ -465,6 +510,13 @@ class TGantt extends TElement
         return implode(' - ', $months);
     }
 
+    /**
+     * Render the header of the Gantt chart.
+     *
+     * This method creates the title bar with navigation buttons (previous, today, next) and any configured header actions.
+     *
+     * @return TElement The generated header element.
+     */
     private function renderHeader()
     {
         $title = new TElement( 'div' );
@@ -551,7 +603,11 @@ class TGantt extends TElement
     }
 
     /**
-     *  Render rows
+     * Render the left sidebar (aside) of the Gantt chart.
+     *
+     * This section contains row labels and structured row elements.
+     *
+     * @return TElement The generated sidebar element.
      */
     private function renderAside()
     {
@@ -604,9 +660,11 @@ class TGantt extends TElement
     }
 
     /**
-     * Render header table month
-     * 
-     * @param $time_table Table
+     * Render the month header of the Gantt chart.
+     *
+     * This method generates the column headers representing months.
+     *
+     * @param TTable $time_table The table where the month headers will be added.
      */
     private function renderMonthHeader($time_table)
     {
@@ -652,9 +710,11 @@ class TGantt extends TElement
     }
 
     /**
-     * Render header table month day
-     * 
-     * @param $time_table Table
+     * Render the month and day headers of the Gantt chart.
+     *
+     * This method generates two rows: one for months and another for days.
+     *
+     * @param TTable $time_table The table where the headers will be added.
      */
     private function renderMonthDayHeader($time_table)
     {
@@ -725,9 +785,11 @@ class TGantt extends TElement
     }
 
     /**
-     * Render header table days
-     * 
-     * @param $time_table Table
+     * Render the daily headers of the Gantt chart.
+     *
+     * This method generates a single row containing the abbreviated day names and dates.
+     *
+     * @param TTable $time_table The table where the headers will be added.
      */
     private function renderDailyHeader( $time_table )
     {
@@ -754,9 +816,11 @@ class TGantt extends TElement
     }
 
     /**
-     * Render header table hours
-     * 
-     * @param $time_table Table
+     * Render the daily and hourly headers of the Gantt chart.
+     *
+     * This method generates two rows: one for days and another for hours.
+     *
+     * @param TTable $time_table The table where the headers will be added.
      */
     private function renderDailyHourHeader( $time_table )
     {
@@ -792,9 +856,13 @@ class TGantt extends TElement
     }
 
     /**
-     * Render header table
-     * 
-     * @param $table
+     * Render the time table header based on the selected view mode.
+     *
+     * This method determines whether to render a daily, monthly, or hourly header.
+     *
+     * @param TTable $table The table where the headers will be added.
+     *
+     * @throws Exception If an invalid view mode is provided.
      */
     private function renderTimeTableHeader($table)
     {
@@ -819,9 +887,11 @@ class TGantt extends TElement
     }
 
     /**
-     * Render time table
-     * 
-     * @param $table
+     * Render the time table grid of the Gantt chart.
+     *
+     * This method generates the grid where events are placed, applying row and column styling based on the configuration.
+     *
+     * @return TElement The generated time table grid.
      */
     private function renderTimeTable()
     {
@@ -920,9 +990,13 @@ class TGantt extends TElement
     }
 
     /**
-     * Render event
-     * 
-     * @param $event
+     * Render a Gantt chart event.
+     *
+     * This method formats an event's position, width, and styling based on its start and end time, color, and percentage completion.
+     *
+     * @param stdClass $event The event data object.
+     *
+     * @return TElement The rendered event element.
      */
     private function renderEvent($event)
     {
@@ -991,7 +1065,11 @@ class TGantt extends TElement
     }
 
     /**
-     * Render gantt
+     * Render the entire Gantt chart structure.
+     *
+     * This method combines the header, aside, and time table components into a structured layout.
+     *
+     * @return TElement The fully rendered Gantt chart element.
      */
     private function renderGantt()
     {
@@ -1004,7 +1082,12 @@ class TGantt extends TElement
     }
     
     /**
-     * Enable view_mode button
+     * Enable the view mode selection button.
+     *
+     * @param bool $with_label Whether to display a label (default: TRUE).
+     * @param bool $with_icon Whether to display an icon (default: TRUE).
+     * @param string|null $label The button label (optional).
+     * @param string|null $icon The button icon (optional).
      */
     function enableViewModeButton($with_label = TRUE, $with_icon = TRUE, $label = NULL, $icon = NULL)
     {
@@ -1013,7 +1096,12 @@ class TGantt extends TElement
     }
     
     /**
-     * Enable size_mode button
+     * Enable the size mode selection button.
+     *
+     * @param bool $with_label Whether to display a label (default: TRUE).
+     * @param bool $with_icon Whether to display an icon (default: TRUE).
+     * @param string|null $label The button label (optional).
+     * @param string|null $icon The button icon (optional).
      */
     function enableSizeModeButton($with_label = TRUE, $with_icon = TRUE, $label = NULL, $icon = NULL)
     {
@@ -1022,7 +1110,7 @@ class TGantt extends TElement
     }
     
     /**
-     *
+     * Display the Gantt chart.
      */
     public function show()
     {

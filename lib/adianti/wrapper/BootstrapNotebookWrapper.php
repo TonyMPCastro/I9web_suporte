@@ -4,7 +4,9 @@ use Adianti\Widget\Container\TNotebook;
 use Adianti\Widget\Base\TElement;
 
 /**
- * Bootstrap datagrid decorator for Adianti Framework
+ * Bootstrap notebook decorator for Adianti Framework.
+ *
+ * This class acts as a wrapper around TNotebook, applying Bootstrap styles.
  *
  * @version    7.5
  * @package    wrapper
@@ -21,7 +23,10 @@ class BootstrapNotebookWrapper
     private $divisions;
     
     /**
-     * Constructor method
+     * Constructor method.
+     * Initializes the BootstrapNotebookWrapper and applies Bootstrap styling to the decorated notebook.
+     *
+     * @param TNotebook $notebook The notebook instance to be decorated.
      */
     public function __construct(TNotebook $notebook)
     {
@@ -32,7 +37,12 @@ class BootstrapNotebookWrapper
     }
     
     /**
-     * Redirect calls to decorated object
+     * Magic method to redirect method calls to the decorated notebook.
+     *
+     * @param string $method     The method name being called.
+     * @param array  $parameters The arguments passed to the method.
+     *
+     * @return mixed The return value of the called method.
      */
     public function __call($method, $parameters)
     {
@@ -40,7 +50,10 @@ class BootstrapNotebookWrapper
     }
     
     /**
-     * Redirect assigns to decorated object
+     * Magic method to set properties on the decorated notebook.
+     *
+     * @param string $property The name of the property being set.
+     * @param mixed  $value    The value to be assigned to the property.
      */
     public function __set($property, $value)
     {
@@ -48,8 +61,10 @@ class BootstrapNotebookWrapper
     }
     
     /**
-     * Set tabs direction
-     * @param $direction Tabs direction (left right)
+     * Sets the tabs direction for the notebook.
+     *
+     * @param string $direction  The direction of the tabs ('left' or 'right').
+     * @param array|null $divisions Optional array defining column width distribution.
      */
     public function setTabsDirection($direction, $divisions = null)
     {
@@ -64,7 +79,8 @@ class BootstrapNotebookWrapper
     }
     
     /**
-     * Shows the decorated datagrid
+     * Renders the decorated notebook with Bootstrap styles.
+     * Applies Bootstrap formatting, manages tab positions, and structures the layout accordingly.
      */
     public function show()
     {

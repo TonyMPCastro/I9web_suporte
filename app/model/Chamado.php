@@ -8,14 +8,14 @@ class Chamado extends TRecord
 
     const CREATEDAT  = 'dt_abertura';
 
-    private $solicitante;
-    private $atendente;
-    private $status;
-    private $tipo_problema;
-    private $tipo_solucao;
-    private $produto;
-    private $categoria;
-    private $prioridade;
+    private Cliente $solicitante;
+    private Atendente $atendente;
+    private Status $status;
+    private TipoProblema $tipo_problema;
+    private TipoSolucao $tipo_solucao;
+    private Produto $produto;
+    private Categoria $categoria;
+    private Prioridade $prioridade;
 
     /**
      * Constructor method

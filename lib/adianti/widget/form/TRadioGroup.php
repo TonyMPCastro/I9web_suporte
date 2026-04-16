@@ -14,7 +14,10 @@ use Adianti\Widget\Form\TRadioButton;
 use Exception;
 
 /**
- * A group of RadioButton's
+ * A group of radio buttons
+ *
+ * This class manages a group of radio buttons, allowing different layouts,
+ * actions, and interaction modes.
  *
  * @version    7.5
  * @package    widget
@@ -40,7 +43,10 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     
     /**
      * Class Constructor
-     * @param  $name name of the field
+     *
+     * Initializes a new instance of the TRadioGroup class.
+     *
+     * @param string $name The name of the field.
      */
     public function __construct($name)
     {
@@ -53,6 +59,9 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     
     /**
      * Clone object
+     *
+     * Creates a deep copy of the object, ensuring that cloned instances
+     * have unique radio button and label objects.
      */
     public function __clone()
     {
@@ -76,7 +85,9 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Enable/disable boolean mode
+     * Enable boolean mode
+     *
+     * Configures the radio group to work in boolean mode with "Yes" and "No" options.
      */
     public function setBooleanMode()
     {
@@ -98,8 +109,9 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's value
-     * @param $value A string containing the field's value
+     * Set the field's value
+     *
+     * @param mixed $value The value to set (string or boolean in boolean mode).
      */
     public function setValue($value)
     {
@@ -114,7 +126,9 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Returns the field's value
+     * Get the field's value
+     *
+     * @return mixed The current value (boolean if in boolean mode, otherwise string).
      */
     public function getValue()
     {
@@ -129,7 +143,11 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the post data
+     * Get the posted value
+     *
+     * Retrieves the posted value from the form submission.
+     *
+     * @return mixed The posted value (boolean if in boolean mode, otherwise string).
      */
     public function getPostData()
     {
@@ -145,8 +163,9 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the direction of the options
-     * @param $direction String (vertical, horizontal)
+     * Set the layout of the radio buttons
+     *
+     * @param string $dir The layout direction (vertical or horizontal).
      */
     public function setLayout($dir)
     {
@@ -154,7 +173,9 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Get the direction (vertical or horizontal)
+     * Get the layout of the radio buttons
+     *
+     * @return string The layout direction (vertical or horizontal).
      */
     public function getLayout()
     {
@@ -162,7 +183,9 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define after how much items, it will break
+     * Set the number of items before a line break
+     *
+     * @param int $breakItems The number of items before inserting a line break.
      */
     public function setBreakItems($breakItems)
     {
@@ -170,7 +193,7 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Show as button
+     * Display radio buttons as styled buttons
      */
     public function setUseButton()
     {
@@ -180,7 +203,8 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     
     /**
      * Add items to the radio group
-     * @param $items An indexed array containing the options
+     *
+     * @param array $items An associative array where keys are values and values are labels.
      */
     public function addItems($items)
     {
@@ -203,7 +227,9 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the items
+     * Get the radio button items
+     *
+     * @return array The array of available options.
      */
     public function getItems()
     {
@@ -211,7 +237,9 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the option buttons
+     * Get the radio button objects
+     *
+     * @return array The array of TRadioButton objects.
      */
     public function getButtons()
     {
@@ -219,7 +247,9 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Return the option labels
+     * Get the labels associated with radio buttons
+     *
+     * @return array The array of TLabel objects.
      */
     public function getLabels()
     {
@@ -227,8 +257,11 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the action to be executed when the user changes the combo
-     * @param $action TAction object
+     * Set an action to be executed when the user changes the selection
+     *
+     * @param TAction $action The action to execute on change.
+     *
+     * @throws Exception If the action is not static.
      */
     public function setChangeAction(TAction $action)
     {
@@ -244,7 +277,9 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Set change function
+     * Set a JavaScript function to be executed when the selection changes
+     *
+     * @param string $function The JavaScript function to execute.
      */
     public function setChangeFunction($function)
     {
@@ -252,16 +287,22 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Reload radio items after it is already shown
-     * @param $formname form name (used in gtk version)
-     * @param $name field name
-     * @param $items array with items
-     * @param $options array of options [layout, breakItems, size, useButton, value, changeAction, changeFunction, checkAll]
+     * Reload radio items dynamically
+     *
+     * Allows reloading the radio options after the group has been rendered.
+     *
+     * @param string $formname The form name.
+     * @param string $name The field name.
+     * @param array $items The array of new options.
+     * @param array $options Additional options including layout, breakItems, size, useButton, value, changeAction, changeFunction, and checkAll.
      */
     public static function reload($formname, $name, $items, $options = [])
     {
         $field = new self($name);
         $field->addItems($items);
+
+        $form = new TForm($formname);
+        $form->addField($field);
 
         if (! empty($options['layout']))
         {
@@ -309,9 +350,10 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Enable the radio group field
+     *
+     * @param string $form_name The form name.
+     * @param string $field The field name.
      */
     public static function enableField($form_name, $field)
     {
@@ -319,9 +361,10 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Disable the radio group field
+     *
+     * @param string $form_name The form name.
+     * @param string $field The field name.
      */
     public static function disableField($form_name, $field)
     {
@@ -329,9 +372,10 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * clear the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Clear the radio group selection
+     *
+     * @param string $form_name The form name.
+     * @param string $field The field name.
      */
     public static function clearField($form_name, $field)
     {
@@ -339,7 +383,9 @@ class TRadioGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Show the widget at the screen
+     * Render the radio group
+     *
+     * Displays the radio buttons according to the configured layout and appearance.
      */
     public function show()
     {

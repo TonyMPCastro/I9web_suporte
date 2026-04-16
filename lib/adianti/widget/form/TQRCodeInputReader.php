@@ -10,6 +10,9 @@ use Adianti\Control\TAction;
 /**
  * QR Code Input Reader
  *
+ * This class extends TEntry to provide an input field for QR code scanning.
+ * It allows defining actions triggered upon input changes.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form
@@ -29,7 +32,10 @@ class TQRCodeInputReader extends TEntry implements AdiantiWidgetInterface
 
     /**
      * Class Constructor
-     * @param $name Name of the widget
+     *
+     * Creates a QR code input field with a unique identifier.
+     *
+     * @param string $name Widget name
      */
     public function __construct($name)
     {
@@ -41,7 +47,9 @@ class TQRCodeInputReader extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Set change function
+     * Sets a JavaScript function to be executed when the input value changes.
+     *
+     * @param string $function JavaScript function name
      */
     public function setChangeFunction($function)
     {
@@ -49,8 +57,11 @@ class TQRCodeInputReader extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the action to be executed when the user changes the content
-     * @param $action TAction object
+     * Sets an action to be executed when the input value changes.
+     *
+     * @param TAction $action Action object to be executed on change
+     *
+     * @throws Exception If the form associated with the field is not properly defined
      */
     public function setChangeAction(TAction $action)
     {
@@ -58,7 +69,12 @@ class TQRCodeInputReader extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Shows the widget at the screen
+     * Displays the QR code input field along with the scan button.
+     *
+     * This method generates the HTML structure and sets up event handling.
+     * It also ensures proper action binding if a change action is set.
+     *
+     * @throws Exception If the form associated with the field is not properly defined
      */
     public function show()
     {

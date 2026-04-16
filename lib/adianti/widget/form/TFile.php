@@ -17,6 +17,11 @@ use Exception;
 /**
  * FileChooser widget
  *
+ * This widget provides a file input field with various features such as
+ * image gallery support, popovers, file handling, size restrictions,
+ * and more. It integrates with AdiantiUploaderService for file uploads
+ * and allows customization of accepted file extensions and display modes.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form
@@ -44,10 +49,16 @@ class TFile extends TField implements AdiantiWidgetInterface
     protected $poptitle;
     protected $popcontent;
     protected $limitSize;
+    protected $dropZone;
+    protected $dropZoneMessage;
     
     /**
      * Constructor method
-     * @param $name input name
+     *
+     * Initializes the file input field with a unique identifier and sets default
+     * properties such as uploader service, file handling mode, and popover settings.
+     *
+     * @param string $name The name of the input field
      */
     public function __construct($name)
     {
@@ -62,10 +73,17 @@ class TFile extends TField implements AdiantiWidgetInterface
         $this->popover = false;
         $this->popcontent = '';
         $this->tag->{'widget'} = 'tfile';
+        $this->dropZone = false;
     }
     
     /**
      * Enable image gallery view
+     *
+     * When enabled, uploaded images will be displayed in a gallery format.
+     * The width and height of the gallery can be customized.
+     *
+     * @param int|null $width  The width of the image gallery (default: unset)
+     * @param int      $height The height of the image gallery (default: 100)
      */
     public function enableImageGallery($width = null, $height = 100)
     {
@@ -76,8 +94,12 @@ class TFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Enable popover
-     * @param $title Title
-     * @param $content Content
+     *
+     * Adds a popover to the file input field, which displays additional information
+     * when the user hovers over or clicks the field.
+     *
+     * @param string|null $title   The title of the popover (default: null)
+     * @param string      $content The content of the popover (default: empty string)
      */
     public function enablePopover($title = null, $content = '')
     {
@@ -86,9 +108,24 @@ class TFile extends TField implements AdiantiWidgetInterface
         $this->popcontent = $content;
     }
 
+    public function enableDropZone($message = false)
+    {
+        if(!$message)
+        {
+            $message = AdiantiCoreTranslator::translate('Drag and drop your file here or click to select!');
+        }
+
+        $this->dropZone = true;
+        $this->dropZoneMessage = $message;
+    }
+
+
     /**
      * Define upload size limit
-     * @param $limit Size limit MBs
+     *
+     * Sets the maximum file size allowed for uploads, in megabytes.
+     *
+     * @param int $limit The maximum file size in MB
      */
     public function setLimitUploadSize($limit)
     {
@@ -96,7 +133,9 @@ class TFile extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Define upload size limit
+     * Define upload size limit based on PHP configuration
+     *
+     * Sets the maximum file upload size based on the server's PHP configuration.
      */
     public function enablePHPFileUploadLimit()
     {
@@ -104,7 +143,11 @@ class TFile extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the display mode {file}
+     * Define the display mode
+     *
+     * Specifies how the uploaded file should be displayed.
+     *
+     * @param string $mode The display mode (e.g., 'file', 'image')
      */
     public function setDisplayMode($mode)
     {
@@ -113,6 +156,10 @@ class TFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Define the service class for response
+     *
+     * Specifies the service class responsible for handling file uploads.
+     *
+     * @param string $service The name of the service class
      */
     public function setService($service)
     {
@@ -121,6 +168,10 @@ class TFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Define the allowed extensions
+     *
+     * Specifies which file types are permitted for upload.
+     *
+     * @param array $extensions An array of allowed file extensions (e.g., ['jpg', 'png', 'pdf'])
      */
     public function setAllowedExtensions($extensions)
     {
@@ -129,7 +180,10 @@ class TFile extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define to file handling
+     * Enable file handling
+     *
+     * Activates file handling, which allows the system to manage files
+     * in a structured way.
      */
     public function enableFileHandling()
     {
@@ -138,6 +192,9 @@ class TFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Disable file handling
+     *
+     * Disables the file handling mechanism, meaning that the uploaded file
+     * will not be processed by the system.
      */
     public function disableFileHandling()
     {
@@ -145,7 +202,11 @@ class TFile extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Set place holder
+     * Set placeholder element
+     *
+     * Defines a placeholder element to be displayed within the file input field.
+     *
+     * @param TElement $widget The placeholder element
      */
     public function setPlaceHolder(TElement $widget)
     {
@@ -154,6 +215,11 @@ class TFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Set field size
+     *
+     * Defines the width of the file input field.
+     *
+     * @param int|string $width  The width of the field (can be in pixels or percentage)
+     * @param int|null   $height The height of the field (optional)
      */
     public function setSize($width, $height = NULL)
     {
@@ -162,6 +228,10 @@ class TFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Set field height
+     *
+     * Defines the height of the file input field.
+     *
+     * @param int $height The height in pixels
      */
     public function setHeight($height)
     {
@@ -169,7 +239,11 @@ class TFile extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the post data
+     * Retrieve the posted file data
+     *
+     * Gets the value of the file input field from the POST request.
+     *
+     * @return mixed|null The uploaded file data or null if not set
      */
     public function getPostData()
     {
@@ -183,6 +257,11 @@ class TFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Set field value
+     *
+     * Defines the value of the file input field. Handles file handling mode
+     * and JSON-encoded file metadata.
+     *
+     * @param mixed $value The value to be set (can be a string, null, or array)
      */
     public function setValue($value)
     {
@@ -225,7 +304,12 @@ class TFile extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Show the widget at the screen
+     * Render the widget
+     *
+     * Displays the file input field on the screen, configuring necessary
+     * attributes and behaviors, including file handling and display modes.
+     *
+     * @throws Exception If the widget is not inside a valid form
      */
     public function show()
     {
@@ -293,12 +377,38 @@ class TFile extends TField implements AdiantiWidgetInterface
             $div->add( $this->placeHolder );
             $this->tag->{'style'} = 'display:none';
         }
+        elseif($this->dropZone)
+        {
+            $dropZoneContainer = new TElement('div');
+            $dropZoneContainer->id = "tfile_dropzone_{$this->id}";
+            $dropZoneContainer->class = "tfile_dropzone";
+            
+            $dropZoneContainer->add('<i class="fas fa-upload tfile_dropzone_icon"></i>');
+            $dropZoneContainer->add("<p class='tfile_dropzone_message'> {$this->dropZoneMessage} </p>");
+            
+            if($this->extensions)
+            {
+                $extMessage = AdiantiCoreTranslator::translate('Allowed extensions');
+                $extMessage .= ': .' . implode(',.', $this->extensions);
+                $dropZoneContainer->add("<small> {$extMessage} </small>");
+            }
+            
+            $dropZoneContainerInfo = new TElement('div');
+            $dropZoneContainerInfo->id = "tfile_dropzone_info_{$this->id}";
+            $dropZoneContainerInfo->class = "tfile_dropzone_info";
+
+            $this->tag->{'style'} = 'display:none';
+
+            $div->add($dropZoneContainer);
+            $div->add($dropZoneContainerInfo);
+            $div->add( $this->tag );
+        }
         else
         {
             $div->add( $this->tag );
         }
         
-        if ($this->displayMode == 'file' AND file_exists($this->value))
+        if ($this->displayMode == 'file' && $this->value && file_exists($this->value))
         {
             $icon = TElement::tag('i', null, ['class' => 'fa fa-download']);
             $link = new TElement('a');
@@ -332,8 +442,9 @@ class TFile extends TField implements AdiantiWidgetInterface
         $imageGallery = json_encode(['enabled'=> $this->imageGallery ? '1' : '0', 'width' => $this->galleryWidth, 'height' => $this->galleryHeight]);
         $popover = json_encode(['enabled' => $this->popover ? '1' : '0', 'title' => $this->poptitle, 'content' => base64_encode($this->popcontent)]);
         $limitSize = $this->limitSize ?? 'null';
+        $dropZone = $this->dropZone ? 'true' : 'false';
 
-        TScript::create(" tfile_start( '{$this->tag-> id}', '{$div-> id}', '{$action}', {$complete_action}, {$error_action}, $fileHandling, '$imageGallery', '$popover', {$limitSize});");
+        TScript::create(" tfile_start( '{$this->tag-> id}', '{$div-> id}', '{$action}', {$complete_action}, {$error_action}, $fileHandling, '$imageGallery', '$popover', {$limitSize}, $dropZone);");
 
         if (!parent::getEditable())
         {
@@ -342,8 +453,13 @@ class TFile extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the action to be executed when upload is finished
-     * @param $action TAction object
+     * Define the action to be executed when upload is completed
+     *
+     * Sets an action that will be triggered upon successful file upload.
+     *
+     * @param TAction $action The action to be executed
+     *
+     * @throws Exception If the action is not static
      */
     public function setCompleteAction(TAction $action)
     {
@@ -359,8 +475,13 @@ class TFile extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the action to be executed when some error occurs
-     * @param $action TAction object
+     * Define the action to be executed when an error occurs
+     *
+     * Sets an action that will be triggered if an error occurs during upload.
+     *
+     * @param TAction $action The action to be executed
+     *
+     * @throws Exception If the action is not static
      */
     public function setErrorAction(TAction $action)
     {
@@ -377,8 +498,11 @@ class TFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     *
+     * Enables the file input field, making it accessible for user interaction.
+     *
+     * @param string $form_name The name of the form
+     * @param string $field     The name of the field
      */
     public static function enableField($form_name, $field)
     {
@@ -387,8 +511,11 @@ class TFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     *
+     * Disables the file input field, preventing user interaction.
+     *
+     * @param string $form_name The name of the form
+     * @param string $field     The name of the field
      */
     public static function disableField($form_name, $field)
     {
@@ -397,8 +524,11 @@ class TFile extends TField implements AdiantiWidgetInterface
     
     /**
      * Clear the field
-     * @param $form_name Form name
-     * @param $field Field name
+     *
+     * Resets the file input field, removing any selected file.
+     *
+     * @param string $form_name The name of the form
+     * @param string $field     The name of the field
      */
     public static function clearField($form_name, $field)
     {

@@ -7,10 +7,15 @@ use Adianti\Core\AdiantiCoreTranslator;
 use Adianti\Widget\Base\TElement;
 use Adianti\Widget\Base\TScript;
 use Adianti\Widget\Form\TField;
+use Adianti\Widget\Util\TImage;
+use Mad\Util\Crypt;
 use Exception;
 
 /**
- * ComboBox Widget
+ * TCombo Widget
+ *
+ * This class represents a ComboBox (drop-down list) widget.
+ * It extends TField and implements the AdiantiWidgetInterface.
  *
  * @version    7.5
  * @package    widget
@@ -24,15 +29,27 @@ class TCombo extends TField implements AdiantiWidgetInterface
     protected $id;
     protected $items; // array containing the combobox options
     protected $formName;
-    private   $searchable;
-    private   $changeAction;
-    private   $defaultOption;
+    private $searchable;
+    private $changeAction;
+    private $defaultOption;
     protected $changeFunction;
     protected $is_boolean;
+    protected $noResultsButtonAction;
+    protected $noResultsButtonActionLabel;
+    protected $noResultsButtonActionIcon;
+    protected $noResultsButtonActionBtnClass;
+    protected $noResultsQuickRegisterAction;
+    protected $noResultsQuickRegisterActionLabel;
+    protected $noResultsQuickRegisterActionIcon;
+    protected $noResultsQuickRegisterActionBtnClass;
+    protected $noResultsMessage;
 
     /**
      * Class Constructor
-     * @param  $name widget's name
+     *
+     * Initializes the ComboBox widget.
+     *
+     * @param string $name The widget's name
      */
     public function __construct($name)
     {
@@ -50,7 +67,9 @@ class TCombo extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Enable/disable boolean mode
+     * Enable boolean mode
+     *
+     * When enabled, the combo box only allows selection between "Yes" and "No".
      */
     public function setBooleanMode()
     {
@@ -70,8 +89,11 @@ class TCombo extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's value
-     * @param $value A string containing the field's value
+     * Set the field's value
+     *
+     * If the combo is in boolean mode, it maps `true` to '1' and `false` to '2'.
+     *
+     * @param mixed $value The value to be set
      */
     public function setValue($value)
     {
@@ -86,7 +108,11 @@ class TCombo extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Returns the field's value
+     * Get the field's value
+     *
+     * If the combo is in boolean mode, it returns `true` for '1' and `false` for '2'.
+     *
+     * @return mixed The field's value
      */
     public function getValue()
     {
@@ -101,7 +127,9 @@ class TCombo extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Clear combo
+     * Clear the combo box options
+     *
+     * Removes all items from the combo box.
      */
     public function clear()
     {
@@ -110,7 +138,8 @@ class TCombo extends TField implements AdiantiWidgetInterface
     
     /**
      * Add items to the combo box
-     * @param $items An indexed array containing the combo options
+     *
+     * @param array $items An associative array where keys are the option values and values are the option labels
      */
     public function addItems($items)
     {
@@ -121,7 +150,9 @@ class TCombo extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the combo items
+     * Get the combo box items
+     *
+     * @return array The array of items in the combo box
      */
     public function getItems()
     {
@@ -129,7 +160,9 @@ class TCombo extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Enable search
+     * Enable search functionality
+     *
+     * Removes the default CSS class and enables the search feature in the combo box.
      */
     public function enableSearch()
     {
@@ -138,7 +171,11 @@ class TCombo extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the post data
+     * Retrieve the posted value
+     *
+     * Handles empty values, boolean mode, and special cases with '::' separators.
+     *
+     * @return mixed The posted value
      */
     public function getPostData()
     {
@@ -179,8 +216,11 @@ class TCombo extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the action to be executed when the user changes the combo
-     * @param $action TAction object
+     * Set the action to be executed when the combo box value changes
+     *
+     * @param TAction $action The action object to be triggered
+     *
+     * @throws Exception If the action is not static
      */
     public function setChangeAction(TAction $action)
     {
@@ -196,20 +236,87 @@ class TCombo extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Set change function
+     * Set a JavaScript function to be executed when the combo box value changes
+     *
+     * @param string $function The JavaScript function to be triggered
      */
     public function setChangeFunction($function)
     {
         $this->changeFunction = $function;
     }
+
+    /**
+     * Configures a create action button that appears when no results are found in the combo search
+     * 
+     * This method sets up a button that will be displayed when the user's search in the combo
+     * returns no results. This allows users to quickly create a new item when they can't find
+     * what they're looking for in the existing options.
+     * 
+     * @param TAction $action The action to be executed when the create button is clicked
+     * @param string $label The text label to be displayed on the create button
+     * @param string $icon The icon to be shown on the button (e.g., 'fa fa-plus')
+     * @param string $btnClass The CSS class for styling the button (e.g., 'btn btn-primary')
+     * 
+     * @return void
+     */
+    public function configureNoResultsCreateButton(TAction $action, $label, $icon, $btnClass)
+    {
+        $this->noResultsButtonAction = $action;
+        $this->noResultsButtonActionLabel = $label;
+        $this->noResultsButtonActionIcon = $icon;
+        $this->noResultsButtonActionBtnClass = $btnClass;
+    }
+
+    /**
+     * Configures the quick register functionality when there are no results.
+     * This feature allows adding a new element through an input field,
+     * executing the configured action when the user clicks the adjacent button.
+     * 
+     * @param TAction $createAction Action to be executed when clicking the confirmation button
+     * @param string|null $confirmButtonLabel Confirmation button text (optional)
+     * @param string|null $confirmButtonIcon Confirmation button icon (optional)
+     * @param string|null $confirmButtonClass Confirmation button CSS classes (optional)
+     * 
+     * @return void
+     */
+    public function configureNoResultsQuickRegister(TAction $createAction, $confirmButtonLabel = null, $confirmButtonIcon = null, $confirmButtonClass = null)
+    {
+        $this->noResultsQuickRegisterAction = $createAction;
+        $this->noResultsQuickRegisterActionLabel = $confirmButtonLabel;
+        $this->noResultsQuickRegisterActionIcon = $confirmButtonIcon;
+        $this->noResultsQuickRegisterActionBtnClass = $confirmButtonClass;
+    }
+
+    /**
+     * Sets the message to be displayed when no results are found.
+     * 
+     * @param string $noResultsMessage Message to be shown when the search returns no results
+     * 
+     * @return void
+     */
+    public function setNoResultsMessage($noResultsMessage)
+    {
+        $this->noResultsMessage = $noResultsMessage;
+    }
+
+    public function getNoResultsButtonAction()
+    {
+        return $this->noResultsButtonAction;
+    }
+
+    public function getNoResultsQuickRegisterAction()
+    {
+        return $this->noResultsQuickRegisterAction;
+    }
     
     /**
-     * Reload combobox items after it is already shown
-     * @param $formname form name (used in gtk version)
-     * @param $name field name
-     * @param $items array with items
-     * @param $startEmpty if the combo will have an empty first item
-     * @param $fire_events If change action will be fired
+     * Reload combo box items dynamically
+     *
+     * @param string  $formname     The form name
+     * @param string  $name         The field name
+     * @param array   $items        The new items to populate the combo box
+     * @param boolean $startEmpty   Whether to start with an empty option
+     * @param boolean $fire_events  Whether to trigger the change event
      */
     public static function reload($formname, $name, $items, $startEmpty = FALSE, $fire_events = TRUE)
     {
@@ -238,11 +345,38 @@ class TCombo extends TField implements AdiantiWidgetInterface
         }
         TScript::create($code);
     }
+
+    /**
+     * Add a single option to a combobox
+     * @param $formname form name (used in gtk version)
+     * @param $name field name
+     * @param $key option key/value
+     * @param $value option label
+     * @param $fire_events If change action will be fired
+     */
+    public static function addOption($formname, $name, $key, $value)
+    {   
+        // Escape special characters in the value
+        $value = htmlspecialchars((string) $value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        
+        $code = '';
+        if (substr((string) $key, 0, 3) == '>>>')
+        {
+            $code = "tcombo_create_opt_group('{$formname}', '{$name}', '{$value}'); ";
+        }
+        else
+        {
+            $code = "tcombo_add_option('{$formname}', '{$name}', '{$key}', '{$value}'); ";
+        }
+        
+        TScript::create($code);
+    }
     
     /**
-     * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Enable the combo box field
+     *
+     * @param string $form_name The form name
+     * @param string $field     The field name
      */
     public static function enableField($form_name, $field)
     {
@@ -250,9 +384,10 @@ class TCombo extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Disable the combo box field
+     *
+     * @param string $form_name The form name
+     * @param string $field     The field name
      */
     public static function disableField($form_name, $field)
     {
@@ -260,10 +395,11 @@ class TCombo extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Clear the field
-     * @param $form_name   Form name
-     * @param $field       Field name
-     * @param $fire_events If change action will be fired
+     * Clear the combo box field
+     *
+     * @param string  $form_name   The form name
+     * @param string  $field       The field name
+     * @param boolean $fire_events Whether to trigger the change event
      */
     public static function clearField($form_name, $field, $fire_events = TRUE)
     {
@@ -272,8 +408,9 @@ class TCombo extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the combo default option value
-     * @param $option option value
+     * Set the default option label for the combo box
+     *
+     * @param string $option The label for the default option
      */
     public function setDefaultOption($option)
     {
@@ -281,7 +418,9 @@ class TCombo extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Render items
+     * Render the combo box items
+     *
+     * Populates the `<select>` element with options and handles optgroups.
      */
     public function renderItems()
     {
@@ -337,14 +476,18 @@ class TCombo extends TField implements AdiantiWidgetInterface
                     else
                     {
                         $this->tag->add($option);
-                    }                    
+                    }
                 }
             }
         }
     }
     
     /**
-     * Shows the widget
+     * Display the combo box widget
+     *
+     * Sets properties, applies styles, and renders items before displaying the widget.
+     *
+     * @throws Exception If the form associated with the combo box is not defined in TForm
      */
     public function show()
     {
@@ -378,6 +521,130 @@ class TCombo extends TField implements AdiantiWidgetInterface
             $string_action = $this->changeAction->serialize(FALSE);
             $this->setProperty('changeaction', "__adianti_post_lookup('{$this->formName}', '{$string_action}', '{$this->id}', 'callback')");
             $this->setProperty('onChange', $this->getProperty('changeaction'));
+        }
+
+        if (isset($this->noResultsButtonAction) && !$this->noResultsButtonAction->isHidden() && !$this->noResultsButtonAction->isDisabled())
+        {
+            if (!TForm::getFormByName($this->formName) instanceof TForm)
+            {
+                throw new Exception(AdiantiCoreTranslator::translate('You must pass the ^1 (^2) as a parameter to ^3', __CLASS__, $this->name, 'TForm::setFields()') );
+            }
+
+            $this->noResultsButtonAction->setParameter('_form_name', $this->formName);
+            $this->noResultsButtonAction->setParameter('_field_name', $this->name);
+            // get the action as URL
+            $url = $this->noResultsButtonAction->serialize(FALSE);
+
+            $url = htmlspecialchars($url);
+            $wait_message = AdiantiCoreTranslator::translate('Loading');
+
+            $obj = new \stdClass;
+            $obj->model = $this->model;
+            $obj->database = $this->database;
+            $obj->key = $this->key;
+            $obj->column = $this->column;
+            $obj->orderColumn = $this->orderColumn;
+            $obj->criteria = $this->criteria;
+            $obj->field_name = $this->name;
+            $obj->field_id = $this->id;
+            $obj->field_form = $this->formName;
+            $obj->component = explode('\\', get_called_class());
+            $obj->component = end($obj->component);
+
+            $action = "\$('.select2').prev().select2('close'); Adianti.waitMessage = '$wait_message';";
+            $action.= "__adianti_post_page_lookup('{$this->formName}', '{$url}', this);";
+            $action.= "return false;";
+            
+            $string_action = $this->noResultsButtonAction->serialize(FALSE);
+            $this->setProperty('noresultsbtnaction', $action);
+            
+            $image = new TImage($this->noResultsButtonActionIcon);
+            $image = $image->getContents();
+
+            $btn = new TElement('span');
+            $btn->add("{$image} {$this->noResultsButtonActionLabel}");
+            $btn->onClick = $action;
+            $btn->class = 'btn '. $this->noResultsButtonActionBtnClass;
+            $btn->id = $this->id.'_btn';
+            $btn->{"data-noresultsbtnprops"} = Crypt::encryptString( base64_encode(serialize($obj)));
+            $btn->name = $this->name;
+
+            $noResultsButtonActionProperties = [
+                'icon' => $this->noResultsButtonActionIcon,
+                'label' => $this->noResultsButtonActionLabel,
+                'btnClass' => $this->noResultsButtonActionBtnClass,
+                'btn' => $btn->getContents(),
+                'noResultsMessage' => $this->noResultsMessage
+            ];
+
+            $this->setProperty('noresultsbtnprops', base64_encode(json_encode($noResultsButtonActionProperties)));
+        }
+
+        if (isset($this->noResultsQuickRegisterAction) && !$this->noResultsQuickRegisterAction->isHidden() && !$this->noResultsQuickRegisterAction->isDisabled())
+        {
+            if (!TForm::getFormByName($this->formName) instanceof TForm)
+            {
+                throw new Exception(AdiantiCoreTranslator::translate('You must pass the ^1 (^2) as a parameter to ^3', __CLASS__, $this->name, 'TForm::setFields()') );
+            }
+
+            $this->noResultsQuickRegisterAction->setParameter('b_from_form', $this->formName);
+            $this->noResultsQuickRegisterAction->setParameter('b_from_field', $this->name);
+            // get the action as URL
+            $url = $this->noResultsQuickRegisterAction->serialize(FALSE);
+            if ($this->noResultsQuickRegisterAction->isStatic())
+            {
+                $url .= '&static=1';
+            }
+            $url = htmlspecialchars($url);
+            $wait_message = AdiantiCoreTranslator::translate('Loading');
+
+            $obj = new \stdClass;
+            $obj->model = $this->model;
+            $obj->database = $this->database;
+            $obj->key = $this->key;
+            $obj->column = $this->column;
+            $obj->orderColumn = $this->orderColumn;
+            $obj->criteria = $this->criteria;
+            $obj->field_name = $this->name;
+            $obj->field_id = $this->id;
+            $obj->field_form = $this->formName;
+            $obj->component = explode('\\', get_called_class());
+            $obj->component = end($obj->component);
+
+            $action = "Adianti.waitMessage = '$wait_message';";
+            $action.= "__adianti_post_lookup('{$this->formName}', '{$url}', this);";
+            $action.= "\$('.select2').prev().select2('close');return false;";
+            
+            $string_action = $this->noResultsQuickRegisterAction->serialize(FALSE);
+            $this->setProperty('createaction', $action);
+            
+            $image = new TImage($this->noResultsQuickRegisterActionIcon);
+            $image = $image->getContents();
+
+            $btn = new TElement('span');
+            $btn->add("{$image} {$this->noResultsQuickRegisterActionLabel}");
+            $btn->onClick = $action;
+            $btn->class = 'btn '. $this->noResultsQuickRegisterActionBtnClass;
+            $btn->{"data-noresultsbtnprops"} = Crypt::encryptString( base64_encode(serialize($obj)));
+            $btn->{"data-quick_register_value"} = '';
+            $btn->id = $this->id.'_btn';
+
+            $input = new TEntry($this->name.'_quickregister');
+            $input->id = $this->id.'_quickregister';
+            $input->class = 'quickregister';
+            $input->oninput = "tcombo_set_quick_register_value(this, '{$this->id}')";
+            $input->setSize('100%');
+
+            $noResultsQuickRegisterActionProperties = [
+                'icon' => $this->noResultsQuickRegisterActionIcon,
+                'label' => $this->noResultsQuickRegisterActionLabel,
+                'btnClass' => $this->noResultsQuickRegisterActionBtnClass,
+                'btn' => $btn->getContents(),
+                'input' => $input->getContents(),
+                'noResultsMessage' => $this->noResultsMessage
+            ];
+
+            $this->setProperty('noresultsquickregisterprops', base64_encode(json_encode($noResultsQuickRegisterActionProperties)));
         }
         
         if (isset($this->changeFunction))

@@ -8,6 +8,9 @@ use ReflectionClass;
 /**
  * Standard Control Trait
  *
+ * Provides standard functionalities for managing database connections
+ * and Active Record classes in the Adianti framework.
+ *
  * @version    7.5
  * @package    base
  * @author     Pablo Dall'Oglio
@@ -20,8 +23,11 @@ trait AdiantiStandardControlTrait
     protected $activeRecord;    // Active Record class name
     
     /**
-     * method setDatabase()
-     * Define the database
+     * Sets the database connection name.
+     *
+     * @param string $database The name of the database to be used.
+     *
+     * @return void
      */
     public function setDatabase($database)
     {
@@ -29,8 +35,12 @@ trait AdiantiStandardControlTrait
     }
     
     /**
-     * method setActiveRecord()
-     * Define wich Active Record class will be used
+     * Sets the Active Record class to be used.
+     *
+     * @param string $activeRecord The name of the Active Record class.
+     *
+     * @throws Exception If the class does not exist or is not a subclass of TRecord.
+     * @return void
      */
     public function setActiveRecord($activeRecord)
     {

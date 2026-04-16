@@ -178,3 +178,33 @@
 [type="checkbox"].filled-in:checked + label.tswitch.white::before {
       background-color: #ffffff !important;
 }
+
+
+.checkCard-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 12px;
+}
+
+.checkCard-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-right: 10px;
+}
+
+.checkCard-title {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.checkCard-description {
+    font-size: 14px;
+    color: #6b7280;
+}

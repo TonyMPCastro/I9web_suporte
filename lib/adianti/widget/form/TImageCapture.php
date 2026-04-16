@@ -4,7 +4,10 @@ namespace Adianti\Widget\Form;
 use Adianti\Widget\Util\TImage;
 
 /**
- * Image capture
+ * TImageCapture Class
+ *
+ * A form widget that allows capturing images using the webcam.
+ * It extends TImageCropper and provides webcam capture functionality.
  *
  * @version    7.5
  * @package    widget
@@ -16,6 +19,14 @@ use Adianti\Widget\Util\TImage;
  */
 class TImageCapture extends TImageCropper
 {
+    /**
+     * Class constructor
+     *
+     * Initializes the TImageCapture component, enabling webcam support 
+     * and setting a default camera icon as a placeholder.
+     *
+     * @param string $name The name of the form field
+     */
     public function __construct($name)
     {
         parent::__construct($name);

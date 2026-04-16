@@ -3,7 +3,10 @@
 use Adianti\Database\TCriteria;
 
 /**
- * Pie chart Widget
+ * Bar chart widget
+ *
+ * This class represents a bar chart widget that extends BChart.
+ * It allows setting up a grouped bar chart with different configurations.
  *
  * @version    7.4
  * @package    widget
@@ -13,27 +16,31 @@ use Adianti\Database\TCriteria;
 class BBarChart extends BChart
 {
     /**
-     * Class Constructor
-     * @param  $name         widget's name
-     * @param  $database     database name
-     * @param  $model        model class name
-     * @param  $fieldGroup   table field to be used as group in the chart
-     * @param  $fieldValue   table field to be used as calc total
-     * @param  $joins        array with joins to be used on select
-     * @param  $totalChart   set type total (optional) default sum [sum, max, min, count, avg]
-     * @param  $criteria     criteria (TCriteria object) to filter the model (optional)
+     * BBarChart constructor.
+     *
+     * Initializes a bar chart with the provided parameters.
+     *
+     * @param string        $name        The widget name.
+     * @param string|null   $database    The database name.
+     * @param string|null   $model       The model class name.
+     * @param array         $fieldGroup  The table fields to be used as group in the chart.
+     * @param string|null   $fieldValue  The table field to be used for total calculation.
+     * @param array         $joins       An array with joins to be used in the select query.
+     * @param string        $totalChart  The type of total calculation (default: 'sum'). Options: 'sum', 'max', 'min', 'count', 'avg'.
+     * @param TCriteria|null $criteria   A TCriteria object to filter the model (optional).
      */
-    public function __construct(String $name, String $database = null, String $model = null, array $fieldGroup = [], String $fieldValue = null, array $joins = [], $totalChart = 'sum', TCriteria $criteria = NULL)
+    public function __construct(String $name, ?String $database = null, ?String $model = null, array $fieldGroup = [], ?String $fieldValue = null, array $joins = [], $totalChart = 'sum', ?TCriteria $criteria = NULL)
     {
         parent::__construct($name, $database, $model, [], $fieldValue, $joins, $totalChart, $criteria);
         $this->setFieldGroup($fieldGroup);
         $this->setType('bar');
+        $this->grid = true;
     }
 
     /**
-     * Set direcion bars
+     * Set the bar chart layout direction.
      *
-     * @param $direction [horizontal or vertical]
+     * @param string $direction The bar chart direction ('horizontal' or 'vertical').
      */
     public function setLayout($direction)
     {
@@ -41,9 +48,9 @@ class BBarChart extends BChart
     }
 
     /**
-     * Set bars stacks
+     * Enable or disable bar stacking.
      *
-     * @param $stack
+     * @param bool $stack Whether to stack the bars (default: true).
      */
     public function setStack($stack = true)
     {
@@ -51,9 +58,9 @@ class BBarChart extends BChart
     }
 
     /**
-     * Define transformer sub legends (bars)
+     * Define a transformer for sub legends (bars).
      *
-     * @param $transformer callable
+     * @param callable $transformer A callable function to transform the sub legends.
      */
     public function setTransformerSubLegend(callable $transformer)
     {
@@ -61,7 +68,9 @@ class BBarChart extends BChart
     }
 
     /**
-     * Set label of value
+     * Set the label for the chart values.
+     *
+     * @param string $labelValue The label to be displayed for chart values.
      */
     public function setLabelValue($labelValue)
     {
@@ -69,7 +78,9 @@ class BBarChart extends BChart
     }
 
     /**
-     * Show grid
+     * Enable or disable the chart grid.
+     *
+     * @param bool $showGrid Whether to display the grid (default: true).
      */
     public function showGrid($showGrid = true)
     {

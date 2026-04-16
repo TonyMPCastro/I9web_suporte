@@ -37,21 +37,24 @@ class SystemPasswordResetForm extends TPage
         $password2 = new TPassword('password2');
         
         // define the sizes
-        $password1->setSize('70%', 40);
-        $password2->setSize('70%', 40);
-        
-        $locker = '<span style="float:left;margin-left:44px;height:35px;" class="login-avatar"><span class="fa fa-lock"></span></span>';
-        $password1->style = 'height:35px; font-size:14px;float:left;border-bottom-left-radius: 0;border-top-left-radius: 0;';
-        $password2->style = 'height:35px; font-size:14px;float:left;border-bottom-left-radius: 0;border-top-left-radius: 0;';
-        
-        $password1->placeholder = _t('Password');
-        $password2->placeholder = _t('Password confirmation');
+        $password1->setSize('100%', 40);
+        $password2->setSize('100%', 40);
+
+        if(SystemPreferenceService::isStrongPasswordEnabled())
+        {
+            $password1->enableStrongPasswordValidation(_t('Password'));
+            $password1->addValidation("Password", new TRequiredValidator()); 
+            $password2->enableStrongPasswordValidation(_t('Password confirmation'));
+            $password2->addValidation(_t('Password confirmation'), new TRequiredValidator()); 
+        }
         
         $this->form->addFields( [$jwt] );
-        $this->form->addFields( [$locker, $password1] );
-        $this->form->addFields( [$locker, $password2] );
+        $row = $this->form->addFields( [new TLabel(_t('Password'), 'red', null, null, '100%'), $password1] );
+        $row->layout = ['col-sm-12'];
+        $row = $this->form->addFields( [new TLabel(_t('Password confirmation'), 'red', null, null, '100%'), $password2] );
+        $row->layout = ['col-sm-12'];
         
-        $btn = $this->form->addAction(_t('Send'), new TAction(array($this, 'onReset')), '');
+        $btn = $this->form->addAction(_t('Send'), new TAction([$this, 'onReset'], ['static'=>1]), '');
         $btn->class = 'btn btn-primary';
         $btn->style = 'height: 40px;width: 90%;display: block;margin: auto;font-size:17px;';
         
@@ -77,16 +80,13 @@ class SystemPasswordResetForm extends TPage
     /**
      * Authenticate the User
      */
-    public static function onReset($param)
+    public function onReset($param)
     {
         $ini = AdiantiApplicationConfig::get();
         
         try
         {
-            if (empty($param['password1']))
-            {
-                throw new Exception('Senha vazia');
-            }
+            $this->form->validate();
             
             if( $param['password1'] !== $param['password2'] )
             {

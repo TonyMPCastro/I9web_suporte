@@ -4,6 +4,9 @@ namespace Adianti\Widget\Form;
 /**
  * Form Interface
  *
+ * Interface for form components.
+ * Defines a contract for handling form fields, data, and validation.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form

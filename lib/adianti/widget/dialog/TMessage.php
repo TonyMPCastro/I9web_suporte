@@ -6,7 +6,8 @@ use Adianti\Control\TAction;
 use Adianti\Widget\Base\TScript;
 
 /**
- * Message Dialog
+ * Class for displaying message dialogs.
+ * This class creates a message dialog with different types (info, warning, error).
  *
  * @version    7.5
  * @package    widget
@@ -19,13 +20,15 @@ use Adianti\Widget\Base\TScript;
 class TMessage
 {
     /**
-     * Class Constructor
-     * @param $type    Type of the message (info, warning, error)
-     * @param $message Message to be shown
-     * @param $action  Action to be processed when closing the dialog
-     * @param $title_msg  Dialog Title
+     * TMessage constructor.
+     * Initializes a message dialog with a type, message, action, and optional title.
+     *
+     * @param string      $type       The type of the message (info, warning, error).
+     * @param string      $message    The message content to be displayed.
+     * @param TAction|null $action    The action to be executed when the dialog is closed (optional).
+     * @param string      $title_msg  The title of the dialog (optional).
      */
-    public function __construct($type, $message, TAction $action = NULL, $title_msg = '')
+    public function __construct($type, $message, ?TAction $action = null, $title_msg = '')
     {
         if (!empty($title_msg))
         {

@@ -16,6 +16,9 @@ use Exception;
 /**
  * Standard Form List Trait
  *
+ * This trait provides standard functionalities for handling form-based lists,
+ * including CRUD operations, pagination, and record transformation.
+ *
  * @version    7.5
  * @package    base
  * @author     Pablo Dall'Oglio
@@ -29,8 +32,9 @@ trait AdiantiStandardFormListTrait
     use AdiantiStandardControlTrait;
     
     /**
-     * method setAfterSaveAction()
-     * Define after save action
+     * Sets an action to be executed after saving a record.
+     *
+     * @param TAction $action The action to be executed after saving.
      */
     public function setAfterSaveAction($action)
     {
@@ -38,8 +42,9 @@ trait AdiantiStandardFormListTrait
     }
     
     /**
-     * method setLimit()
-     * Define the record limit
+     * Sets the record limit for data retrieval.
+     *
+     * @param int $limit The maximum number of records to be retrieved.
      */
     public function setLimit($limit)
     {
@@ -47,9 +52,10 @@ trait AdiantiStandardFormListTrait
     }
     
     /**
-     * Define the default order
-     * @param $order The order field
-     * @param $directiont the order direction (asc, desc)
+     * Sets the default order for data retrieval.
+     *
+     * @param string $order The field to order the results by.
+     * @param string $direction The sorting direction ('asc' for ascending, 'desc' for descending).
      */
     public function setDefaultOrder($order, $direction = 'asc')
     {
@@ -58,8 +64,9 @@ trait AdiantiStandardFormListTrait
     }
     
     /**
-     * method setCriteria()
-     * Define the criteria
+     * Sets a criteria object to filter the retrieved data.
+     *
+     * @param TCriteria $criteria The criteria object to be applied.
      */
     public function setCriteria($criteria)
     {
@@ -67,8 +74,9 @@ trait AdiantiStandardFormListTrait
     }
 
     /**
-     * Define a callback method to transform objects
-     * before load them into datagrid
+     * Defines a callback function to transform objects before loading them into the data grid.
+     *
+     * @param callable $callback The callback function that processes the objects.
      */
     public function setTransformer($callback)
     {
@@ -76,8 +84,12 @@ trait AdiantiStandardFormListTrait
     }
     
     /**
-     * method onReload()
-     * Load the datagrid with the database objects
+     * Reloads the data grid with records from the database.
+     *
+     * This method applies filtering, sorting, pagination, and optional transformation
+     * before displaying the records in the data grid.
+     *
+     * @param array|null $param Optional parameters such as pagination settings.
      */
     public function onReload($param = NULL)
     {
@@ -143,8 +155,12 @@ trait AdiantiStandardFormListTrait
     }
     
     /**
-     * method onSave()
-     * Executed whenever the user clicks at the save button
+     * Saves the form data to the database.
+     *
+     * This method validates the form data, stores the record in the database,
+     * executes an optional post-save action, and reloads the data grid.
+     *
+     * @return TRecord|null The saved record instance on success, null on failure.
      */
     public function onSave()
     {
@@ -193,9 +209,9 @@ trait AdiantiStandardFormListTrait
     }
     
     /**
-     * method onDelete()
-     * executed whenever the user clicks at the delete button
-     * Ask if the user really wants to delete the record
+     * Prompts the user for confirmation before deleting a record.
+     *
+     * @param array $param The parameters, including the record key to delete.
      */
     public function onDelete($param)
     {
@@ -208,8 +224,12 @@ trait AdiantiStandardFormListTrait
     }
     
     /**
-     * method Delete()
-     * Delete a record
+     * Deletes a record from the database.
+     *
+     * This method removes the record associated with the given key and reloads
+     * the data grid upon successful deletion.
+     *
+     * @param array $param The parameters containing the record key.
      */
     public function Delete($param)
     {
@@ -246,7 +266,9 @@ trait AdiantiStandardFormListTrait
     }
     
     /**
-     * Clear form
+     * Clears the form fields.
+     *
+     * @param array $param Optional parameters.
      */
     public function onClear($param)
     {
@@ -254,9 +276,15 @@ trait AdiantiStandardFormListTrait
     }
     
     /**
-     * method onEdit()
-     * Executed whenever the user clicks at the edit button da datagrid
-     */ 
+     * Loads a record into the form for editing.
+     *
+     * This method retrieves the record by its key and populates the form with its data.
+     * If no key is provided, the form is cleared.
+     *
+     * @param array $param The parameters containing the record key.
+     *
+     * @return TRecord|null The loaded record instance or null if not found.
+     */
     public function onEdit($param)
     {
         try
@@ -299,7 +327,10 @@ trait AdiantiStandardFormListTrait
     }
     
     /**
-     * Shows the page
+     * Displays the page and ensures the data grid is loaded.
+     *
+     * This method checks whether the data grid needs to be reloaded based on
+     * the request method parameters.
      */
     public function show()
     {

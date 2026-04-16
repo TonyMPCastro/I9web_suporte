@@ -10,6 +10,9 @@ use Adianti\Widget\Base\TScript;
 /**
  * Label Widget
  *
+ * This class represents a label element that can be styled with font color, size, and decoration.
+ * It extends TField and implements AdiantiWidgetInterface, providing additional formatting capabilities.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form
@@ -28,7 +31,14 @@ class TLabel extends TField implements AdiantiWidgetInterface
     
     /**
      * Class Constructor
-     * @param  $value text label
+     *
+     * Initializes a label with optional styles such as color, font size, and decoration.
+     *
+     * @param string      $value      The label text content.
+     * @param string|null $color      The font color (optional).
+     * @param string|null $fontsize   The font size (optional, e.g., '12px' or '12pt').
+     * @param string|null $decoration The font decoration (optional, accepts 'b' for bold, 'i' for italic, 'u' for underline).
+     * @param int|null    $size       The width of the label (optional).
      */
     public function __construct($value, $color = null, $fontsize = null, $decoration = null, $size = null)
     {
@@ -66,7 +76,11 @@ class TLabel extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Enable toggle visible
+     * Enable or disable the visibility toggle feature
+     *
+     * When enabled, the label content will be blurred, and an eye icon will allow toggling visibility.
+     *
+     * @param bool $toggleVisibility Whether to enable or disable visibility toggling (default: TRUE).
      */
     public function enableToggleVisibility($toggleVisibility = TRUE)
     {
@@ -75,6 +89,8 @@ class TLabel extends TField implements AdiantiWidgetInterface
     
     /**
      * Clone the object
+     *
+     * Ensures the embedded style is also cloned when duplicating the object.
      */
     public function __clone()
     {
@@ -83,8 +99,9 @@ class TLabel extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the font size
-     * @param $size Font size in pixels
+     * Set the font size of the label
+     *
+     * @param string|int $size The font size (e.g., '12px', '14pt', or an integer which defaults to 'pt' if no unit is provided).
      */
     public function setFontSize($size)
     {
@@ -92,8 +109,11 @@ class TLabel extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the style
-     * @param  $decoration text decorations (b=bold, i=italic, u=underline)
+     * Set the font style of the label
+     *
+     * Defines text decoration styles such as bold, italic, and underline.
+     *
+     * @param string $decoration A combination of 'b' (bold), 'i' (italic), and 'u' (underline).
      */
     public function setFontStyle($decoration)
     {
@@ -114,8 +134,9 @@ class TLabel extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the font face
-     * @param $font Font Family Name
+     * Set the font family of the label
+     *
+     * @param string $font The font family name (e.g., 'Arial', 'Times New Roman').
      */
     public function setFontFace($font)
     {
@@ -123,8 +144,9 @@ class TLabel extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the font color
-     * @param $color Font Color
+     * Set the font color of the label
+     *
+     * @param string $color The font color in hexadecimal (e.g., '#FF0000') or named colors (e.g., 'red').
      */
     public function setFontColor($color)
     {
@@ -132,8 +154,11 @@ class TLabel extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Add a content inside the label
-     * @param $content
+     * Add content inside the label
+     *
+     * Appends new content to the label element.
+     *
+     * @param string|TElement $content The content to be added (string or TElement object).
      */
     function add($content)
     {
@@ -146,7 +171,9 @@ class TLabel extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Get value
+     * Get the label content
+     *
+     * @return string The current value of the label.
      */
     public function getValue()
     {
@@ -154,7 +181,9 @@ class TLabel extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Shows the widget at the screen
+     * Displays the label on the screen
+     *
+     * Applies the configured styles and renders the label, including optional visibility toggle effects.
      */
     public function show()
     {

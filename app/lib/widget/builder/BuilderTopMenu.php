@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Class BuilderTopMenu
+ *
+ * This class represents a hierarchical top menu that can be built from an XML structure.
+ * It allows defining menu items, submenus, and applying permissions and transformations.
+ */
 class BuilderTopMenu extends TElement
 {
     private $items;
@@ -11,8 +17,17 @@ class BuilderTopMenu extends TElement
     private $item_transformer;
     
     /**
-     * Class Constructor
-     * @param $xml SimpleXMLElement parsed from XML Menu
+     * BuilderTopMenu constructor.
+     *
+     * Initializes the top menu from an XML structure and applies optional permission checks and transformations.
+     *
+     * @param SimpleXMLElement $xml The parsed XML object containing menu definitions.
+     * @param callable|null $permission_callback A callback function to check permissions for menu items.
+     * @param int $menu_level The hierarchical level of the menu (default: 1).
+     * @param string $menu_class The CSS class applied to the menu container (default: 'dropdown-menu').
+     * @param string $item_class The CSS class applied to menu items (default: '').
+     * @param string $link_class The CSS class applied to menu links (default: 'dropdown-toggle').
+     * @param callable|null $item_transformer A callback function to transform menu items before adding them.
      */
     public function __construct($xml, $permission_callback = NULL, $menu_level = 1, $menu_class = 'dropdown-menu', $item_class = '', $link_class = 'dropdown-toggle', $item_transformer = null)
     {
@@ -35,8 +50,11 @@ class BuilderTopMenu extends TElement
     }
     
     /**
-     * Add a MenuItem
-     * @param $menuitem A BuilderTopMenuItem Object
+     * Adds a menu item to the menu.
+     *
+     * If an item transformer is set, it is applied to the menu item before adding it.
+     *
+     * @param BuilderTopMenuItem $menuitem The menu item to be added.
      */
     public function addMenuItem(BuilderTopMenuItem $menuitem)
     {
@@ -48,7 +66,9 @@ class BuilderTopMenu extends TElement
     }
     
     /**
-     * Return the menu items
+     * Retrieves the menu items.
+     *
+     * @return array The list of menu items.
      */
     public function getMenuItems()
     {
@@ -56,9 +76,12 @@ class BuilderTopMenu extends TElement
     }
     
     /**
-     * Parse a XMLElement reading menu entries
-     * @param $xml A SimpleXMLElement Object
-     * @param $permission_callback check permission callback
+     * Parses an XML structure to create the menu hierarchy.
+     *
+     * Reads menu entries from an XML object and applies permission checks if provided.
+     *
+     * @param SimpleXMLElement $xml The XML object representing the menu structure.
+     * @param callable|null $permission_callback A callback function to check permissions for menu items.
      */
     public function parse($xml, $permission_callback = NULL)
     {
@@ -127,7 +150,9 @@ class BuilderTopMenu extends TElement
     }
     
     /**
-     * Shows the widget at the screen
+     * Displays the menu on the screen.
+     *
+     * Renders all menu items and their submenus before displaying the menu.
      */
     public function show()
     {

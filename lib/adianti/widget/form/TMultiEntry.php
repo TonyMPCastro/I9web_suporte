@@ -13,6 +13,9 @@ use Exception;
 /**
  * Multi Entry Widget
  *
+ * This widget allows the selection of multiple items in a form field.
+ * It extends the TSelect component and implements AdiantiWidgetInterface.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form
@@ -34,7 +37,10 @@ class TMultiEntry extends TSelect implements AdiantiWidgetInterface
     
     /**
      * Class Constructor
-     * @param  $name Widget's name
+     *
+     * Initializes the widget with a unique ID and default configurations.
+     *
+     * @param string $name The name of the widget
      */
     public function __construct($name)
     {
@@ -50,9 +56,10 @@ class TMultiEntry extends TSelect implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the widget's size
-     * @param  $width   Widget's width
-     * @param  $height  Widget's height
+     * Defines the widget's size
+     *
+     * @param string|int $width  The width of the widget (can be percentage or pixels)
+     * @param string|int|null $height The height of the widget (optional, defaults to null)
      */
     public function setSize($width, $height = NULL)
     {
@@ -64,7 +71,9 @@ class TMultiEntry extends TSelect implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the maximum number of items that can be selected
+     * Defines the maximum number of items that can be selected
+     *
+     * @param int $maxsize The maximum number of selectable items
      */
     public function setMaxSize($maxsize)
     {
@@ -72,9 +81,10 @@ class TMultiEntry extends TSelect implements AdiantiWidgetInterface
     }
     
     /**
-     * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Enables the specified field
+     *
+     * @param string $form_name The name of the form
+     * @param string $field The name of the field to enable
      */
     public static function enableField($form_name, $field)
     {
@@ -82,9 +92,10 @@ class TMultiEntry extends TSelect implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Disables the specified field
+     *
+     * @param string $form_name The name of the form
+     * @param string $field The name of the field to disable
      */
     public static function disableField($form_name, $field)
     {
@@ -92,9 +103,10 @@ class TMultiEntry extends TSelect implements AdiantiWidgetInterface
     }
 
     /**
-     * Clear the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Clears the specified field
+     *
+     * @param string $form_name The name of the form
+     * @param string $field The name of the field to clear
      */
     public static function clearField($form_name, $field)
     {
@@ -102,7 +114,9 @@ class TMultiEntry extends TSelect implements AdiantiWidgetInterface
     }
     
     /**
-     * Render items
+     * Renders the selected items as HTML option elements
+     *
+     * @param bool $with_titles Whether to include titles in the options
      */
     protected function renderItems( $with_titles = true)
     {
@@ -130,7 +144,11 @@ class TMultiEntry extends TSelect implements AdiantiWidgetInterface
     }
     
     /**
-     * Shows the widget
+     * Displays the widget on the screen
+     *
+     * It renders the component, applies styles, and initializes necessary scripts.
+     *
+     * @throws Exception If the form is not properly set when using change actions
      */
     public function show()
     {

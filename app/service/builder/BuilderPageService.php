@@ -37,11 +37,6 @@ class BuilderPageService
         $manager_url = $ini['builder']['manager_url'];
         $url = "{$manager_url}/ws.php?method=getAllCodes&token={$token}";
         
-        if (self::checkExternalUrl($url) !== 200)
-        {
-            throw new Exception(_bt('Connection failed'));
-        }
-        
         $content = file_get_contents($url, false, stream_context_create(['ssl' => ['verify_peer' => false, 'verify_peer_name' => false]]));
         $response = (array) json_decode($content);
         

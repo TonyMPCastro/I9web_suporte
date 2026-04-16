@@ -8,16 +8,6 @@
 
       <div class="dropdown-divider"></div>
 
-      <a onclick="Builder.editPage()" generator="adianti" href="#" class="dropdown-item">
-        <div class="media">
-          <div class="media-body">
-            <h3 class="dropdown-item-title">Editar a página</h3>
-          </div>
-        </div>
-      </a>
-
-      <div class="dropdown-divider"></div>
-
       <a generator="adianti" href="index.php?class=BuilderPageBatchUpdate" class="dropdown-item">
         <div class="media">
           <div class="media-body">
@@ -62,6 +52,16 @@
 
       <div class="dropdown-divider"></div>
 
+      <a generator="adianti" href="index.php?class=SystemFrameworkUpdate" class="dropdown-item">
+        <div class="media">
+          <div class="media-body">
+            <h3 class="dropdown-item-title">Atualizar framework</h3>
+          </div>
+        </div>
+      </a>
+
+      <div class="dropdown-divider"></div>
+
       <a generator="adianti" href="index.php?class=BuilderConfigList" class="dropdown-item">
         <div class="media">
           <div class="media-body">
@@ -69,10 +69,10 @@
           </div>
         </div>
       </a>
-      
-      <div class="dropdown-divider"></div>
 
-      <a generator="adianti" href="#" onclick="BuilderEditorCss.initEditorCss()" class="dropdown-item">
+      <span class="dropdown-item dropdown-header">Dev Tools</span>
+
+      <a href='#' onclick="BuilderEditorCss.initEditorCss()" class="dropdown-item">
         <div class="media">
           <div class="media-body">
             <h3 class="dropdown-item-title">Editor de estilos</h3>
@@ -80,12 +80,17 @@
         </div>
       </a>
 
-      <div class="dropdown-divider"></div>
-
-      <a generator="adianti" href="index.php?class=SystemFrameworkUpdate" class="dropdown-item">
+      <a href='#' onclick="Builder.enableDebugConsole()" class="dropdown-item">
         <div class="media">
           <div class="media-body">
-            <h3 class="dropdown-item-title">Atualizar framework</h3>
+            <h3 class="dropdown-item-title">Habilitar Debug Console</h3>
+          </div>
+        </div>
+      </a>
+      <a href='db-mad-manager.php' target="_blank" class="dropdown-item">
+        <div class="media">
+          <div class="media-body">
+            <h3 class="dropdown-item-title">Database Manager</h3>
           </div>
         </div>
       </a>

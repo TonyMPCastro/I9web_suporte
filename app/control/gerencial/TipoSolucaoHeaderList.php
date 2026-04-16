@@ -11,7 +11,7 @@ class TipoSolucaoHeaderList extends TPage
     private static $activeRecord = 'TipoSolucao';
     private static $primaryKey = 'id';
     private static $formName = 'formList_TipoSolucao';
-    private $showMethods = ['onReload', 'onSearch'];
+    private $showMethods = ['onReload', 'onSearch', 'onRefresh', 'onClearFilters', 'onGlobalSearch'];
     private $limit = 20;
 
     /**
@@ -46,7 +46,6 @@ class TipoSolucaoHeaderList extends TPage
 
         // creates a Datagrid
         $this->datagrid = new TDataGrid;
-        $this->datagrid->disableHtmlConversion();
         $this->datagrid->setId(__CLASS__.'_datagrid');
 
         $this->datagrid_form = new TForm(self::$formName);
@@ -101,10 +100,17 @@ class TipoSolucaoHeaderList extends TPage
         $this->datagrid->createModel();
 
         $tr = new TElement('tr');
+        $tr->id = 'datagrid-header-filter-row';
         $this->datagrid->prependRow($tr);
 
-        $tr->add(TElement::tag('td', ''));
-        $tr->add(TElement::tag('td', ''));
+        if(!$action_onEdit->isHidden())
+        {
+            $tr->add(TElement::tag('td', ''));
+        }
+        if(!$action_onDelete->isHidden())
+        {
+            $tr->add(TElement::tag('td', ''));
+        }
         $td_nome = TElement::tag('td', $nome);
         $tr->add($td_nome);
         $td_ativo = TElement::tag('td', $ativo);
@@ -140,8 +146,7 @@ class TipoSolucaoHeaderList extends TPage
         $headerActions->add($head_left_actions);
         $headerActions->add($head_right_actions);
 
-        $this->datagrid_form->add($this->datagrid);
-        $panel->add($headerActions);
+        $this->datagrid_form->add($headerActions);
         $panel->add($this->datagrid_form);
 
         $button_cadastrar = new TButton('button_button_cadastrar');
@@ -162,6 +167,8 @@ class TipoSolucaoHeaderList extends TPage
         $head_left_actions->add($button_cadastrar);
 
         $head_right_actions->add($dropdown_button_exportar);
+
+        $this->datagrid_form->add($this->datagrid);
 
         // vertical box container
         $container = new TVBox;
@@ -622,9 +629,9 @@ class TipoSolucaoHeaderList extends TPage
         parent::show();
     }
 
-    public static function manageRow($id)
+    public static function manageRow($id, $param = [])
     {
-        $list = new self([]);
+        $list = new self($param);
 
         $openTransaction = TTransaction::getDatabase() != self::$database ? true : false;
 

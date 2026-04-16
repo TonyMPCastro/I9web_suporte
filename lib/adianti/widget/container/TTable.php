@@ -5,7 +5,7 @@ use Adianti\Widget\Base\TElement;
 use Adianti\Widget\Container\TTableRow;
 
 /**
- * Creates a table layout, with rows and columns
+ * Creates a table layout with rows and columns.
  *
  * @version    7.5
  * @package    widget
@@ -19,7 +19,8 @@ class TTable extends TElement
     private $section;
     
     /**
-     * Class Constructor
+     * Class constructor.
+     * Initializes the TTable component.
      */
     public function __construct()
     {
@@ -28,7 +29,11 @@ class TTable extends TElement
     }
 
     /**
-     * Create a table
+     * Creates a table instance with given properties.
+     *
+     * @param array $properties Associative array of property names and values.
+     *
+     * @return TTable The configured table instance.
      */
     public static function create($properties)
     {
@@ -41,7 +46,11 @@ class TTable extends TElement
     }
     
     /**
-     * Add section
+     * Add a section (thead, tbody, or tfoot) to the table.
+     *
+     * @param string $type The type of section ('thead', 'tbody', or 'tfoot').
+     *
+     * @return TElement The created section element.
      */
     public function addSection($type)
     {
@@ -63,8 +72,9 @@ class TTable extends TElement
     }
     
     /**
-     * Add a new row (TTableRow object) to the table
-     * @return TTableRow
+     * Add a new row to the table.
+     *
+     * @return TTableRow The created table row instance.
      */
     public function addRow()
     {
@@ -84,9 +94,11 @@ class TTable extends TElement
     }
     
     /**
-     * Add a new row (TTableRow object) with many cells
-     * @param $cells Each argument is a row cell
-     * @return TTableRow
+     * Add a new row with multiple cells.
+     *
+     * @param mixed ...$cells Each argument represents a row cell. Arrays will be treated as multi-cell entries.
+     *
+     * @return TTableRow The created table row instance.
      */
     public function addRowSet()
     {
@@ -113,11 +125,14 @@ class TTable extends TElement
     }
     
     /**
-     * Create a table from data array
-     * @param $array_data Array with raw data
-     * @param $table_properties Array of CSS properties for table
-     * @param $header_properties Array of CSS properties for header
-     * @param $body_properties Array of CSS properties for body
+     * Create a table from a data array.
+     *
+     * @param array      $array_data       Array containing the raw data to be displayed in the table.
+     * @param array|null $table_properties (Optional) Associative array of CSS properties for the table.
+     * @param array|null $header_properties (Optional) Associative array of CSS properties for the table header.
+     * @param array|null $body_properties (Optional) Associative array of CSS properties for the table body.
+     *
+     * @return TTable The generated table instance.
      */
     public static function fromData($array_data, $table_properties = null, $header_properties = null, $body_properties = null)
     {

@@ -4,7 +4,7 @@ namespace Adianti\Widget\Container;
 use Adianti\Widget\Base\TElement;
 
 /**
- * TableCell: Represents a cell inside a table
+ * TableCell: represents a table cell element.
  *
  * @version    7.5
  * @package    widget
@@ -16,8 +16,10 @@ use Adianti\Widget\Base\TElement;
 class TTableCell extends TElement
 {
     /**
-     * Class Constructor
-     * @param $value  TableCell content
+     * Class constructor.
+     *
+     * @param mixed  $value The content of the table cell.
+     * @param string $tag   The HTML tag to be used for the cell (default: 'td').
      */
     public function __construct($value, $tag = 'td')
     {

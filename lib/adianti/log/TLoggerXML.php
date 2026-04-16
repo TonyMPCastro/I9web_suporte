@@ -6,6 +6,9 @@ use Adianti\Log\TLogger;
 /**
  * Register LOG in HTML files
  *
+ * Logger that registers log messages in an XML file.
+ * Messages are stored in structured XML format.
+ *
  * @version    7.5
  * @package    log
  * @author     Pablo Dall'Oglio
@@ -15,8 +18,10 @@ use Adianti\Log\TLogger;
 class TLoggerXML extends TLogger
 {
     /**
-     * Writes an message in the LOG file
-     * @param  $message Message to be written
+     * Writes a log message to the XML log file.
+     * Messages are structured as XML nodes.
+     *
+     * @param string $message The message to be stored in XML format.
      */
     public function write($message)
     {

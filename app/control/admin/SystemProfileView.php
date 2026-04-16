@@ -15,6 +15,8 @@ class SystemProfileView extends TPage
     {
         parent::__construct();
         
+        parent::setTargetContainer('adianti_right_panel');
+        
         $html = new THtmlRenderer('app/resources/system_profile.html');
         $replaces = array();
         

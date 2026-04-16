@@ -7,6 +7,10 @@ use Adianti\Widget\Form\TField;
 /**
  * Hidden field
  *
+ * This class represents a hidden input field, extending the TField class.
+ * It is used to store data that should not be visible in the user interface
+ * but can be submitted with a form.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form
@@ -20,7 +24,10 @@ class THidden extends TField implements AdiantiWidgetInterface
     
     /**
      * Class Constructor
-     * @param  $name name of the field
+     *
+     * Initializes a hidden field with a unique identifier.
+     *
+     * @param string $name The name of the field
      */
     public function __construct($name)
     {
@@ -29,7 +36,11 @@ class THidden extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the post data
+     * Retrieve the submitted value from the request
+     *
+     * This method fetches the posted data for the hidden field from the $_POST superglobal.
+     *
+     * @return string The value submitted in the request, or an empty string if not set
      */
     public function getPostData()
     {
@@ -46,7 +57,12 @@ class THidden extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Show the widget at the screen
+     * Render the hidden field
+     *
+     * This method sets up the attributes for the HTML input element and displays it on the page.
+     * The field is rendered as a hidden input with a unique identifier and predefined attributes.
+     *
+     * @return void
      */
     public function show()
     {

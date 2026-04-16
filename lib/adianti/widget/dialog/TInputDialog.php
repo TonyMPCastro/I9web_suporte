@@ -14,7 +14,8 @@ use Adianti\Wrapper\BootstrapFormBuilder;
 use Exception;
 
 /**
- * Input Dialog
+ * Class representing an input dialog.
+ * This class creates a modal dialog with a form and a configurable action button.
  *
  * @version    7.5
  * @package    widget
@@ -29,13 +30,15 @@ class TInputDialog
     private $action;
     
     /**
-     * Class Constructor
-     * @param $title_msg  Dialog Title
-     * @param $form    Dialog form body
-     * @param $action  Action to be processed when closing the dialog
-     * @param $caption Button caption
+     * TInputDialog constructor.
+     * Initializes an input dialog with a form, action, and button caption.
+     *
+     * @param string                 $title_msg Dialog title.
+     * @param AdiantiFormInterface   $form      The form to be displayed inside the dialog.
+     * @param TAction|null           $action    The action to be executed when the dialog is closed (optional).
+     * @param string                 $caption   The caption for the button (optional).
      */
-    public function __construct($title_msg, AdiantiFormInterface $form, TAction $action = NULL, $caption = '')
+    public function __construct($title_msg, AdiantiFormInterface $form, ?TAction $action = null, $caption = '')
     {
         $this->id = 'tinputdialog_'.mt_rand(1000000000, 1999999999);
         

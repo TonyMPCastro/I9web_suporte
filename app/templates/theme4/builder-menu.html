@@ -1,8 +1,8 @@
-  <li class="dropdown">
-     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+<li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
         <i class="fa fa-cog fa-fw fa-lg"></i>
-     </a>
-     <ul class="dropdown-menu">
+    </a>
+    <ul class="dropdown-menu">
         <li class="header">Mad Builder</li>
         <li class='body'>
             <ul class='menu' style="list-style:none">
@@ -53,6 +53,15 @@
                     </a>
                 </li>
                 <li>
+                    <a class='waves-effect waves-block' href='index.php?class=SystemFrameworkUpdate' generator="adianti" style="cursor:pointer">
+                        <div class="menu-info"> 
+                            <span style="font-size: 13px;"> 
+                                Atualizar framework
+                            </span>
+                        </div>
+                    </a>
+                </li>
+                <li>
                     <a class='waves-effect waves-block' href='index.php?class=BuilderConfigList' generator="adianti" style="cursor:pointer">
                         <div class="menu-info"> 
                             <span style="font-size: 13px;"> 
@@ -61,6 +70,9 @@
                         </div>
                     </a>
                 </li>
+
+                <li class="header">Dev Tools</li>
+
                 <li>
                     <a class='waves-effect waves-block' href='#' onclick="BuilderEditorCss.initEditorCss()" style="cursor:pointer">
                         <div class="menu-info"> 
@@ -70,16 +82,27 @@
                         </div>
                     </a>
                 </li>
+
                 <li>
-                    <a class='waves-effect waves-block' href='index.php?class=SystemFrameworkUpdate' generator="adianti" style="cursor:pointer">
+                    <a class='waves-effect waves-block' href='#' onclick="Builder.enableDebugConsole()" style="cursor:pointer">
                         <div class="menu-info"> 
                             <span style="font-size: 13px;"> 
-                                Atualizar framework
+                                Habilitar Debug Console
+                            </span>
+                        </div>
+                    </a>
+                </li>
+
+                <li>
+                    <a class='waves-effect waves-block' href='db-mad-manager.php' target="_blank" style="cursor:pointer">
+                        <div class="menu-info"> 
+                            <span style="font-size: 13px;"> 
+                                Database Manager
                             </span>
                         </div>
                     </a>
                 </li>
             </ul>
         </li>
-     </ul>
-  </li>
+    </ul>
+    </li>

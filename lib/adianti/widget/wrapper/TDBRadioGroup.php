@@ -7,7 +7,9 @@ use Adianti\Database\TCriteria;
 use Exception;
 
 /**
- * Database Radio Widget
+ * TDBRadioGroup is a wrapper for a radio button group that retrieves its options from a database.
+ *
+ * This widget extends TRadioGroup and automatically loads its items from a specified database table.
  *
  * @version    7.5
  * @package    widget
@@ -23,16 +25,21 @@ class TDBRadioGroup extends TRadioGroup
     use AdiantiDatabaseWidgetTrait;
     
     /**
-     * Class Constructor
-     * @param  $name     widget's name
-     * @param  $database database name
-     * @param  $model    model class name
-     * @param  $key      table field to be used as key in the combo
-     * @param  $value    table field to be listed in the combo
-     * @param  $ordercolumn column to order the fields (optional)
-     * @param  $criteria criteria (TCriteria object) to filter the model (optional)
+     * Constructor method
+     *
+     * Initializes a radio button group with values fetched from a database.
+     *
+     * @param string      $name        The name of the radio group field
+     * @param string      $database    The database connection name
+     * @param string      $model       The model class name
+     * @param string      $key         The table field to be used as the key
+     * @param string      $value       The table field to be listed as value
+     * @param string|null $ordercolumn The column name used for ordering the results (optional)
+     * @param TCriteria|null $criteria A filtering criteria for selecting the data (optional)
+     * 
+     * @throws Exception If an error occurs while retrieving data
      */
-    public function __construct($name, $database, $model, $key, $value, $ordercolumn = NULL, TCriteria $criteria = NULL)
+    public function __construct($name, $database, $model, $key, $value, $ordercolumn = NULL, ?TCriteria $criteria = NULL)
     {
         // executes the parent class constructor
         parent::__construct($name);
@@ -42,16 +49,21 @@ class TDBRadioGroup extends TRadioGroup
     }
 
     /**
-     * Reload radio from model data
-     * @param  $formname    form name
-     * @param  $field       field name
-     * @param  $database    database name
-     * @param  $model       model class name
-     * @param  $key         table field to be used as key in the radio
-     * @param  $value       table field to be listed in the radio
-     * @param  $ordercolumn column to order the fields (optional)
-     * @param  $criteria    criteria (TCriteria object) to filter the model (optional)
-     * @param  $options     array of options [layout, breakItems, useButton, value, changeAction, changeFunction]
+     * Reloads the radio button group with new data from the database.
+     *
+     * This method updates the radio button options dynamically based on the database model data.
+     *
+     * @param string      $formname    The name of the form containing the radio group
+     * @param string      $field       The name of the radio group field
+     * @param string      $database    The database connection name
+     * @param string      $model       The model class name
+     * @param string      $key         The table field to be used as the key
+     * @param string      $value       The table field to be listed as value
+     * @param string|null $ordercolumn The column used to order the fields (optional)
+     * @param TCriteria|null $criteria A filtering criteria for selecting the data (optional)
+     * @param array       $options     Additional options such as layout, breakItems, useButton, value, changeAction, changeFunction
+     *
+     * @throws Exception If an error occurs while retrieving data
      */
     public static function reloadFromModel($formname, $field, $database, $model, $key, $value, $ordercolumn = NULL, $criteria = NULL, $options = [])
     {

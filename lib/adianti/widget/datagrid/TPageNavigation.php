@@ -10,7 +10,10 @@ use Adianti\Widget\Container\TTable;
 use Exception;
 
 /**
- * Page Navigation provides navigation for a datagrid
+ * Class TPageNavigation
+ *
+ * Provides navigation controls for a data grid.
+ * This class allows handling pagination, record counts, ordering, and navigation actions.
  *
  * @version    7.5
  * @package    widget
@@ -33,7 +36,7 @@ class TPageNavigation
     private $resume;
     
     /**
-     * Constructor method
+     * Initializes the page navigation with default settings.
      */
     public function __construct()
     {
@@ -42,7 +45,7 @@ class TPageNavigation
     }
     
     /**
-     * Hide
+     * Hides the pagination component.
      */
     public function hide()
     {
@@ -50,7 +53,7 @@ class TPageNavigation
     }
     
     /**
-     * Enable counters
+     * Enables the record counter display.
      */
     public function enableCounters()
     {
@@ -58,7 +61,9 @@ class TPageNavigation
     }
     
     /**
-     * Get resume string
+     * Retrieves the pagination summary string.
+     *
+     * @return string The formatted string showing the range of records being displayed.
      */
     private function getResume()
     {
@@ -76,8 +81,9 @@ class TPageNavigation
     }
     
     /**
-     * Set the Amount of displayed records
-     * @param $limit An integer
+     * Sets the maximum number of records per page.
+     *
+     * @param int $limit The number of records per page.
      */
     public function setLimit($limit)
     {
@@ -85,7 +91,9 @@ class TPageNavigation
     }
     
     /**
-     * Returns the limit of records
+     * Retrieves the maximum number of records per page.
+     *
+     * @return int The number of records per page.
      */
     public function getLimit()
     {
@@ -93,8 +101,9 @@ class TPageNavigation
     }
     
     /**
-     * Define the PageNavigation's width
-     * @param $width PageNavigation's width
+     * Sets the width of the pagination component.
+     *
+     * @param int|string $width The width of the pagination element.
      */
     public function setWidth($width)
     {
@@ -102,8 +111,9 @@ class TPageNavigation
     }
     
     /**
-     * Define the total count of records
-     * @param $count An integer (the total count of records)
+     * Sets the total count of records.
+     *
+     * @param int $count The total number of records.
      */
     public function setCount($count)
     {
@@ -111,7 +121,9 @@ class TPageNavigation
     }
     
     /**
-     * Return the total count of records
+     * Retrieves the total count of records.
+     *
+     * @return int The total number of records.
      */
     public function getCount()
     {
@@ -119,8 +131,9 @@ class TPageNavigation
     }
     
     /**
-     * Define the current page
-     * @param $page An integer (the current page)
+     * Sets the current page number.
+     *
+     * @param int $page The current page index.
      */
     public function setPage($page)
     {
@@ -128,7 +141,9 @@ class TPageNavigation
     }
     
     /**
-     * Returns the current page
+     * Retrieves the current page number.
+     *
+     * @return int The current page index.
      */
     public function getPage()
     {
@@ -136,8 +151,9 @@ class TPageNavigation
     }
     
     /**
-     * Define the first page
-     * @param $page An integer (the first page)
+     * Sets the first page number.
+     *
+     * @param int $first_page The index of the first page.
      */
     public function setFirstPage($first_page)
     {
@@ -145,8 +161,9 @@ class TPageNavigation
     }
     
     /**
-     * Define the ordering
-     * @param $order A string containint the column name
+     * Sets the sorting order.
+     *
+     * @param string $order The column name used for sorting.
      */
     public function setOrder($order)
     {
@@ -154,8 +171,9 @@ class TPageNavigation
     }
     
     /**
-     * Define the ordering
-     * @param $direction asc, desc
+     * Sets the sorting direction.
+     *
+     * @param string $direction The sorting direction ('asc' or 'desc').
      */
     public function setDirection($direction)
     {
@@ -163,8 +181,13 @@ class TPageNavigation
     }
     
     /**
-     * Set the page navigation properties
-     * @param $properties array of properties
+     * Sets the pagination properties.
+     *
+     * @param array $properties An associative array containing pagination settings:
+     *                          - 'order' (string): The sorting column.
+     *                          - 'page' (int): The current page.
+     *                          - 'direction' (string): Sorting direction ('asc' or 'desc').
+     *                          - 'first_page' (int): The first page number.
      */
     public function setProperties($properties)
     {
@@ -180,17 +203,29 @@ class TPageNavigation
     }
     
     /**
-     * Define the PageNavigation action
-     * @param $action TAction object (fired when the user navigates)
+     * Sets the navigation action.
+     *
+     * @param TAction $action The action triggered when the user navigates.
      */
     public function setAction($action)
     {
         $this->action = $action;
     }
+
+    /**
+     * Retrieves the navigation action.
+     *
+     * @return TAction The action triggered when the user navigates.
+     */
+    public function getAction()
+    {
+        return $this->action;
+    }
     
     /**
-     * Keep the last user pagination in session
-     * @param $listName the name of the page list to be used as a session key
+     * Retains the last user pagination settings in the session.
+     *
+     * @param string $listName The session key used to store pagination data.
      */
     public function keepLastPagination($listName = '')
     {
@@ -248,7 +283,9 @@ class TPageNavigation
     }
 
     /**
-     * Show the PageNavigation widget
+     * Renders the page navigation component.
+     *
+     * @throws Exception If the navigation action is not set.
      */
     public function show()
     {

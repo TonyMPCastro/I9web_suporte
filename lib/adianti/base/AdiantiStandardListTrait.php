@@ -13,6 +13,12 @@ use Exception;
 /**
  * Standard List Trait
  *
+ * Provides standard list functionalities, including inline editing, 
+ * total row display, and batch deletion for Adianti Framework.
+ *
+ * This trait must be used within a class that has attributes such as 
+ * `$database`, `$activeRecord`, and `$formgrid` defined.
+ *
  * @version    7.5
  * @package    base
  * @author     Pablo Dall'Oglio
@@ -27,7 +33,11 @@ trait AdiantiStandardListTrait
     use AdiantiStandardListExportTrait;
     
     /**
-     * Enable total row
+     * Enables the display of a total row at the bottom of the list.
+     *
+     * The total row will display the count of records.
+     *
+     * @return void
      */
     public function enableTotalRow()
     {
@@ -49,11 +59,16 @@ trait AdiantiStandardListTrait
     }
     
     /**
-     * Inline record editing
-     * @param $param Array containing:
-     *              key: object ID value
-     *              field name: object attribute to be updated
-     *              value: new attribute content 
+     * Handles inline record editing.
+     *
+     * Updates a specific field of a record directly from the list interface.
+     *
+     * @param array $param Associative array containing:
+     *     - `key` (mixed) The ID of the record.
+     *     - `field` (string) The attribute name to be updated.
+     *     - `value` (mixed) The new value for the attribute.
+     *
+     * @return void
      */
     public function onInlineEdit($param)
     {
@@ -95,7 +110,14 @@ trait AdiantiStandardListTrait
     }
     
     /**
-     * Ask before delete record collection
+     * Displays a confirmation dialog before deleting multiple records.
+     *
+     * Retrieves selected records from the form grid and prompts the user 
+     * for confirmation before proceeding with deletion.
+     *
+     * @param array $param Request parameters.
+     *
+     * @return void
      */
     public function onDeleteCollection( $param )
     {
@@ -131,8 +153,15 @@ trait AdiantiStandardListTrait
     }
     
     /**
-     * method deleteCollection()
-     * Delete many records
+     * Deletes multiple records from the database.
+     *
+     * This method is executed after user confirmation and removes all 
+     * selected records in a batch operation.
+     *
+     * @param array $param Associative array containing:
+     *     - `selected` (string) JSON-encoded array of record IDs to be deleted.
+     *
+     * @return void
      */
     public function deleteCollection($param)
     {

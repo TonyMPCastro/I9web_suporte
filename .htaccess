@@ -136,3 +136,6 @@ RewriteRule ^contacts/([A-Za-z0-9]*)$ rest.php?class=ContactRestService&method=h
 RewriteRule ^contacts/([A-Za-z-_0-9]*)/([A-Za-z-_0-9]*)$ rest.php?class=ContactRestService&method=$2&id=$1&%{QUERY_STRING} [NC]
 RewriteRule ^contacts$ rest.php?class=ContactRestService&method=handle&%{QUERY_STRING} [NC]
 
+
+# Redirecionar todas as outras solicitações para rest.php
+RewriteRule ^api/(.*)$ MadRestServer.php [L,QSA]

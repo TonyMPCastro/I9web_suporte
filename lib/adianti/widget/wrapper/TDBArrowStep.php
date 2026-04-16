@@ -6,7 +6,9 @@ use Adianti\Widget\Form\TArrowStep;
 use Adianti\Widget\Wrapper\AdiantiDatabaseWidgetTrait;
 
 /**
- * Database Arrow Step
+ * Database Arrow Step Widget
+ *
+ * This widget represents an arrow step component that fetches data from a database.
  *
  * @version    7.5
  * @package    widget
@@ -33,15 +35,18 @@ class TDBArrowStep extends TArrowStep
     
     /**
      * Class Constructor
-     * @param  $name     widget's name
-     * @param  $database database name
-     * @param  $model    model class name
-     * @param  $key      table field to be used as key in the combo
-     * @param  $value    table field to be listed in the combo
-     * @param  $ordercolumn column to order the fields (optional)
-     * @param  $criteria criteria (TCriteria object) to filter the model (optional)
+     *
+     * Initializes the arrow step widget and configures the database connection.
+     *
+     * @param string     $name        Widget name
+     * @param string     $database    Database name
+     * @param string     $model       Model class name
+     * @param string     $key         Table field to be used as key in the widget
+     * @param string     $value       Table field to be displayed in the widget
+     * @param string|null $ordercolumn Column to order the fields (optional)
+     * @param TCriteria|null $criteria Criteria to filter the model (optional)
      */
-    public function __construct($name, $database, $model, $key, $value, $ordercolumn = NULL, TCriteria $criteria = NULL)
+    public function __construct($name, $database, $model, $key, $value, $ordercolumn = NULL, ?TCriteria $criteria = NULL)
     {
         // executes the parent class constructor
         parent::__construct($name);
@@ -54,11 +59,21 @@ class TDBArrowStep extends TArrowStep
         $this->criteria = $criteria;
     }
 
+    /**
+     * Sets the color column for the arrow step widget.
+     *
+     * @param string $colorcolumn Column name containing color values
+     */
     public function setColorColumn($colorcolumn)
     {
         $this->colorcolumn = $colorcolumn;
     }
 
+    /**
+     * Displays the arrow step widget.
+     * 
+     * Fetches data from the database and applies the color settings if provided.
+     */
     public function show()
     {
         parent::setItems( self::getItemsFromModel($this->database, $this->model, $this->key, $this->value, $this->ordercolumn, $this->criteria) );

@@ -4,9 +4,14 @@ namespace Adianti\Database;
 use Adianti\Core\AdiantiCoreTranslator;
 use PDO;
 use Exception;
+use Mad\Service\MadLogService;
 
 /**
  * Singleton manager for database connections
+ *
+ * This class is responsible for managing database connections using PDO.
+ * It supports multiple database types, reads configurations from INI or PHP files,
+ * and provides a caching mechanism for keeping persistent connections.
  *
  * @version    7.5
  * @package    database
@@ -18,21 +23,27 @@ class TConnection
 {
     private static $config_path;
     private static $conn_cache;
+    private static $keep_connections;
+    private static $last_connection_id;
     
     /**
-     * Class Constructor
-     * There'll be no instances of this class
+     * Private constructor to prevent instantiation.
+     *
+     * This class is a singleton and should not be instantiated directly.
+     * All database connections must be accessed through static methods.
      */
     private function __construct() {}
     
     /**
-     * Opens a database connection
-     * 
-     * @param $database Name of the database (an INI file).
-     * @return          A PDO object if the $database exist,
-     *                  otherwise, throws an exception
-     * @exception       Exception
-     *                  if the $database is not found
+     * Opens a database connection based on the given database name.
+     *
+     * This method reads the database configuration from an INI or PHP file,
+     * retrieves the connection settings, and establishes a PDO connection.
+     *
+     * @param string $database The name of the database configuration file (without extension).
+     *
+     * @return PDO The PDO object representing the database connection.
+     * @throws Exception If the database configuration file is not found.
      */
     public static function open($database)
     {
@@ -48,9 +59,12 @@ class TConnection
     }
     
     /**
-     * Change database configuration Path
-     * 
-     * @param $path Config path
+     * Sets the path for database configuration files.
+     *
+     * This method allows specifying a custom directory where database
+     * configuration files are located.
+     *
+     * @param string $path The path to the configuration directory.
      */
     public static function setConfigPath($path)
     {
@@ -58,10 +72,26 @@ class TConnection
     }
     
     /**
-     * Opens a database connection from array with db info
-     * 
-     * @param $db Array with database info
-     * @return          A PDO object
+     * Opens a database connection using an array of database parameters.
+     *
+     * This method supports different database drivers (e.g., MySQL, PostgreSQL, SQLite),
+     * applies specific connection settings, and enables persistent connections if configured.
+     *
+     * @param array $db An associative array containing database connection details:
+     *                  - user: Database username.
+     *                  - pass: Database password.
+     *                  - name: Database name.
+     *                  - host: Database host.
+     *                  - type: Database type (e.g., mysql, pgsql, sqlite, etc.).
+     *                  - port: Database port (optional).
+     *                  - char: Character set (optional).
+     *                  - flow, fupp, fnat, fkey: Additional database settings (optional).
+     *                  - zone: Time zone setting (optional).
+     *                  - keep: Whether to keep the connection persistent (optional).
+     *                  - opts: Additional connection options (optional).
+     *
+     * @return PDO The PDO object representing the database connection.
+     * @throws Exception If the database driver is not supported.
      */
     public static function openArray($db)
     {
@@ -78,9 +108,24 @@ class TConnection
         $fnat  = isset($db['fnat']) ? $db['fnat'] : NULL;
         $fkey  = isset($db['fkey']) ? $db['fkey'] : NULL;
         $zone  = isset($db['zone']) ? $db['zone'] : NULL;
+        $keep  = isset($db['keep']) ? $db['keep'] : NULL;
         $opts  = isset($db['opts']) ? ';' . $db['opts'] : '';
         $type  = strtolower($type);
         
+        if(!empty($db['fake']))
+        {
+            unset($db['fake']);
+        }
+        
+        if($keep && !empty(self::$keep_connections[md5(serialize($db))]))
+        {
+            return self::$keep_connections[md5(serialize($db))];
+        }
+        else{
+            self::$last_connection_id = uniqid();
+        }
+        MadLogService::logConnection($db, self::$last_connection_id);
+
         // each database driver has a different instantiation process
         switch ($type)
         {
@@ -238,13 +283,26 @@ class TConnection
             $conn->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
         }
         
+        if($keep)
+        {
+            self::$keep_connections[md5(serialize($db))] = $conn;
+        }
+
+        MadLogService::logExecutionTimeConnection($db, self::$last_connection_id, spl_object_hash($conn));
+
         // return the PDO object
         return $conn;
     }
     
     /**
-     * Returns the database information as an array
-     * @param $database INI File
+     * Retrieves the database connection settings from an INI or PHP file.
+     *
+     * This method checks if the configuration for a given database is already cached.
+     * If not, it reads the database settings from a file and returns them as an array.
+     *
+     * @param string $database The name of the database configuration file (without extension).
+     *
+     * @return array|false An associative array with database settings or FALSE if the file is not found.
      */
     public static function getDatabaseInfo($database)
     {
@@ -278,12 +336,21 @@ class TConnection
     }
     
     /**
-     * Set database info
-     * @param $database Database name
-     * @param $info Database connection information
+     * Stores database connection settings in the internal cache.
+     *
+     * This method allows dynamically setting database connection parameters
+     * without modifying configuration files.
+     *
+     * @param string $database The name of the database.
+     * @param array $info An associative array containing database connection details.
      */
     public static function setDatabaseInfo($database, $info)
     {
         self::$conn_cache[ $database ] = $info;
+    }
+
+    public static function getLastConnectionId()
+    {
+        return self::$last_connection_id;
     }
 }

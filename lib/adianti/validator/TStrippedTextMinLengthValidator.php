@@ -6,7 +6,9 @@ use Adianti\Core\AdiantiCoreTranslator;
 use Exception;
 
 /**
- * Minimum stripped text length validation
+ * Validates the minimum length of a stripped text.
+ *
+ * Ensures that the text, after stripping HTML tags and unnecessary spaces, meets the required minimum length.
  *
  * @version    7.5
  * @package    validator
@@ -17,10 +19,15 @@ use Exception;
 class TStrippedTextMinLengthValidator extends TFieldValidator
 {
     /**
-     * Validate a given value
-     * @param $label Identifies the value to be validated in case of exception
-     * @param $value Value to be validated
-     * @param $parameters aditional parameters for validation (min value)
+     * Validates whether a stripped text meets the minimum length requirement.
+     *
+     * Strips HTML tags and non-breaking spaces before checking the text length.
+     *
+     * @param string $label Identifies the value to be validated in case of an exception.
+     * @param string $value Text value to be validated.
+     * @param array $parameters Array containing the minimum required length as the first element.
+     *
+     * @throws Exception If the text length is less than the required minimum.
      */
     public function validate($label, $value, $parameters = NULL)
     {

@@ -4,7 +4,11 @@ namespace Adianti\Widget\Util;
 use Adianti\Widget\Base\TElement;
 
 /**
- * BreadCrumb
+ * Represents a breadcrumb navigation component.
+ *
+ * This class allows the creation of a breadcrumb trail, which helps users 
+ * navigate through hierarchical pages. It supports adding home links and 
+ * multiple breadcrumb items.
  *
  * @version    7.5
  * @package    widget
@@ -21,8 +25,10 @@ class TBreadCrumb extends TElement
     protected $items;
     
     /**
-     * Handle paths from a XML file
-     * @param $xml_file path for the file
+     * Initializes a new instance of the TBreadCrumb class.
+     *
+     * The breadcrumb is displayed within a `<div>` container with an ordered list (`<ol>`)
+     * styled as a breadcrumb navigation bar.
      */
     public function __construct()
     {
@@ -35,7 +41,12 @@ class TBreadCrumb extends TElement
     }
     
     /**
-     * Static constructor
+     * Creates and returns a new breadcrumb instance.
+     *
+     * @param array $options An array of breadcrumb labels.
+     * @param bool  $home    Whether to include a home icon as the first item (default: true).
+     *
+     * @return TBreadCrumb The created breadcrumb instance.
      */
     public static function create( $options, $home = true)
     {
@@ -52,7 +63,10 @@ class TBreadCrumb extends TElement
     }
     
     /**
-     * Add the home icon
+     * Adds a home link as the first breadcrumb item.
+     *
+     * The home link redirects to the main controller if defined, otherwise, it 
+     * redirects to the default engine page.
      */
     public function addHome()
     {
@@ -77,9 +91,10 @@ class TBreadCrumb extends TElement
     }
     
     /**
-     * Add an item
-     * @param $path Path to be shown
-     * @param $last If the item is the last one
+     * Adds a new item to the breadcrumb.
+     *
+     * @param string  $path The text label for the breadcrumb item.
+     * @param bool $last Whether this item is the last one in the breadcrumb trail.
      */
     public function addItem($path, $last = FALSE)
     {
@@ -105,7 +120,9 @@ class TBreadCrumb extends TElement
     }
     
     /**
-     * Mark one breadcrumb item as selected
+     * Marks a specific breadcrumb item as selected.
+     *
+     * @param string $path The breadcrumb label to mark as selected.
      */
     public function select($path)
     {
@@ -123,8 +140,9 @@ class TBreadCrumb extends TElement
     }
     
     /**
-     * Define the home controller
-     * @param $class Home controller class
+     * Defines the home controller for the breadcrumb.
+     *
+     * @param string $className The name of the controller to use for the home link.
      */
     public static function setHomeController($className)
     {

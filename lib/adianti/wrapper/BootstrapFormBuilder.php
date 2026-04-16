@@ -26,12 +26,17 @@ use Adianti\Widget\Wrapper\TDBSeekButton;
 use Adianti\Registry\TSession;
 use Adianti\Widget\Form\TArrowStep;
 use Adianti\Widget\Form\TCheckList;
+use BComboNoResultsService;
+use Mad\Widget\Form\BDateRange;
 
 use stdClass;
 use Exception;
 
 /**
  * Bootstrap form builder for Adianti Framework
+ *
+ * A Bootstrap form builder for the Adianti Framework.
+ * Provides a structured way to create and manage forms with Bootstrap styling.
  *
  * @version    7.5
  * @package    wrapper
@@ -65,7 +70,10 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     
     /**
      * Constructor method
-     * @param $name form name
+     *
+     * Initializes the form builder with a given name.
+     *
+     * @param string $name The name of the form (default: 'my_form')
      */
     public function __construct($name = 'my_form')
     {
@@ -99,7 +107,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Turn on/off client validation
+     * Enable or disable client-side validation
+     *
+     * @param bool $bool Whether to enable client-side validation
      */
     public function setClientValidation($bool)
     {
@@ -107,7 +117,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Enable CSRF Protection
+     * Enable CSRF protection for the form
+     *
+     * Generates a CSRF token and stores it in the session for validation.
      */
     public function enableCSRFProtection()
     {
@@ -118,7 +130,13 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Add expand button
+     * Add an expand button to toggle form visibility
+     *
+     * @param string|null $label        The button label (default: 'Expand')
+     * @param string|null $icon         The button icon (default: 'fa:search')
+     * @param bool        $start_hidden Whether the form starts hidden (default: true)
+     *
+     * @return TButton The created button
      */
     public function addExpandButton( $label = null, $icon = null, $start_hidden = true)
     {
@@ -140,7 +158,7 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Hide
+     * Hide the form
      */
     public function hide()
     {
@@ -148,7 +166,7 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Generate automatic aria-labels
+     * Enable automatic generation of ARIA labels
      */
     public function generateAria()
     {
@@ -156,7 +174,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Returns form id
+     * Get the form ID
+     *
+     * @return string The unique form ID
      */
     public function getId()
     {
@@ -164,7 +184,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Set field sizes
+     * Set field size configuration
+     *
+     * @param mixed $size The size configuration for fields
      */
     public function setFieldSizes($size)
     {
@@ -172,8 +194,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Add a form title
-     * @param $title Form title
+     * Set the form title
+     *
+     * @param string $title The form title
      */
     public function setFormTitle($title)
     {
@@ -181,8 +204,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Set padding
-     * @param $padding
+     * Set the padding for form elements
+     *
+     * @param int $padding The padding size in pixels
      */
     public function setPadding($padding)
     {
@@ -190,8 +214,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Define the current page to be shown
-     * @param $i An integer representing the page number (start at 0)
+     * Set the current page of a multi-page form
+     *
+     * @param int $i The page index (starting from 0)
      */
     public function setCurrentPage($i)
     {
@@ -199,7 +224,12 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Redirect calls to decorated object
+     * Redirect method calls to the decorated object
+     *
+     * @param string $method     The method name
+     * @param array  $parameters The method parameters
+     *
+     * @return mixed The result of the called method
      */
     public function __call($method, $parameters)
     {
@@ -207,7 +237,10 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Redirect assigns to decorated object
+     * Redirect property assignments to the decorated object
+     *
+     * @param string $property The property name
+     * @param mixed  $value    The value to assign
      */
     public function __set($property, $value)
     {
@@ -215,9 +248,10 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Define a style property
-     * @param $name  Property Name
-     * @param $value Property Value
+     * Set a property for the form
+     *
+     * @param string $name  The property name
+     * @param mixed  $value The property value
      */
     public function setProperty($name, $value)
     {
@@ -225,9 +259,10 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Define a header style property
-     * @param $name  Property Name
-     * @param $value Property Value
+     * Set a property for the form header
+     *
+     * @param string $name  The property name
+     * @param mixed  $value The property value
      */
     public function setHeaderProperty($name, $value)
     {
@@ -235,8 +270,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Set form name
-     * @param $name Form name
+     * Set the form name
+     *
+     * @param string $name The form name
      */
     public function setName($name)
     {
@@ -244,7 +280,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Get form name
+     * Get the form name
+     *
+     * @return string The form name
      */
     public function getName()
     {
@@ -252,8 +290,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Add form field
-     * @param $field Form field
+     * Add a field to the form
+     *
+     * @param AdiantiWidgetInterface $field The field to add
      */
     public function addField(AdiantiWidgetInterface $field)
     {
@@ -261,8 +300,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Del form field
-     * @param $field Form field
+     * Remove a field from the form
+     *
+     * @param AdiantiWidgetInterface $field The field to remove
      */
     public function delField(AdiantiWidgetInterface $field)
     {
@@ -270,8 +310,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Set form fields
-     * @param $fields Array of Form fields
+     * Set multiple fields in the form
+     *
+     * @param array $fields The array of fields to set
      */
     public function setFields($fields)
     {
@@ -279,8 +320,11 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Return form field
-     * @param $name Field name
+     * Get a field by name
+     *
+     * @param string $name The field name
+     *
+     * @return TField|null The field instance or null if not found
      */
     public function getField($name)
     {
@@ -288,7 +332,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Return form fields
+     * Get all fields in the form
+     *
+     * @return array The array of form fields
      */
     public function getFields()
     {
@@ -296,7 +342,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Clear form
+     * Clear the form fields
+     *
+     * @param bool $keepDefaults Whether to keep default values (default: false)
      */
     public function clear( $keepDefaults = FALSE )
     {
@@ -304,8 +352,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Set form data
-     * @param $object Data object
+     * Set data in the form
+     *
+     * @param object $object The data object
      */
     public function setData($object)
     {
@@ -313,8 +362,11 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Get form data
-     * @param $class Object type of return data
+     * Get form data as an object
+     *
+     * @param string $class The class name of the return object (default: 'StdClass')
+     *
+     * @return object The form data
      */
     public function getData($class = 'StdClass')
     {
@@ -322,7 +374,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Return form actions
+     * Get the form actions
+     *
+     * @return array The array of action buttons
      */
     public function getActions()
     {
@@ -330,7 +384,11 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Validate form data
+     * Validate the form data
+     *
+     * Performs CSRF validation if enabled.
+     *
+     * @throws Exception If CSRF validation fails
      */
     public function validate()
     {
@@ -346,8 +404,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Append a notebook page
-     * @param $title Tab title
+     * Append a new tab/page to the form
+     *
+     * @param string $title The title of the tab
      */
     public function appendPage($title)
     {
@@ -356,7 +415,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Set tab click function
+     * Set a JavaScript function for handling tab clicks
+     *
+     * @param string $function The JavaScript function
      */
     public function setTabFunction($function)
     {
@@ -364,9 +425,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Define the action for the Notebook tab
-     * @param $action Action taken when the user
-     * clicks over Notebook tab (A TAction object)
+     * Define the action for a Notebook tab
+     *
+     * @param TAction $action The action object
      */
     public function setTabAction(TAction $action)
     {
@@ -374,8 +435,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Add form fields
-     * @param mixed $fields,... Form fields
+     * Add multiple fields to the form
+     *
+     * @param mixed ...$fields The fields to add
      */
     public function addFields()
     {
@@ -407,7 +469,14 @@ class BootstrapFormBuilder implements AdiantiFormInterface
                         {
                             foreach ($content->getFields() as $field)
                             {
-                                $this->decorated->addField($field);
+                                if($field instanceof BDateRange && !empty($this->decorated->getFields()[$field->getName()]) && empty($field->getNameEnd()) )
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    $this->decorated->addField($field);
+                                }
                             }
                         }
                         
@@ -422,8 +491,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Add a form content
-     * @param mixed $content,... Form content
+     * Add content to the form
+     *
+     * @param mixed ...$content The content to add
      */
     public function addContent()
     {
@@ -464,9 +534,12 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Validate argument type
-     * @param $args Array of arguments
-     * @param $method Generator method
+     * Validate the argument type for field/content addition methods
+     *
+     * @param array  $args   The arguments array
+     * @param string $method The method name
+     *
+     * @throws Exception If an argument is not an array
      */
     public function validateInlineArguments($args, $method)
     {
@@ -483,10 +556,14 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Add a form action
-     * @param $label Button label
-     * @param $action Button action
-     * @param $icon Button icon
+     * Add an action button to the form
+     *
+     * @param string  $label  The button label
+     * @param TAction $action The action to execute
+     * @param string  $icon   The button icon (default: 'fa:save')
+     * @param string|null $name Optional button name
+     *
+     * @return TButton The created button
      */
     public function addAction($label, TAction $action, $icon = 'fa:save', $name = null)
     {
@@ -504,10 +581,13 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Add a form action link
-     * @param $label Button label
-     * @param $action Button action
-     * @param $icon Button icon
+     * Add an action link button
+     *
+     * @param string  $label  The button label
+     * @param TAction $action The action to execute
+     * @param string  $icon   The button icon (default: 'fa:save')
+     *
+     * @return TActionLink The created action link
      */
     public function addActionLink($label, TAction $action, $icon = 'fa:save')
     {
@@ -519,10 +599,13 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Add a form header action
-     * @param $label Button label
-     * @param $action Button action
-     * @param $icon Button icon
+     * Add an action button to the form header
+     *
+     * @param string  $label  The button label
+     * @param TAction $action The action to execute
+     * @param string  $icon   The button icon (default: 'fa:save')
+     *
+     * @return TButton The created button
      */
     public function addHeaderAction($label, TAction $action, $icon = 'fa:save')
     {
@@ -540,8 +623,11 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Add a form header widget
-     * @param $widget Widget
+     * Add a widget to the form header
+     *
+     * @param mixed $widget The widget to add
+     *
+     * @return mixed The added widget
      */
     public function addHeaderWidget($widget)
     {
@@ -550,8 +636,11 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Add a form footer widget
-     * @param $widget Widget
+     * Add a widget to the form footer
+     *
+     * @param mixed $widget The widget to add
+     *
+     * @return mixed The added widget
      */
     public function addFooterWidget($widget)
     {
@@ -560,10 +649,13 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Add a form header action
-     * @param $label Button label
-     * @param $action Button action
-     * @param $icon Button icon
+     * Add an action link button to the form header
+     *
+     * @param string  $label  The button label
+     * @param TAction $action The action to execute
+     * @param string  $icon   The button icon (default: 'fa:save')
+     *
+     * @return TActionLink The created header action link
      */
     public function addHeaderActionLink($label, TAction $action, $icon = 'fa:save')
     {
@@ -575,10 +667,13 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Add a form button
-     * @param $label Button label
-     * @param $action JS Button action
-     * @param $icon Button icon
+     * Add a custom button to the form
+     *
+     * @param string $label  The button label
+     * @param string $action The JavaScript action to execute
+     * @param string $icon   The button icon (default: 'fa:save')
+     *
+     * @return TButton The created button
      */
     public function addButton($label, $action, $icon = 'fa:save')
     {
@@ -602,7 +697,7 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Clear actions row
+     * Remove all action buttons from the form
      */
     public function delActions()
     {
@@ -616,7 +711,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Return an array with action buttons
+     * Get an array of action buttons in the form
+     *
+     * @return array The array of action buttons
      */
     public function getActionButtons()
     {
@@ -624,7 +721,10 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
+     * Set column classes for form layout
      *
+     * @param int   $key     The column index
+     * @param array $classes The array of CSS classes
      */
     public function setColumnClasses($key, $classes)
     {
@@ -632,7 +732,7 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Render form
+     * Render the form
      */
     public function render()
     {
@@ -647,6 +747,14 @@ class BootstrapFormBuilder implements AdiantiFormInterface
             $this->addFields([$csrf_token]);
             $csrf_token->setValue(TSession::getValue('csrf_token_'.$this->name));
             $this->decorated->silentField('csrf_token');
+        }
+
+        if (BComboNoResultsService::getPropertiesJson($_REQUEST))
+        {
+            $noresultsbtnprops = new THidden('form_noresultsbtnprops');
+            $this->addFields([$noresultsbtnprops]);
+            $noresultsbtnprops->setValue(BComboNoResultsService::getPropertiesJson($_REQUEST));
+            $this->decorated->silentField('form_noresultsbtnprops');
         }
         
         $this->decorated->{'class'} = 'form-horizontal';
@@ -758,136 +866,138 @@ class BootstrapFormBuilder implements AdiantiFormInterface
         $body->add($content);
         
         $tab_counter = 0;
-        foreach ($this->tabcontent as $tab => $rows)
+        if($this->tabcontent !== null)
         {
-            $tabpanel = new TElement('div');
-            $tabpanel->{'role'}  = 'tabpanel';
-            $tabpanel->{'class'} = 'tab-pane tabpanel_'.$this->name .' '. ( ($tab_counter == $this->current_page) ? 'active' : '' );
-            $tabpanel->{'style'} = 'padding:10px; margin-top: -1px;';
-            if ($tab)
+            foreach ($this->tabcontent as $tab => $rows)
             {
-                $tabpanel->{'style'} .= 'border: 1px solid #DDDDDD';
-            }
-            $tabpanel->{'id'}    = "tab_{$this->id}_{$tab_counter}";
-            
-            $content->add($tabpanel);
-            
-            if ($rows)
-            {
-                foreach ($rows as $row)
+                $tabpanel = new TElement('div');
+                $tabpanel->{'role'}  = 'tabpanel';
+                $tabpanel->{'class'} = 'tab-pane tabpanel_'.$this->name .' '. ( ($tab_counter == $this->current_page) ? 'active' : '' );
+                $tabpanel->{'style'} = 'padding:10px; margin-top: -1px;';
+                if ($tab)
                 {
-                    $aria_label  = null;
-                    $aria_id     = null;
-                    
-                    $slots = $row->{'content'};
-                    $type  = $row->{'type'};
-                    
-                    $form_group = new TElement('div');
-                    $form_group->{'class'} = 'form-group tformrow row' . ' ' . ( isset($row->{'class'}) ? $row->{'class'} : '' );
-                    $tabpanel->add($form_group);
-                    $row_visual_widgets = 0;
-                    
-                    if (isset($row->{'style'}))
+                    $tabpanel->{'style'} .= 'border: 1px solid #DDDDDD';
+                }
+                $tabpanel->{'id'}    = "tab_{$this->id}_{$tab_counter}";
+                
+                $content->add($tabpanel);
+                
+                if ($rows)
+                {
+                    foreach ($rows as $row)
                     {
-                        $form_group->{'style'} = $row->{'style'};
-                    }
-                    
-                    $slot_counter = count($slots);
-                    $row_counter  = 0;
-                    
-                    foreach ($slots as $slot)
-                    {
-                        $label_css    = ((count($slots)>1) AND (count($slot)==1) AND $slot[0] instanceof TLabel AND empty($row->layout)) ? ' col-form-label control-label' : '';
-                        $column_class = (isset($row->layout) && !empty($row->layout[$row_counter])) ? $row->layout[$row_counter] : (isset($this->column_classes[$slot_counter][$row_counter]) ? $this->column_classes[$slot_counter][$row_counter] : null);
-                        $slot_wrapper = new TElement('div');
-                        $slot_wrapper->{'class'} = $column_class . ' fb-field-container '.$label_css;
-                        $slot_wrapper->{'style'} = 'min-height:26px';
-                        $form_group->add($slot_wrapper);
+                        $aria_label  = null;
+                        $aria_id     = null;
                         
-                        // one field per slot do not need to be wrapped
-                        if (count($slot)==1)
+                        $slots = $row->{'content'};
+                        $type  = $row->{'type'};
+                        
+                        $form_group = new TElement('div');
+                        $form_group->{'class'} = 'form-group tformrow row' . ' ' . ( isset($row->{'class'}) ? $row->{'class'} : '' );
+                        $tabpanel->add($form_group);
+                        $row_visual_widgets = 0;
+                        
+                        if (isset($row->{'style'}))
                         {
-                            foreach ($slot as $field)
-                            {
-                                $field_wrapper = self::wrapField($field, 'inherit', $this->field_sizes);
-                                
-                                $slot_wrapper->add($field_wrapper);
-                                
-                                if (!$field instanceof THidden)
-                                {
-                                    $row_visual_widgets ++;
-                                }
-                                
-                                if ($field instanceof TLabel)
-                                {
-                                    $aria_label = $field->getValue();
-                                    $aria_id    = $field->getId();
-                                }
-                                
-                                if ($this->automatic_aria && !empty($aria_label) && !$field instanceof TLabel && $field instanceof TField)
-                                {
-                                    $field->{'aria-label'} = $aria_label;
-                                    $field->{'aria-labelledby'} = $aria_id;
-                                }
-                                
-                                if ($field instanceof TField && $field->isRequired())
-                                {
-                                    $field->{'aria-required'} = 'true';
-                                }
-                            }
-                        }
-                        else // more fields must be wrapped
-                        {
-                            $field_counter = 0;
-                            foreach ($slot as $field)
-                            {
-                                $field_wrapper = self::wrapField($field, 'inline-block', $this->field_sizes);
-                                
-                                if ( ($field_counter+1 < count($slot)) and (!$field instanceof TDBSeekButton) ) // padding less last element
-                                {
-                                    $field_wrapper->{'style'} .= ';padding-right: '.$this->padding.'px;';
-                                }
-                                
-                                $slot_wrapper->add($field_wrapper);
-                                
-                                if (!$field instanceof THidden)
-                                {
-                                    $row_visual_widgets ++;
-                                }
-                                
-                                if ($field instanceof TLabel)
-                                {
-                                    $aria_label = $field->getValue();
-                                    $aria_id    = $field->getId();
-                                }
-                                
-                                if ($this->automatic_aria && !empty($aria_label) && !$field instanceof TLabel && $field instanceof TField)
-                                {
-                                    $field->{'aria-label'} = $aria_label;
-                                    $field->{'aria-labelledby'} = $aria_id;
-                                }
-                                
-                                if ($field instanceof TField && $field->isRequired())
-                                {
-                                    $field->{'aria-required'} = 'true';
-                                }
-                                
-                                $field_counter ++;
-                            }
+                            $form_group->{'style'} = $row->{'style'};
                         }
                         
-                        $row_counter ++;
-                    }
-                    
-                    if ($row_visual_widgets == 0)
-                    {
-                        $form_group->{'style'} = 'display:none';
+                        $slot_counter = count($slots);
+                        $row_counter  = 0;
+                        
+                        foreach ($slots as $slot)
+                        {
+                            $label_css    = ((count($slots)>1) AND (count($slot)==1) AND $slot[0] instanceof TLabel AND empty($row->layout)) ? ' col-form-label control-label' : '';
+                            $column_class = (isset($row->layout) && !empty($row->layout[$row_counter])) ? $row->layout[$row_counter] : (isset($this->column_classes[$slot_counter][$row_counter]) ? $this->column_classes[$slot_counter][$row_counter] : null);
+                            $slot_wrapper = new TElement('div');
+                            $slot_wrapper->{'class'} = $column_class . ' fb-field-container '.$label_css;
+                            $slot_wrapper->{'style'} = 'min-height:26px';
+                            $form_group->add($slot_wrapper);
+                            
+                            // one field per slot do not need to be wrapped
+                            if (count($slot)==1)
+                            {
+                                foreach ($slot as $field)
+                                {
+                                    $field_wrapper = self::wrapField($field, 'inherit', $this->field_sizes);
+                                    
+                                    $slot_wrapper->add($field_wrapper);
+                                    
+                                    if (!$field instanceof THidden)
+                                    {
+                                        $row_visual_widgets ++;
+                                    }
+                                    
+                                    if ($field instanceof TLabel)
+                                    {
+                                        $aria_label = $field->getValue();
+                                        $aria_id    = $field->getId();
+                                    }
+                                    
+                                    if ($this->automatic_aria && !empty($aria_label) && !$field instanceof TLabel && $field instanceof TField)
+                                    {
+                                        $field->{'aria-label'} = $aria_label;
+                                        $field->{'aria-labelledby'} = $aria_id;
+                                    }
+                                    
+                                    if ($field instanceof TField && $field->isRequired())
+                                    {
+                                        $field->{'aria-required'} = 'true';
+                                    }
+                                }
+                            }
+                            else // more fields must be wrapped
+                            {
+                                $field_counter = 0;
+                                foreach ($slot as $field)
+                                {
+                                    $field_wrapper = self::wrapField($field, 'inline-block', $this->field_sizes);
+                                    
+                                    if ( ($field_counter+1 < count($slot)) and (!$field instanceof TDBSeekButton) ) // padding less last element
+                                    {
+                                        $field_wrapper->{'style'} .= ';padding-right: '.$this->padding.'px;';
+                                    }
+                                    
+                                    $slot_wrapper->add($field_wrapper);
+                                    
+                                    if (!$field instanceof THidden)
+                                    {
+                                        $row_visual_widgets ++;
+                                    }
+                                    
+                                    if ($field instanceof TLabel)
+                                    {
+                                        $aria_label = $field->getValue();
+                                        $aria_id    = $field->getId();
+                                    }
+                                    
+                                    if ($this->automatic_aria && !empty($aria_label) && !$field instanceof TLabel && $field instanceof TField)
+                                    {
+                                        $field->{'aria-label'} = $aria_label;
+                                        $field->{'aria-labelledby'} = $aria_id;
+                                    }
+                                    
+                                    if ($field instanceof TField && $field->isRequired())
+                                    {
+                                        $field->{'aria-required'} = 'true';
+                                    }
+                                    
+                                    $field_counter ++;
+                                }
+                            }
+                            
+                            $row_counter ++;
+                        }
+                        
+                        if ($row_visual_widgets == 0)
+                        {
+                            $form_group->{'style'} = 'display:none';
+                        }
                     }
                 }
+                $tab_counter ++;
             }
-            $tab_counter ++;
         }
-        
         if ($this->actions)
         {
             $footer = new TElement('div');
@@ -911,7 +1021,7 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Show form
+     * Display the form
      */
     public function show()
     {
@@ -926,7 +1036,13 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Create a field wrapper
+     * Create a wrapper for a form field
+     *
+     * @param mixed  $field              The field object
+     * @param string $display            The display style (e.g., 'inline-block')
+     * @param mixed  $default_field_size The default field size
+     *
+     * @return TElement The wrapper element
      */
     public static function wrapField($field, $display, $default_field_size = null)
     {
@@ -1032,7 +1148,11 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
+     * Show a form field using JavaScript
      *
+     * @param string  $form  The form name
+     * @param string  $field The field name
+     * @param int     $speed The animation speed (default: 0)
      */
     public static function showField($form, $field, $speed = 0)
     {
@@ -1040,7 +1160,11 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
+     * Hide a form field using JavaScript
      *
+     * @param string  $form  The form name
+     * @param string  $field The field name
+     * @param int     $speed The animation speed (default: 0)
      */
     public static function hideField($form, $field, $speed = 0)
     {
@@ -1048,7 +1172,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Converts the object into a string
+     * Convert the object into a string
+     *
+     * @return string The form content as a string
      */
     public function __toString()
     {
@@ -1056,7 +1182,9 @@ class BootstrapFormBuilder implements AdiantiFormInterface
     }
     
     /**
-     * Returns the element content as a string
+     * Get the form content as a string
+     *
+     * @return string The HTML representation of the form
      */
     public function getContents()
     {

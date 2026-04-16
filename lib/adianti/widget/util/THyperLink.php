@@ -4,7 +4,9 @@ namespace Adianti\Widget\Util;
 use Adianti\Widget\Base\TElement;
 
 /**
- * File Link
+ * Represents a hyperlink element in the Adianti Framework.
+ * This class extends TTextDisplay to create a clickable text element
+ * that can redirect users to a specified location.
  *
  * @version    7.5
  * @package    widget
@@ -17,11 +19,14 @@ class THyperLink extends TTextDisplay
 {
     /**
      * Class Constructor
-     * @param  $value    text content
-     * @param  $location link location
-     * @param  $color    text color
-     * @param  $size     text size
-     * @param  $decoration text decorations (b=bold, i=italic, u=underline)
+     * Initializes a hyperlink with text content, destination URL, optional styles, and an optional icon.
+     *
+     * @param string      $value      The text content of the hyperlink.
+     * @param string      $location   The URL or file location the hyperlink points to.
+     * @param string|null $color      (Optional) The text color.
+     * @param int|null    $size       (Optional) The text size.
+     * @param string|null $decoration (Optional) Text decoration: 'b' for bold, 'i' for italic, 'u' for underline.
+     * @param string|null $icon       (Optional) Path to an image icon to be displayed before the text.
      */
     public function __construct($value, $location, $color = null, $size = null, $decoration = null, $icon = null)
     {

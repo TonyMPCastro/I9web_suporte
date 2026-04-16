@@ -5,6 +5,16 @@
  */
 class BuilderDatabaseService
 {
+
+    public static function getTableInfos($database, $table_name)
+    {
+        return self::post([
+            'method' => 'getTableInfos',
+            'databaseName' => $database,
+            'tableName' => $table_name
+        ]);
+    }
+
     public static function makeColumnComponentDiff($table_name_equals, $table_renames, $table_equals, $table_drops, $table_news, $showConfirm, $databaseBuilder, $databaseProject, $databaseType, $tablesProject)
     {
         $param = [

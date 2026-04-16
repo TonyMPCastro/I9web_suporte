@@ -8,7 +8,7 @@ use Adianti\Widget\Container\TTableCell;
 use Exception;
 
 /**
- * TableRow: Represents a row inside a table
+ * TableRow: represents table row element.
  *
  * @version    7.5
  * @package    widget
@@ -22,7 +22,9 @@ class TTableRow extends TElement
     private $section;
     
     /**
-     * Class Constructor
+     * Class constructor.
+     *
+     * @param string $section The section type of the row ('thead', 'tbody', or 'tfoot'). Default is 'tbody'.
      */
     public function __construct($section = 'tbody')
     {
@@ -31,9 +33,12 @@ class TTableRow extends TElement
     }
     
     /**
-     * Add a new cell (TTableCell) to the Table Row
-     * @param  $value Cell Content
-     * @return TTableCell
+     * Adds a new cell (TTableCell) to the table row.
+     *
+     * @param mixed $value The content of the cell.
+     *
+     * @return TTableCell The created table cell.
+     * @throws Exception If a null value is passed.
      */
     public function addCell($value)
     {
@@ -53,8 +58,11 @@ class TTableRow extends TElement
     }
     
     /**
-     * Add a multi-cell content to a table cell
-     * @param $cells Each argument is a row cell
+     * Adds multiple elements inside a single table cell.
+     *
+     * @param mixed ...$cells Each argument represents a cell content.
+     *
+     * @return TTableCell The created table cell containing multiple elements.
      */
     public function addMultiCell()
     {
@@ -73,7 +81,7 @@ class TTableRow extends TElement
     }
     
     /**
-     * Clear any child elements
+     * Clears all child elements from the row.
      */
     public function clearChildren()
     {

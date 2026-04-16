@@ -12,7 +12,10 @@ use stdClass;
 use ApplicationTranslator;
 
 /**
- * Timeline
+  * Timeline widget for displaying events in a chronological order.
+ *
+ * This class allows creating and displaying a timeline with various events.
+ * It supports defining icons, templates, labels, and actions associated with events.
  *
  * @version    7.5
  * @package    widget
@@ -35,6 +38,9 @@ class TTimeline extends TElement
     
     /**
      * Class Constructor
+     *
+     * Initializes the timeline with default settings, including a unique identifier,
+     * default time display format, and empty lists for items and actions.
      */
     public function __construct()
     {
@@ -48,8 +54,9 @@ class TTimeline extends TElement
     }
     
     /**
-     * Define the final timeline icon
-     * @param  $icon icon
+     * Define the final icon for the timeline.
+     *
+     * @param string $icon The icon to be displayed at the end of the timeline.
      */
     public function setFinalIcon( $icon )
     {
@@ -57,8 +64,9 @@ class TTimeline extends TElement
     }
     
     /**
-     * Define the labelmask
-     * @param  $mask Mask
+     * Define the display format for the timeline dates.
+     *
+     * @param string $mask The date format mask (e.g., 'yyyy-mm-dd').
      */
     public function setTimeDisplayMask( $mask )
     {
@@ -66,8 +74,9 @@ class TTimeline extends TElement
     }
     
     /**
-     * Define the labelmask
-     * @param  $mask Mask
+     * Enable the use of both sides for timeline items.
+     *
+     * When enabled, items are alternately aligned on both sides of the timeline.
      */
     public function setUseBothSides()
     {
@@ -75,8 +84,9 @@ class TTimeline extends TElement
     }
     
     /**
-     * Set card item template for rendering
-     * @param  $template   Template content
+     * Set a template for rendering timeline items.
+     *
+     * @param string $template The template content used for rendering each item.
      */
     public function setItemTemplate($template)
     {
@@ -84,8 +94,9 @@ class TTimeline extends TElement
     }
     
     /**
-     * Define the item template path
-     * @param  $template_path Template path
+     * Define the path to an external template file for timeline items.
+     *
+     * @param string $template_path The file path to the template.
      */
     public function setTemplatePath( $template_path )
     {
@@ -93,8 +104,9 @@ class TTimeline extends TElement
     }
     
     /**
-     * Set item min database
-     * @param $database min database
+     * Define the database to be used for timeline items.
+     *
+     * @param string $database The database connection name.
      */
     public function setItemDatabase($database)
     {
@@ -102,14 +114,15 @@ class TTimeline extends TElement
     }
     
     /**
-     * Add Item
-     * @param  $id       ID
-     * @param  $title    Title
-     * @param  $content  Item content
-     * @param  $date     Item date
-     * @param  $icon     Item icon
-     * @param  $align    Item align
-     * @param  $object   Item data object
+     * Add an item to the timeline.
+     *
+     * @param string   $id       The unique identifier of the item.
+     * @param string   $title    The title of the item.
+     * @param string   $content  The content or description of the item.
+     * @param string   $date     The date associated with the item.
+     * @param string   $icon     The icon representing the item.
+     * @param string|null $align The alignment of the item (left/right) [optional].
+     * @param stdClass|null $object Additional data associated with the item [optional].
      */
     public function addItem( $id, $title, $content, $date, $icon, $align = null, $object = null  )
     {
@@ -136,13 +149,14 @@ class TTimeline extends TElement
     }
     
     /**
-     * Add Action
-     * @param  $label             Action Label
-     * @param  $action            Action
-     * @param  $field             Action field
-     * @param  $icon              Action icon
-     * @param  $btn_class         Action button class
-     * @param  $display_condition Action display condition
+     * Add an action to the timeline.
+     *
+     * Actions allow interaction with timeline items, such as opening a page or triggering an event.
+     *
+     * @param TAction    $action            The action to be executed.
+     * @param string     $label             The label for the action button.
+     * @param string     $icon              The icon for the action button.
+     * @param callable|null $display_condition A callback function to determine if the action should be displayed [optional].
      */
     public function addAction(TAction $action, $label, $icon, $display_condition = null)
     {
@@ -154,8 +168,11 @@ class TTimeline extends TElement
     }
     
     /**
-     * Render  Action
-     * @param  $object Data object
+     * Render available actions for a given timeline item.
+     *
+     * @param stdClass|null $object The item data object [optional].
+     *
+     * @return TElement|null The generated action buttons container, or null if no actions exist.
      */
     private function renderItemActions( $object = null )
     {
@@ -200,8 +217,11 @@ class TTimeline extends TElement
     }
     
     /**
-     * Render label
-     * @param $label Label
+     * Render a timeline item using the default template.
+     *
+     * @param stdClass $item The item data object.
+     *
+     * @return TElement The rendered item element.
      */
     private function defaultItemRender( $item )
     {
@@ -254,8 +274,13 @@ class TTimeline extends TElement
     }
     
     /**
-     * Render item
-     * @param $item Item
+     * Render a timeline item.
+     *
+     * Uses either a predefined template or the default rendering method.
+     *
+     * @param stdClass $item The item data object.
+     *
+     * @return TElement The rendered item element.
      */
     private function renderItem( $item )
     {
@@ -284,8 +309,13 @@ class TTimeline extends TElement
     }
     
     /**
-     * Render label
-     * @param $label Label
+     * Render a date label for the timeline.
+     *
+     * Labels are displayed between timeline items to indicate different time periods.
+     *
+     * @param string $label The date label to be displayed.
+     *
+     * @return TElement The rendered label element.
      */
     private function renderLabel( $label )
     {
@@ -303,7 +333,9 @@ class TTimeline extends TElement
     }
     
     /**
-     * Render items
+     * Render all timeline items.
+     *
+     * Iterates through the added items and renders them sequentially, inserting date labels when necessary.
      */
     private function renderItems()
     {
@@ -339,7 +371,9 @@ class TTimeline extends TElement
     }
     
     /**
-     * Render final icon
+     * Render the final icon at the end of the timeline.
+     *
+     * If a final icon has been defined, it is displayed as the last element of the timeline.
      */
     private function renderFinalIcon()
     {
@@ -353,7 +387,9 @@ class TTimeline extends TElement
     }
     
     /**
-     * Show
+     * Display the timeline.
+     *
+     * Renders all timeline items, inserts labels, applies styles, and outputs the timeline structure.
      */
     public function show()
     {

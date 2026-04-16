@@ -5,7 +5,9 @@ use Adianti\Core\AdiantiCoreTranslator;
 use Exception;
 
 /**
- * CNPJ validation (Valid only in Brazil)
+ * Validator for CNPJ (Brazilian business identification number).
+ *
+ * This class checks if a given CNPJ is valid according to official validation rules.
  *
  * @version    7.5
  * @package    validator
@@ -16,10 +18,13 @@ use Exception;
 class TCNPJValidator extends TFieldValidator
 {
     /**
-     * Validate a given value
-     * @param $label Identifies the value to be validated in case of exception
-     * @param $value Value to be validated
-     * @param $parameters aditional parameters for validation
+     * Validates a given CNPJ.
+     *
+     * @param string $label The field label used for error messages.
+     * @param string $value The CNPJ value to be validated.
+     * @param mixed|null $parameters Additional parameters for validation (not used).
+     *
+     * @throws Exception If the provided CNPJ is invalid.
      */
     public function validate($label, $value, $parameters = NULL)
     {

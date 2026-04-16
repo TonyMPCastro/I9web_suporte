@@ -1,6 +1,10 @@
 <?php
 /**
- * TAccordion Container
+ * Class TAccordion
+ *
+ * A container widget that represents an accordion structure.
+ * It allows adding collapsible content sections.
+ *
  * Copyright (c) 2006-2010 Pablo Dall'Oglio
  * @author  Pablo Dall'Oglio <pablo [at] adianti.com.br>
  * @version 2.0, 2007-08-01
@@ -10,7 +14,9 @@ class TAccordion extends TElement
     protected $elements;
     
     /**
-     * Class Constructor
+     * TAccordion constructor.
+     *
+     * Initializes the accordion container and assigns a unique ID.
      */
     public function __construct()
     {
@@ -20,9 +26,10 @@ class TAccordion extends TElement
     }
     
     /**
-     * Add an object to the accordion
-     * @param $title  Title
-     * @param $objeto Content
+     * Adds a new page to the accordion.
+     *
+     * @param string   $title  The title of the accordion section.
+     * @param mixed    $object The content to be displayed inside the section.
      */
     public function appendPage($title, $object)
     {
@@ -30,7 +37,10 @@ class TAccordion extends TElement
     }
     
     /**
-     * Shows the widget at the screen
+     * Renders the accordion on the screen.
+     *
+     * It iterates over the added elements and generates the necessary HTML structure,
+     * also importing required CSS and JavaScript files.
      */
     public function show()
     {

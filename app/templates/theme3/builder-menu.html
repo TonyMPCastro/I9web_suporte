@@ -5,7 +5,7 @@
     <ul class="dropdown-menu">
       <li class="header" style="text-align:center"><b>Mad Builder</b></li>
       <li>
-        <ul class="menu" style="max-height: 250px;">
+        <ul class="menu">
           <li>
             <a onclick="Builder.editPage()" generator="adianti" style="cursor:pointer">
                 Editar a página
@@ -31,19 +31,33 @@
                 Atualizar permissões
             </a>
           </li>
+          
+          <li>
+            <a href='index.php?class=SystemFrameworkUpdate&method=onReload&register_state=false' generator="adianti" style="cursor:pointer">
+                Atualizar framework
+            </a>
+          </li>
+
           <li>
             <a href="index.php?class=BuilderConfigList" generator="adianti" style="cursor:pointer">
                 Arquivos de configuração
             </a>
           </li>
+
           <li>
-            <a class='waves-effect waves-block' href='#' onclick="BuilderEditorCss.initEditorCss()" style="cursor:pointer">
+            <a href='#' onclick="BuilderEditorCss.initEditorCss()" style="cursor:pointer">
                 Editor de estilos
             </a>
           </li>
+
           <li>
-            <a href='index.php?class=SystemFrameworkUpdate&method=onReload&register_state=false' generator="adianti" style="cursor:pointer">
-                Atualizar framework
+            <a href='#' onclick="Builder.enableDebugConsole()" style="cursor:pointer">
+                Habilitar Debug Console
+            </a>
+          </li>
+          <li>
+            <a href='db-mad-manager.php' target="_blank" style="cursor:pointer">
+                Database Manager
             </a>
           </li>
         </ul>

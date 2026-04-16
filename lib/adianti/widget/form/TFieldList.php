@@ -14,7 +14,9 @@ use Exception;
 use stdClass;
 
 /**
- * Create a field list
+ * Represents a dynamic field list component that extends a table structure.
+ * It allows adding, removing, and managing dynamic fields with sorting, cloning,
+ * and custom actions.
  *
  * @version    7.5
  * @package    widget
@@ -54,6 +56,7 @@ class TFieldList extends TTable
     
     /**
      * Class Constructor
+     * Initializes the TFieldList component, setting default properties and behaviors.
      */
     public function __construct()
     {
@@ -80,7 +83,7 @@ class TFieldList extends TTable
     }
     
     /**
-     *
+     * Disables the ability to post an empty row in the field list.
      */
     public function disablePostEmptyRow()
     {
@@ -88,7 +91,10 @@ class TFieldList extends TTable
     }
     
     /**
-     * Get post data as object list 
+     * Retrieves the posted data as a list of objects.
+     * The method processes all fields and structures them into objects.
+     *
+     * @return array An array of stdClass objects containing the submitted data.
      */
     public function getPostData()
     {
@@ -150,7 +156,11 @@ class TFieldList extends TTable
     }
     
     /**
-     * Get post row count
+     * Gets the number of rows submitted.
+     *
+     * @param string|null $field_name The field name to count values for.
+     *
+     * @return int The count of non-empty rows in the submitted data.
      */
     public function getRowCount($field_name = null)
     {
@@ -178,7 +188,7 @@ class TFieldList extends TTable
     }
     
     /**
-     * Disable remove button
+     * Disables the remove button, preventing users from deleting rows.
      */
     public function disableRemoveButton()
     {
@@ -186,7 +196,9 @@ class TFieldList extends TTable
     }
 
     /**
-     * Get remove enabled
+     * Checks whether the remove button is enabled.
+     *
+     * @return bool True if removal is enabled, false otherwise.
      */
     public function getRemoveEnabled()
     {
@@ -194,7 +206,7 @@ class TFieldList extends TTable
     }
 
     /**
-     * Disable clone button
+     * Disables the clone button, preventing users from duplicating rows.
      */
     public function disableCloneButton()
     {
@@ -202,7 +214,9 @@ class TFieldList extends TTable
     }
     
     /**
-     * Get clone enabled
+     * Checks whether the clone button is enabled.
+     *
+     * @return bool True if cloning is enabled, false otherwise.
      */
     public function getCloneEnabled()
     {
@@ -210,7 +224,7 @@ class TFieldList extends TTable
     }
 
     /**
-     * Enable sorting
+     * Enables row sorting functionality.
      */
     public function enableSorting()
     {
@@ -218,7 +232,7 @@ class TFieldList extends TTable
     }
     
     /**
-     * Generate automatic aria-labels
+     * Enables automatic generation of ARIA labels for accessibility.
      */
     public function generateAria()
     {
@@ -226,8 +240,11 @@ class TFieldList extends TTable
     }
     
     /**
-     * Define the action to be executed when the user sort rows
-     * @param $action TAction object
+     * Defines an action to be executed when the user sorts the rows.
+     *
+     * @param TAction $action The sorting action.
+     *
+     * @throws Exception If the provided action is not static.
      */
     public function setSortAction(TAction $action)
     {
@@ -243,7 +260,11 @@ class TFieldList extends TTable
     }
     
     /**
-     * Set the remove javascript action
+     * Sets the JavaScript function to be executed when removing a row.
+     *
+     * @param string $action The JavaScript function.
+     * @param string|null $icon The icon for the remove button.
+     * @param string|null $title The tooltip title for the remove button.
      */
     public function setRemoveFunction($action, $icon = null, $title = null)
     {
@@ -253,9 +274,15 @@ class TFieldList extends TTable
     }
     
     /**
-     * Set the remove action
+     * Sets a PHP action to be executed when removing a row.
+     *
+     * @param TAction|null $action The removal action.
+     * @param string|null $icon The icon for the remove button.
+     * @param string|null $title The tooltip title for the remove button.
+     *
+     * @throws Exception If the provided action is not static.
      */
-    public function setRemoveAction(TAction $action = null, $icon = null, $title = null)
+    public function setRemoveAction(?TAction $action = null, $icon = null, $title = null)
     {
         if ($action)
         {
@@ -275,7 +302,9 @@ class TFieldList extends TTable
     }
     
     /**
-     * Set the clone javascript action
+     * Sets the JavaScript function to be executed when cloning a row.
+     *
+     * @param string $action The JavaScript function.
      */
     public function setCloneFunction($action)
     {
@@ -283,7 +312,11 @@ class TFieldList extends TTable
     }
     
     /**
-     * Add function
+     * Adds a button with a custom JavaScript function.
+     *
+     * @param string $function The JavaScript function.
+     * @param string $icon The button icon.
+     * @param string $title The button tooltip title.
      */
     public function addButtonFunction($function, $icon, $title)
     {
@@ -291,7 +324,11 @@ class TFieldList extends TTable
     }
     
     /**
-     * Add action
+     * Adds a button with a PHP action.
+     *
+     * @param TAction $action The action to be executed.
+     * @param string $icon The button icon.
+     * @param string $title The button tooltip title.
      */
     public function addButtonAction(TAction $action, $icon, $title)
     {
@@ -299,7 +336,9 @@ class TFieldList extends TTable
     }
     
     /**
-     * Define total update action
+     * Defines an action to update total values dynamically.
+     *
+     * @param TAction $action The total update action.
      */
     public function setTotalUpdateAction(TAction $action)
     {
@@ -308,7 +347,9 @@ class TFieldList extends TTable
     }
     
     /**
-     * Set field prefix
+     * Sets a prefix for field names in the list.
+     *
+     * @param string $prefix The prefix to be used.
      */
     public function setFieldPrefix($prefix)
     {
@@ -316,7 +357,9 @@ class TFieldList extends TTable
     }
     
     /**
-     * Get field prefix
+     * Retrieves the current field name prefix.
+     *
+     * @return string|null The field prefix if set, null otherwise.
      */
     public function getFieldPrefix()
     {
@@ -324,9 +367,13 @@ class TFieldList extends TTable
     }
     
     /**
-     * Add a field
-     * @param $label  Field Label
-     * @param $object Field Object
+     * Adds a field to the field list.
+     *
+     * @param string|TLabel $label The field label.
+     * @param AdiantiWidgetInterface $field The field object.
+     * @param array|null $properties Additional field properties.
+     *
+     * @throws Exception If a duplicate field name is detected.
      */
     public function addField($label, AdiantiWidgetInterface $field, $properties = null)
     {
@@ -378,7 +425,9 @@ class TFieldList extends TTable
     }
     
     /**
-     * Add table header
+     * Adds a table header row based on the defined fields.
+     *
+     * @return TElement The generated header element.
      */
     public function addHeader()
     {
@@ -437,8 +486,11 @@ class TFieldList extends TTable
     }
     
     /**
-     * Add detail row
-     * @param $item Data object
+     * Adds a row with field inputs based on an item.
+     *
+     * @param stdClass $item The data object for the row.
+     *
+     * @return TElement The created row.
      */
     public function addDetail( $item )
     {
@@ -469,22 +521,56 @@ class TFieldList extends TTable
                 $field_name = $field->getName();
                 $name  = str_replace( ['[', ']'], ['', ''], $field->getName());
                 
-                if ($this->detail_row == 0)
-                {
-                    $clone = $field;
-                }
-                else
-                {
-                    $clone = clone $field;
-                }
+                $clone = clone $field;
                 
                 if (isset($this->fields_properties[$field_name]['sum']) && $this->fields_properties[$field_name]['sum'] == true)
                 {
-                    $field->{'exitaction'} = "tfieldlist_update_sum('{$field_list_name}', '{$name}', 'callback')";
-                    $field->{'onBlur'}     = "tfieldlist_update_sum('{$field_list_name}', '{$name}', 'callback')";
+                    $clone->{'exitaction'} = "tfieldlist_update_sum('{$field_list_name}', '{$name}', 'callback')";
+                    $clone->{'onBlur'}     = "tfieldlist_update_sum('{$field_list_name}', '{$name}', 'callback')";
                     
-                    $this->total_functions .= $field->{'exitaction'} . ';';
+                    $this->total_functions .= $clone->{'exitaction'} . ';';
                     
+                    $value = isset($item->$name) ? $item->$name : 0;
+                    
+                    if (isset($field->{'data-nmask'}))
+                    {
+                        $dec_sep = substr($field->{'data-nmask'},1,1);
+                        $tho_sep = substr($field->{'data-nmask'},2,1);
+                        
+                        if ( (strpos($value, $tho_sep) !== false) && (strpos($value, $dec_sep) !== false) )
+                        {
+                            $value   = str_replace($tho_sep, '', $value);
+                            $value   = str_replace($dec_sep, '.', $value);
+                        }
+                    }
+                    
+                    if (isset($this->totals[$name]))
+                    {
+                        $this->totals[$name] += $value;
+                    }
+                    else
+                    {
+                        $this->totals[$name] = $value;
+                    }
+                }
+
+                if (isset($this->fields_properties[$field_name]['count']) && $this->fields_properties[$field_name]['count'] == true)
+                {
+                    $fieldClass = get_class($field);
+                    
+                    if(preg_match('/TEntry|TNumeric/', $fieldClass))
+                    {
+                        $field->{'exitaction'} = "tfieldlist_update_count('{$field_list_name}', '{$name}', 'callback')";
+                        $field->{'onBlur'}     = "tfieldlist_update_count('{$field_list_name}', '{$name}', 'callback')";
+                        $this->total_functions .= $field->{'exitaction'} . ';';
+                    }
+                    else
+                    {
+                        $field->{'changeaction'} = "tfieldlist_update_count('{$field_list_name}', '{$name}', 'callback')";
+                        $field->{'onchange'}     = "tfieldlist_update_count('{$field_list_name}', '{$name}', 'callback')";
+                        $this->total_functions .= $field->{'changeaction'} . ';';
+                    }
+
                     $value = isset($item->$name) ? $item->$name : 0;
                     
                     if (isset($field->{'data-nmask'}))
@@ -593,6 +679,8 @@ class TFieldList extends TTable
                 }
 
                 $del->{'onclick'} .= $this->remove_function;
+
+                $this->total_functions = '';
                 
                 $del->{'title'} = $this->remove_title ? $this->remove_title : AdiantiCoreTranslator::translate('Delete');
                 $del->add($this->remove_icon ? new TImage($this->remove_icon) : '<i class="fa fa-times red"></i>');
@@ -606,9 +694,15 @@ class TFieldList extends TTable
     }
     
     /**
-     * Add clone action
+     * Adds a cloning action to duplicate rows.
+     *
+     * @param TAction|null $clone_action The cloning action.
+     * @param string|null $icon The clone button icon.
+     * @param string|null $title The clone button tooltip title.
+     *
+     * @throws Exception If no detail rows have been added before calling this method.
      */
-    public function addCloneAction(TAction $clone_action = null, $icon = null, $title = null)
+    public function addCloneAction(?TAction $clone_action = null, $icon = null, $title = null)
     {
         if (!$this->body_created)
         {
@@ -637,6 +731,7 @@ class TFieldList extends TTable
                 }
                 else if (isset($this->fields_properties[$field_name]['sum']) && $this->fields_properties[$field_name]['sum'] == true)
                 {
+                    $totalFormField = $this->fields_properties[$field_name]['totalFormField'] ?? false;
                     $field_name = str_replace('[]', '', $field_name);
                     $grand_total = clone $field;
                     $grand_total->setId($field_name.'_'.mt_rand(1000000, 9999999));
@@ -648,6 +743,33 @@ class TFieldList extends TTable
                     if (!empty($this->totals[$field_name]))
                     {
                         $grand_total->setValue($this->totals[$field_name]);
+                    }
+                    
+                    if($totalFormField)
+                    {
+                        $grand_total->{'data-total-form-field'} = $totalFormField;
+                    }
+
+                    $cell->add($grand_total);
+                }
+                else if (isset($this->fields_properties[$field_name]['count']) && $this->fields_properties[$field_name]['count'] == true)
+                {
+                    $field_name = str_replace('[]', '', $field_name);
+                    $grand_total = new TEntry('grandtotal_'.$field_name);
+                    $grand_total->setId($field_name.'_'.mt_rand(1000000, 9999999));
+                    $grand_total->{'field_name'} = $field_name;
+                    $grand_total->setEditable(FALSE);
+                    $grand_total->{'style'}  .= ';font-weight:bold;border:0 !important;background:none; width: 100%';
+                    
+                    
+                    if (!empty($this->totals[$field_name]))
+                    {
+                        $grand_total->setValue($this->totals[$field_name]);
+                    }
+
+                    if(!empty($this->fields_properties[$field_name]['totalFormField']))
+                    {
+                        $grand_total->{'data-total-form-field'} = $this->fields_properties[$field_name]['totalFormField'];
                     }
                     
                     $cell->add($grand_total);
@@ -686,8 +808,26 @@ class TFieldList extends TTable
     }
     
     /**
-     * Clear field list
-     * @param $name field list name
+     * Sets the clone action by first removing the previous one and then adding a new one.
+     *
+     * @param TAction|null $clone_action The cloning action.
+     * @param string|null $icon The clone button icon.
+     * @param string|null $title The clone button tooltip title.
+     */
+    public function setCloneAction(?TAction $clone_action = null, $icon = null, $title = null)
+    {        
+        if($this->tfoot && !empty($this->tfoot->getChildren()[0]))
+        {
+            $this->tfoot->del($this->tfoot->getChildren()[0]);
+        }
+
+        $this->addCloneAction($clone_action, $icon, $title);    
+    }
+
+    /**
+     * Clears all rows from a specified field list.
+     *
+     * @param string $name The field list identifier.
      */
     public static function clear($name)
     {
@@ -695,10 +835,11 @@ class TFieldList extends TTable
     }
     
     /**
-     * Clear some field list rows
-     * @param $name     field list name
-     * @param $index    field list name
-     * @param $quantity field list name
+     * Clears a specified number of rows from a field list.
+     *
+     * @param string $name The field list identifier.
+     * @param int $start The starting row index.
+     * @param int $length The number of rows to clear.
      */
     public static function clearRows($name, $start = 0, $length = 0)
     {
@@ -706,10 +847,11 @@ class TFieldList extends TTable
     }
     
     /**
-     * Add rows on field list
-     * @param $name     field list name
-     * @param $rows     quantity rows
-     * @param $timeout  timeout
+     * Adds a specified number of rows to a field list.
+     *
+     * @param string $name The field list identifier.
+     * @param int $rows The number of rows to add.
+     * @param int $timeout The delay in milliseconds before adding the rows.
      */
     public static function addRows($name, $rows, $timeout = 50)
     {
@@ -717,7 +859,11 @@ class TFieldList extends TTable
     }
     
     /**
-     * Enable scrolling
+     * Enables scrolling for the field list.
+     *
+     * @param int $height The height of the scrollable area in pixels.
+     *
+     * @throws Exception If called before adding a clone action.
      */
     public function makeScrollable($height)
     {
@@ -735,7 +881,9 @@ class TFieldList extends TTable
     }
     
     /**
-     * Get head
+     * Retrieves the table header section.
+     *
+     * @return TElement The header element.
      */
     public function getHead()
     {
@@ -743,7 +891,9 @@ class TFieldList extends TTable
     }
 
     /**
-     * Get foot
+     * Retrieves the table footer section.
+     *
+     * @return TElement The footer element.
      */
     public function getFoot()
     {
@@ -751,7 +901,9 @@ class TFieldList extends TTable
     }
 
     /**
-     * Get body
+     * Retrieves the table body section.
+     *
+     * @return TElement The body element.
      */
     public function getBody()
     {
@@ -759,9 +911,9 @@ class TFieldList extends TTable
     }
     
     /**
-     * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Enables a specific field in the field list.
+     *
+     * @param string $field The field name.
      */
     public static function enableField($field)
     {
@@ -769,9 +921,9 @@ class TFieldList extends TTable
     }
     
     /**
-     * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Disables a specific field in the field list.
+     *
+     * @param string $field The field name.
      */
     public static function disableField($field)
     {
@@ -779,7 +931,7 @@ class TFieldList extends TTable
     }
     
     /**
-     * Show component
+     * Renders the component and applies sorting behavior if enabled.
      */
     public function show()
     {
@@ -790,7 +942,7 @@ class TFieldList extends TTable
         {
             if (empty($this->sort_action))
             {
-                TScript::create("ttable_sortable_rows('{$id}', '.handle')");
+                TScript::create("ttable_sortable_rows('{$id}', '.handle', function() { ttable_remove_row($('#{$id}'));} )");
             }
             else
             {
@@ -800,7 +952,7 @@ class TFieldList extends TTable
                     $this->sort_action->setParameter('static', '1');
                     $form_name   = $first_field->getFormName();
                     $string_action = $this->sort_action->serialize(FALSE);
-                    $sort_action = "function() { __adianti_post_data('{$form_name}', '{$string_action}'); }";
+                    $sort_action = "function() { ttable_remove_row($('#{$id}')); __adianti_post_data('{$form_name}', '{$string_action}'); }";
                     TScript::create("ttable_sortable_rows('{$id}', '.handle', $sort_action)");
                 }
             }

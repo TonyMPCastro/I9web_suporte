@@ -9,6 +9,10 @@ use Adianti\Database\TFilter;
 /**
  * Record rest service
  *
+ * This class provides methods to load, store, delete, and list Active Records
+ * using HTTP parameters. It supports operations like retrieving a single record,
+ * deleting a record, storing a record, and listing multiple records based on filters.
+ *
  * @version    7.5
  * @package    service
  * @author     Pablo Dall'Oglio
@@ -18,9 +22,15 @@ use Adianti\Database\TFilter;
 class AdiantiRecordService
 {
     /**
-     * Find a Active Record and returns it
-     * @return The Active Record itself as array
-     * @param $param HTTP parameter
+     * Retrieves an Active Record by its ID.
+     *
+     * This method fetches a record from the database based on the provided ID and
+     * returns it as an array.
+     *
+     * @param array $param HTTP parameters, must include 'id' as the primary key.
+     *
+     * @return array The Active Record as an associative array.
+     * @throws Exception If the record is not found or database access fails.
      */
     public function load($param)
     {
@@ -37,8 +47,14 @@ class AdiantiRecordService
     }
     
     /**
-     * Delete an Active Record object from the database
-     * @param [$id]     HTTP parameter
+     * Deletes an Active Record by its ID.
+     *
+     * This method removes a record from the database based on the provided ID.
+     *
+     * @param array $param HTTP parameters, must include 'id' as the primary key.
+     *
+     * @return void
+     * @throws Exception If the record is not found or deletion fails.
      */
     public function delete($param)
     {
@@ -55,8 +71,14 @@ class AdiantiRecordService
     }
     
     /**
-     * Store the objects into the database
-     * @param $param HTTP parameter
+     * Stores or updates an Active Record in the database.
+     *
+     * If an ID is provided, the existing record is updated; otherwise, a new record is created.
+     *
+     * @param array $param HTTP parameters containing 'data' with record fields.
+     *
+     * @return array The stored record as an associative array.
+     * @throws Exception If saving to the database fails.
      */
     public function store($param)
     {
@@ -76,9 +98,20 @@ class AdiantiRecordService
     }
     
     /**
-     * List the Active Records by the filter
-     * @return The Active Record list as array
-     * @param $param HTTP parameter
+     * Retrieves multiple Active Records based on filters.
+     *
+     * This method applies optional filters, pagination, and sorting options to return
+     * a list of records.
+     *
+     * @param array $param HTTP parameters, supports:
+     *  - 'offset' (int): Starting record for pagination.
+     *  - 'limit' (int): Number of records to retrieve.
+     *  - 'order' (string): Column name for sorting.
+     *  - 'direction' (string): Sorting direction ('asc' or 'desc').
+     *  - 'filters' (array): Conditions for filtering records.
+     *
+     * @return array List of Active Records as an associative array.
+     * @throws Exception If database access fails.
      */
     public function loadAll($param)
     {
@@ -129,9 +162,15 @@ class AdiantiRecordService
     }
     
     /**
-     * Delete the Active Records by the filter
-     * @return The result of operation
-     * @param $param HTTP parameter
+     * Deletes multiple Active Records based on filters.
+     *
+     * This method applies filters and removes all matching records from the database.
+     *
+     * @param array $param HTTP parameters, must include:
+     *  - 'filters' (array): Conditions to select records for deletion.
+     *
+     * @return int Number of deleted records.
+     * @throws Exception If deletion fails.
      */
     public function deleteAll($param)
     {
@@ -156,9 +195,15 @@ class AdiantiRecordService
     }
 
     /**
-     * Find the count Records by the filter
-     * @return The Active Record list as array
-     * @param $param HTTP parameter
+     * Counts the number of Active Records that match given filters.
+     *
+     * This method applies filters and returns the count of matching records.
+     *
+     * @param array $param HTTP parameters, supports:
+     *  - 'filters' (array): Conditions for filtering records.
+     *
+     * @return int Number of matching records.
+     * @throws Exception If database access fails.
      */
     public function countAll($param)
     {
@@ -200,8 +245,14 @@ class AdiantiRecordService
     }
     
     /**
-     * Handle HTTP Request and dispatch
-     * @param $param HTTP POST and php input vars
+     * Handles HTTP requests and dispatches them to the appropriate method.
+     *
+     * This method determines the HTTP request type (GET, POST, PUT, DELETE) and
+     * calls the corresponding CRUD operation.
+     *
+     * @param array $param HTTP parameters containing request data.
+     *
+     * @return mixed The result of the respective method call.
      */
     public function handle($param)
     {

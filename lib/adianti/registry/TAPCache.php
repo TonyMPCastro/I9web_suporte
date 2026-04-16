@@ -6,6 +6,9 @@ use Adianti\Registry\AdiantiRegistryInterface;
 /**
  * Adianti APC Record Cache
  *
+ * This class provides an implementation of the AdiantiRegistryInterface using
+ * APCu as a caching mechanism for storing and retrieving values.
+ *
  * @version    7.5
  * @package    registry
  * @author     Pablo Dall'Oglio
@@ -15,7 +18,9 @@ use Adianti\Registry\AdiantiRegistryInterface;
 class TAPCache implements AdiantiRegistryInterface
 {
     /**
-     * Returns if the service is active
+     * Checks if the APCu extension is enabled.
+     *
+     * @return bool Returns TRUE if APCu is available, FALSE otherwise.
      */
     public static function enabled()
     {
@@ -23,9 +28,12 @@ class TAPCache implements AdiantiRegistryInterface
     }
     
     /**
-     * Store a variable in cache
-     * @param $key    Key
-     * @param $value  Value
+     * Stores a value in the APCu cache.
+     *
+     * @param string $key   The key under which the value will be stored.
+     * @param mixed  $value The value to be stored.
+     *
+     * @return bool Returns TRUE on success, FALSE on failure.
      */
     public static function setValue($key, $value)
     {
@@ -33,8 +41,11 @@ class TAPCache implements AdiantiRegistryInterface
     }
     
     /**
-     * Get a variable from cache
-     * @param $key    Key
+     * Retrieves a value from the APCu cache.
+     *
+     * @param string $key The key of the stored value.
+     *
+     * @return mixed The stored value or FALSE if the key does not exist.
      */
     public static function getValue($key)
     {
@@ -42,8 +53,11 @@ class TAPCache implements AdiantiRegistryInterface
     }
     
     /**
-     * Delete a variable from cache
-     * @param $key    Key
+     * Deletes a value from the APCu cache.
+     *
+     * @param string $key The key of the value to be deleted.
+     *
+     * @return bool Returns TRUE on success, FALSE on failure.
      */
     public static function delValue($key)
     {
@@ -51,7 +65,9 @@ class TAPCache implements AdiantiRegistryInterface
     }
     
     /**
-     * Clear cache
+     * Clears all stored values from the APCu cache.
+     *
+     * @return bool Returns TRUE on success, FALSE on failure.
      */
     public static function clear()
     {

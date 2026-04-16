@@ -6,8 +6,8 @@ class ClienteProduto extends TRecord
     const PRIMARYKEY = 'id';
     const IDPOLICY   =  'serial'; // {max, serial}
 
-    private $produto;
-    private $cliente;
+    private Produto $produto;
+    private Cliente $cliente;
 
     
 

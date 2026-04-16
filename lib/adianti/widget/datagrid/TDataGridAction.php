@@ -6,7 +6,8 @@ use Adianti\Core\AdiantiCoreTranslator;
 use Exception;
 
 /**
- * Represents an action inside a datagrid
+ * Represents an action inside a DataGrid.
+ * This class extends TAction and is responsible for managing actions associated with data grid elements.
  *
  * @version    7.5
  * @package    widget
@@ -27,9 +28,13 @@ class TDataGridAction extends TAction
     private $usePostAction = false;
     
     /**
-     * Class Constructor
-     * @param $action Callback to be executed
-     * @param $parameters = array of parameters
+     * Class constructor.
+     *
+     * Initializes the DataGrid action with a given callback and optional parameters.
+     * If parameters are provided, it sets the fields from the parent's parameters.
+     *
+     * @param callable $action     The callback function to be executed.
+     * @param array|null $parameters Optional array of parameters for the action.
      */
     public function __construct($action, $parameters = null)
     {
@@ -42,8 +47,9 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * Define wich Active Record's property will be passed along with the action
-     * @param $field Active Record's property
+     * Defines which Active Record property will be passed along with the action.
+     *
+     * @param string $field The name of the Active Record property.
      */
     public function setField($field)
     {
@@ -54,8 +60,9 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * Define wich Active Record's properties will be passed along with the action
-     * @param $field Active Record's property
+     * Defines which Active Record properties will be passed along with the action.
+     *
+     * @param array $fields An array of Active Record properties.
      */
     public function setFields($fields)
     {
@@ -76,8 +83,9 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * Returns the Active Record's property that 
-     * will be passed along with the action
+     * Retrieves the Active Record property that will be passed along with the action.
+     *
+     * @return string|null The field name or null if not set.
      */
     public function getField()
     {
@@ -85,8 +93,9 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * Returns the Active Record's properties that 
-     * will be passed along with the action
+     * Retrieves the Active Record properties that will be passed along with the action.
+     *
+     * @return array|null An array of field names or null if not set.
      */
     public function getFields()
     {
@@ -94,7 +103,9 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * Return if there at least one field defined
+     * Checks if at least one field is defined for the action.
+     *
+     * @return bool True if at least one field is defined, false otherwise.
      */
     public function fieldDefined()
     {
@@ -102,8 +113,9 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * Define an icon for the action
-     * @param $image  The Image path
+     * Defines an icon for the action.
+     *
+     * @param string $image The path to the image icon.
      */
     public function setImage($image)
     {
@@ -111,7 +123,9 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * Returns the icon of the action
+     * Retrieves the icon associated with the action.
+     *
+     * @return string|null The image path or null if not set.
      */
     public function getImage()
     {
@@ -119,8 +133,9 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * define the label for the action
-     * @param $label A string containing a text label
+     * Defines the label for the action.
+     *
+     * @param string $label A string containing the text label.
      */
     public function setLabel($label)
     {
@@ -128,7 +143,9 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * Returns the text label for the action
+     * Retrieves the text label for the action.
+     *
+     * @return string|null The label or null if not set.
      */
     public function getLabel()
     {
@@ -136,8 +153,9 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * define the buttonClass for the action
-     * @param $buttonClass A string containing the button css class
+     * Defines the CSS class for the button associated with the action.
+     *
+     * @param string $buttonClass The CSS class name.
      */
     public function setButtonClass($buttonClass)
     {
@@ -145,7 +163,9 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * Returns the buttonClass
+     * Retrieves the CSS class of the button associated with the action.
+     *
+     * @return string|null The button class or null if not set.
      */
     public function getButtonClass()
     {
@@ -153,8 +173,9 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * define if the action will use a regular button
-     * @param $useButton A boolean
+     * Defines whether the action should use a regular button.
+     *
+     * @param bool $useButton True to use a button, false otherwise.
      */
     public function setUseButton($useButton)
     {
@@ -162,7 +183,9 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * Returns if the action will use a regular button
+     * Checks whether the action uses a regular button.
+     *
+     * @return bool|null True if a button is used, false otherwise.
      */
     public function getUseButton()
     {
@@ -170,8 +193,9 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * Define a callback that must be valid to show the action
-     * @param Callback $displayCondition Action display condition
+     * Defines a condition to determine whether the action should be displayed.
+     *
+     * @param callable $displayCondition A callback function that evaluates the display condition.
      */
     public function setDisplayCondition( /*Callable*/ $displayCondition )
     {
@@ -179,7 +203,9 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * Returns the action display condition
+     * Retrieves the display condition for the action.
+     *
+     * @return callable|null The callback function or null if not set.
      */
     public function getDisplayCondition()
     {
@@ -187,8 +213,14 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * Prepare action for use over an object
-     * @param $object Data Object
+     * Prepares the action for use with a given object.
+     *
+     * Ensures that the required field(s) exist in the provided object before executing the action.
+     *
+     * @param object $object The data object.
+     *
+     * @throws Exception If the required field is not defined or does not exist in the object.
+     * @return array The prepared action parameters.
      */
     public function prepare($object)
     {
@@ -220,8 +252,13 @@ class TDataGridAction extends TAction
     }
     
     /**
-     * Converts the action into an URL
-     * @param  $format_action = format action with document or javascript (ajax=no)
+     * Converts the action into a URL.
+     *
+     * This method serializes the action parameters and appends necessary request parameters.
+     *
+     * @param bool $format_action Whether to format the action as a document or JavaScript action.
+     *
+     * @return string The serialized action URL.
      */
     public function serialize($format_action = TRUE)
     {
@@ -255,16 +292,27 @@ class TDataGridAction extends TAction
         return parent::serialize($format_action);
     }
 
+    /**
+     * Enables the post action for the DataGrid action.
+     */
     public function enablePostAction()
     {
         $this->usePostAction = true;
     }
 
+    /**
+     * Disables the post action for the DataGrid action.
+     */
     public function disablePostAction()
     {
         $this->usePostAction = false;
     }
 
+    /**
+     * Checks whether the post action is enabled.
+     *
+     * @return bool True if post action is enabled, false otherwise.
+     */
     public function getUsePostAction()
     {
         return $this->usePostAction;

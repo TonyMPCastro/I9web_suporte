@@ -5,7 +5,11 @@ use Adianti\Widget\Base\TElement;
 use Adianti\Control\TAction;
 
 /**
- * Action Link
+ * Represents a clickable action link with customizable appearance.
+ *
+ * This class extends TTextDisplay and allows the creation of a link element (`<a>`) 
+ * with an associated action (`TAction`). It supports optional customization of 
+ * text color, size, decoration, and an icon.
  *
  * @version    7.5
  * @package    widget
@@ -19,12 +23,14 @@ class TActionLink extends TTextDisplay
     private $action;
 
     /**
-     * Class Constructor
-     * @param  $value  text content
-     * @param  $action TAction Object
-     * @param  $color  text color
-     * @param  $size   text size
-     * @param  $decoration text decorations (b=bold, i=italic, u=underline)
+     * Initializes a new instance of the TActionLink class.
+     *
+     * @param string   $value      The text content of the link.
+     * @param TAction  $action     The action associated with the link.
+     * @param string|null $color   The text color (optional).
+     * @param string|null $size    The text size (optional).
+     * @param string|null $decoration Text decorations (optional, can be "b" for bold, "i" for italic, "u" for underline).
+     * @param string|null $icon    The optional icon path to be displayed before the text.
      */
     public function __construct($value, TAction $action, $color = null, $size = null, $decoration = null, $icon = null)
     {
@@ -40,10 +46,22 @@ class TActionLink extends TTextDisplay
 
         $this->{'href'} = $action->serialize();
         $this->{'generator'} = 'adianti';
+
+        if($action->isDisabled())
+        {
+            unset($this->generator);
+            $this->disabled = 'disabled';
+        }
+        elseif($action->isHidden())
+        {
+            $this->hide();
+        }
     }
 
     /**
-     * Returns the current calback
+     * Retrieves the associated action of the link.
+     *
+     * @return TAction The action object linked to this element.
      */
     public function getAction()
     {
@@ -51,9 +69,9 @@ class TActionLink extends TTextDisplay
     }
 
     /**
-     * Add a JavaScript function to be executed by the button
-     * @param $function A piece of JavaScript code
-     * @ignore-autocomplete on
+     * Assigns a JavaScript function to be executed when the link is clicked.
+     *
+     * @param string $function The JavaScript code to execute on click.
      */
     public function addFunction($function)
     {
@@ -64,7 +82,9 @@ class TActionLink extends TTextDisplay
     }
 
     /**
-     * Add CSS class
+     * Adds a CSS class to the link element.
+     *
+     * @param string $class The CSS class to be added.
      */
     public function addStyleClass($class)
     {

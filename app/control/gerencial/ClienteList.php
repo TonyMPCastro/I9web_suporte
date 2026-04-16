@@ -11,7 +11,7 @@ class ClienteList extends TPage
     private static $activeRecord = 'Cliente';
     private static $primaryKey = 'id';
     private static $formName = 'form_ClienteList';
-    private $showMethods = ['onReload', 'onSearch', 'onRefresh', 'onClearFilters'];
+    private $showMethods = ['onReload', 'onSearch', 'onRefresh', 'onClearFilters', 'onGlobalSearch'];
     private $limit = 20;
 
     /**
@@ -66,7 +66,6 @@ class ClienteList extends TPage
 
         // creates a Datagrid
         $this->datagrid = new TDataGrid;
-        $this->datagrid->disableHtmlConversion();
         $this->datagrid->setId(__CLASS__.'_datagrid');
 
         $this->datagrid_form = new TForm('datagrid_'.self::$formName);
@@ -114,7 +113,7 @@ class ClienteList extends TPage
         $panel = new TPanelGroup("Listagem de clientes");
         $panel->datagrid = 'datagrid-container';
         $this->datagridPanel = $panel;
-        $this->datagrid_form->add($this->datagrid);
+
         $panel->add($this->datagrid_form);
 
         $panel->getBody()->class .= ' table-responsive';
@@ -134,7 +133,7 @@ class ClienteList extends TPage
         $headerActions->add($head_left_actions);
         $headerActions->add($head_right_actions);
 
-        $panel->getBody()->insert(0, $headerActions);
+        $this->datagrid_form->add($headerActions);
 
         $button_cadastrar = new TButton('button_button_cadastrar');
         $button_cadastrar->setAction(new TAction(['ClienteForm', 'onShow']), "Cadastrar");
@@ -178,6 +177,8 @@ class ClienteList extends TPage
         $head_left_actions->add($button_limpar_filtros);
 
         $head_right_actions->add($dropdown_button_exportar);
+
+        $this->datagrid_form->add($this->datagrid);
 
         $this->btnShowCurtainFilters = $btnShowCurtainFilters;
 
@@ -693,9 +694,9 @@ class ClienteList extends TPage
         parent::show();
     }
 
-    public static function manageRow($id)
+    public static function manageRow($id, $param = [])
     {
-        $list = new self([]);
+        $list = new self($param);
 
         $openTransaction = TTransaction::getDatabase() != self::$database ? true : false;
 

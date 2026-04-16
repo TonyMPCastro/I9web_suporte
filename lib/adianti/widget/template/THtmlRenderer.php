@@ -8,7 +8,7 @@ use Exception;
 use ApplicationTranslator;
 
 /**
- * Html Renderer
+ * HTML Renderer for processing and rendering HTML templates with dynamic sections and variable replacements.
  *
  * @version    7.5
  * @package    widget
@@ -30,9 +30,11 @@ class THtmlRenderer
     private $HTMLOutputConversion;
     
     /**
-     * Constructor method
+     * Initializes the HTML Renderer with a given HTML template file.
+     *
+     * @param string $path The path to the HTML template file.
      * 
-     * @param $path  HTML resource path
+     * @throws Exception If the provided file does not exist.
      */
     public function __construct($path)
     {
@@ -52,7 +54,12 @@ class THtmlRenderer
     }
     
     /**
-     * Creates HTML Renderer
+     * Creates an instance of THtmlRenderer and enables the main section with replacements.
+     *
+     * @param string $path The path to the HTML template file.
+     * @param array $replaces An associative array of replacement values.
+     *
+     * @return THtmlRenderer The created instance of THtmlRenderer.
      */
     public static function create($path, $replaces)
     {
@@ -62,7 +69,7 @@ class THtmlRenderer
     }
     
     /**
-     * Disable htmlspecialchars on output
+     * Disables the automatic conversion of special characters to HTML entities.
      */
     public function disableHtmlConversion()
     {
@@ -70,7 +77,7 @@ class THtmlRenderer
     }
     
     /**
-     * Enable translation inside template
+     * Enables translation for the template using the ApplicationTranslator.
      */
     public function enableTranslation()
     {
@@ -78,11 +85,11 @@ class THtmlRenderer
     }
     
     /**
-     * Enable a HTML section to show
-     * 
-     * @param $sectionName Section name
-     * @param $replacements Array of replacements for this section
-     * @param $repeat Define if the section is repeatable
+     * Enables a section in the template for rendering.
+     *
+     * @param string $sectionName The name of the section to enable.
+     * @param array|null $replacements An associative array of replacements for this section (optional).
+     * @param bool $repeat Whether the section should be repeated (default: false).
      */
     public function enableSection($sectionName, $replacements = NULL, $repeat = FALSE)
     {
@@ -92,7 +99,9 @@ class THtmlRenderer
     }
     
     /**
-     * Diable section
+     * Disables a previously enabled section, preventing it from being rendered.
+     *
+     * @param string $sectionName The name of the section to disable.
      */
     public function disableSection($sectionName)
     {
@@ -102,10 +111,12 @@ class THtmlRenderer
     }
     
     /**
-     * Replace the content with array of replacements
-     * 
-     * @param $replacements array of replacements
-     * @param $content content to be replaced
+     * Replaces placeholders in the content with the provided replacement values.
+     *
+     * @param array|null &$replacements An associative array of replacement values.
+     * @param string $content The content in which to perform the replacements.
+     *
+     * @return string The content with replacements applied.
      */
     private function replace(&$replacements, $content)
     {
@@ -206,7 +217,9 @@ class THtmlRenderer
     }
     
     /**
-     * Show the HTML and the enabled sections
+     * Processes and displays the template with enabled sections and applied replacements.
+     *
+     * @throws Exception If there are unclosed sections in the template.
      */
     public function show()
     {
@@ -344,7 +357,12 @@ class THtmlRenderer
     }
     
     /**
-     * Static search in memory structure
+     * Recursively searches for a key in a nested array.
+     *
+     * @param mixed $needle The key to search for.
+     * @param array $haystack The array in which to search.
+     *
+     * @return mixed The value associated with the found key, or false if not found.
      */
     public static function recursiveKeyArraySearch($needle,$haystack)
     {
@@ -366,7 +384,9 @@ class THtmlRenderer
     }
     
     /**
-     * Returns the HTML content as a string
+     * Returns the rendered HTML content as a string.
+     *
+     * @return string The processed HTML content.
      */
     public function getContents()
     {

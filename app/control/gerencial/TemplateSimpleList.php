@@ -25,7 +25,6 @@ class TemplateSimpleList extends TPage
 
         // creates a Datagrid
         $this->datagrid = new TDataGrid;
-        $this->datagrid->disableHtmlConversion();
         $this->datagrid->setId(__CLASS__.'_datagrid');
 
         $this->datagrid_form = new TForm('datagrid_'.self::$formName);
@@ -183,9 +182,9 @@ class TemplateSimpleList extends TPage
         parent::show();
     }
 
-    public static function manageRow($id)
+    public static function manageRow($id, $param = [])
     {
-        $list = new self([]);
+        $list = new self($param);
 
         $openTransaction = TTransaction::getDatabase() != self::$database ? true : false;
 

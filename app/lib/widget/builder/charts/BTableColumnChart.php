@@ -4,7 +4,11 @@ use Adianti\Core\AdiantiCoreTranslator;
 use Adianti\Widget\Base\TElement;
 
 /**
- * Table column chart Widget
+ * Class BTableColumnChart
+ *
+ * This class represents a column chart widget that can be used within a table.
+ * It supports functionalities like alignment, ordering, width configuration, 
+ * transformations, and aggregation of column values.
  *
  * @version    7.4
  * @package    widget
@@ -24,8 +28,15 @@ class BTableColumnChart extends TElement
     protected $transformerTotal;
 
     /**
-     * Class Constructor
-     * @param  $name column name
+     * BTableColumnChart constructor.
+     *
+     * Initializes the column chart with a given name, label, alignment, width, and order.
+     *
+     * @param string $name  The column name.
+     * @param string $label The header label of the column.
+     * @param string $align The text alignment in the column (default: 'left'). Accepted values: 'left', 'right', 'center'.
+     * @param string $width The width of the column (default: empty string).
+     * @param string $order The order definition for the column (default: empty string).
      */
     public function __construct(String $name, String $label, $align = 'left', $width = '', $order = '')
     {
@@ -40,8 +51,9 @@ class BTableColumnChart extends TElement
     }
 
     /**
-     * Get name
+     * Retrieves the column name.
      *
+     * @return string The name of the column.
      */
     public function getName()
     {
@@ -49,9 +61,9 @@ class BTableColumnChart extends TElement
     }
 
     /**
-     * Set label
+     * Sets the label (header text) of the column.
      *
-     * @param $label header label of chart
+     * @param string $label The label text to be displayed.
      */
     public function setLabel($label)
     {
@@ -59,8 +71,9 @@ class BTableColumnChart extends TElement
     }
 
     /**
-     * Get label
+     * Retrieves the label of the column.
      *
+     * @return string The label text.
      */
     public function getLabel()
     {
@@ -68,9 +81,9 @@ class BTableColumnChart extends TElement
     }
 
     /**
-     * Set name
+     * Sets the column name.
      *
-     * @param $name name of chart
+     * @param string $name The name of the column.
      */
     public function setName($name)
     {
@@ -78,37 +91,51 @@ class BTableColumnChart extends TElement
     }
 
     /**
-     * Set width
+     * Sets the width of the column.
      *
-     * @param $width column size
+     * @param mixed $width The column width, either as a numeric value (in pixels) or a string.
      */
     public function setWidth($width)
     {
         $this->width = (is_numeric($width) !== FALSE) ? "{$width}px" : $width ;
     }
 
+    /**
+     * Retrieves the width of the column.
+     *
+     * @return string The width of the column.
+     */
     public function getWidth()
     {
         return $this->width;
     }
 
     /**
-     * Set order
+     * Sets the order property of the column.
      *
-     * @param $order column size
+     * @param string $order The order configuration for the column.
      */
     public function setOrder($order)
     {
         $this->order = $order;
     }
 
+    /**
+     * Retrieves the order property of the column.
+     *
+     * @return string The order configuration.
+     */
     public function getOrder()
     {
         return $this->order;
     }
 
     /**
-     * Set align column
+     * Sets the text alignment for the column.
+     *
+     * @param string $align The text alignment ('left', 'right', 'center').
+     *
+     * @throws Exception If an invalid alignment is provided.
      */
     public function setAlign($align)
     {
@@ -121,7 +148,9 @@ class BTableColumnChart extends TElement
     }
 
     /**
-     * Get align column
+     * Retrieves the text alignment of the column.
+     *
+     * @return string The text alignment ('left', 'right', 'center').
      */
     public function getAlign()
     {
@@ -129,7 +158,9 @@ class BTableColumnChart extends TElement
     }
 
     /**
-     * Set transformer column
+     * Sets a transformer function to modify column values before display.
+     *
+     * @param callable $transformer A callable function to transform column values.
      */
     public function setTransformer(callable $transformer)
     {
@@ -137,7 +168,9 @@ class BTableColumnChart extends TElement
     }
 
     /**
-     * Get transformer column
+     * Retrieves the transformer function for the column.
+     *
+     * @return callable|null The transformer function, or null if not set.
      */
     public function getTransformer()
     {
@@ -145,11 +178,14 @@ class BTableColumnChart extends TElement
     }
 
     /**
-     * Set total
-     * @param  $total set type total (optional) default sum [sum, max, min, count, avg]
-     * @param  $transformerTotal set function transformer total number
+     * Sets the total calculation method for the column.
+     *
+     * @param string   $total            The type of total to apply ('sum', 'max', 'min', 'count', 'avg').
+     * @param callable|null $transformerTotal An optional transformer function for the total.
+     *
+     * @throws Exception If an invalid total type is provided.
      */
-    public function setTotal($total, callable $transformerTotal = null)
+    public function setTotal($total, ?callable $transformerTotal = null)
     {
         if (! in_array($total, ['sum', 'max', 'min', 'count', 'avg']))
         {
@@ -161,7 +197,9 @@ class BTableColumnChart extends TElement
     }
 
     /**
-     * Return total column
+     * Retrieves the total calculation method for the column.
+     *
+     * @return string The total calculation type ('sum', 'max', 'min', 'count', 'avg').
      */
     public function getTotal()
     {
@@ -169,16 +207,21 @@ class BTableColumnChart extends TElement
     }
 
     /**
-     * Return total column
+     * Retrieves the transformer function for the total calculation.
+     *
+     * @return callable|null The transformer function, or null if not set.
      */
     public function getTransformerTotal()
     {
         return $this->transformerTotal;
     }
 
-     /**
-     * Set aggregate column
-     * @param  $aggregate set type aggregate (optional) default sum [sum, max, min, count, avg]
+    /**
+     * Sets the aggregate calculation method for the column.
+     *
+     * @param string $aggregate The aggregate type ('sum', 'max', 'min', 'count', 'avg').
+     *
+     * @throws Exception If an invalid aggregate type is provided.
      */
     public function setAggregate($aggregate)
     {
@@ -191,7 +234,9 @@ class BTableColumnChart extends TElement
     }
 
     /**
-     * Return aggregate column
+     * Retrieves the aggregate calculation method for the column.
+     *
+     * @return string The aggregate type ('sum', 'max', 'min', 'count', 'avg').
      */
     public function getAggregate()
     {

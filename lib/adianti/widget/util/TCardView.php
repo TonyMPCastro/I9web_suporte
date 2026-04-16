@@ -14,7 +14,11 @@ use stdClass;
 use ApplicationTranslator;
 
 /**
- * Card
+ * TCardView
+ *
+ * A widget that represents a collection of cards with customizable attributes,
+ * templates, and actions. It allows defining titles, content, colors, 
+ * actions, and search functionalities.
  *
  * @version    7.5
  * @package    widget
@@ -42,6 +46,9 @@ class TCardView extends TElement
     
     /**
      * Class Constructor
+     *
+     * Initializes a new instance of TCardView, setting up the default attributes
+     * and configuration.
      */
 	public function __construct()
     {
@@ -57,8 +64,9 @@ class TCardView extends TElement
     }
     
     /**
-     * Set item min height
-     * @param $height min height
+     * Set the minimum height for each card item.
+     *
+     * @param int|string $height Minimum height in pixels or percentage.
      */
     public function setItemHeight($height)
     {
@@ -66,8 +74,9 @@ class TCardView extends TElement
     }
     
     /**
-     * Set item min database
-     * @param $database min database
+     * Set the database connection for retrieving card items.
+     *
+     * @param string $database Database connection name.
      */
     public function setItemDatabase($database)
     {
@@ -75,8 +84,9 @@ class TCardView extends TElement
     }
     
     /**
-     * Set content min height
-     * @param $height min height
+     * Set the minimum height for the card content area.
+     *
+     * @param int|string $height Minimum height in pixels or percentage.
      */
     public function setContentHeight($height)
     {
@@ -84,8 +94,9 @@ class TCardView extends TElement
     }
     
     /**
-     * Set title attribute
-     * @param $field attribute name 
+     * Define the attribute to be used as the card title.
+     *
+     * @param string $field The name of the attribute to be used as the title.
      */
     public function setTitleAttribute($field)
     {
@@ -93,8 +104,9 @@ class TCardView extends TElement
     }
     
     /**
-     * Set content attribute
-     * @param $field attribute name 
+     * Define the attribute to be used as the card content.
+     *
+     * @param string $field The name of the attribute to be used as the content.
      */
     public function setContentAttribute($field)
     {
@@ -102,8 +114,9 @@ class TCardView extends TElement
     }
     
     /**
-     * Set color attribute
-     * @param $field attribute name 
+     * Define the attribute to be used for setting the card color.
+     *
+     * @param string $field The name of the attribute to be used for color.
      */
     public function setColorAttribute($field)
     {
@@ -111,8 +124,9 @@ class TCardView extends TElement
     }
 
     /**
-     * Set custom class card
-     * @param $class class name 
+     * Set a custom CSS class for card items.
+     *
+     * @param string $class CSS class name to be applied to each card item.
      */
     public function setItemClass($class)
     {
@@ -120,7 +134,7 @@ class TCardView extends TElement
     }
     
     /**
-     * Clear items
+     * Clear all items from the card view.
      */
     public function clear()
     {
@@ -128,8 +142,9 @@ class TCardView extends TElement
     }
     
     /**
-     * Add item
-     * @param  $object Item data object
+     * Add an item to the card view.
+     *
+     * @param object $object The data object representing a card item.
      */
     public function addItem($object)
     {
@@ -137,7 +152,7 @@ class TCardView extends TElement
     }
     
     /**
-     * Display icons as buttons
+     * Enable the display of item actions as buttons instead of icons.
      */
     public function setUseButton()
     {
@@ -145,8 +160,9 @@ class TCardView extends TElement
     }
     
     /**
-     * Set card item template for rendering
-     * @param  $path   Template path
+     * Set the template path for rendering the card items.
+     *
+     * @param string $path Path to the template file.
      */
     public function setTemplatePath($path)
     {
@@ -154,8 +170,9 @@ class TCardView extends TElement
     }
     
     /**
-     * Set card item template for rendering
-     * @param  $template   Template content
+     * Set the item template content for rendering the card items.
+     *
+     * @param string $template The HTML content of the template.
      */
     public function setItemTemplate($template)
     {
@@ -163,8 +180,9 @@ class TCardView extends TElement
     }
     
     /**
-     * Set card title template for rendering
-     * @param  $template   Template content
+     * Set the template for rendering the card title.
+     *
+     * @param string $template The HTML content of the title template.
      */
     public function setTitleTemplate($template)
     {
@@ -172,11 +190,14 @@ class TCardView extends TElement
     }
     
     /**
-     * Add item action
-     * @param  $label             Action label
-     * @param  $action            Action callback (TAction)
-     * @param  $icon              Action icon
-     * @param  $display_condition Display condition
+     * Add an action to the card items.
+     *
+     * @param TAction      $action            The action to be executed.
+     * @param string       $label             The label of the action.
+     * @param string|null  $icon              The icon to be displayed with the action.
+     * @param callable|null $display_condition A callable function to determine whether the action should be displayed.
+     * @param string|null  $title             Tooltip title for the action.
+     * @param bool         $useButton         Whether to display the action as a button.
      */
     public function addAction(TAction $action, $label, $icon = NULL, $display_condition = NULL, $title = NULL, $useButton = false)
     {
@@ -192,9 +213,13 @@ class TCardView extends TElement
     }
     
     /**
-     * Render item
+     * Render a single card item based on the provided data object.
+     *
+     * @param object $item The data object representing a card item.
+     *
+     * @return TElement The rendered card item element.
      */
-    private function renderItem($item)
+    public function renderItem($item)
     {
         if (!empty($this->templatePath))
         {
@@ -316,9 +341,10 @@ class TCardView extends TElement
     }
     
     /**
-     * Enable fuse search
-     * @param $input Field input for search
-     * @param $attribute Attribute name
+     * Enable search functionality using a specified input field and attribute.
+     *
+     * @param TField $input The input field used for searching.
+     * @param string $attribute The attribute to be used for search filtering.
      */
     public function enableSearch(TField $input, $attribute) 
     {
@@ -329,7 +355,11 @@ class TCardView extends TElement
     }
     
     /**
-     * Render item actions
+     * Render the actions associated with a given card item.
+     *
+     * @param object|null $object The data object for which actions should be rendered.
+     *
+     * @return TElement The rendered actions container.
      */
     private function renderItemActions($object = NULL)
     {
@@ -384,7 +414,7 @@ class TCardView extends TElement
     
     
     /**
-     * Show cards
+     * Display the card view, rendering all items and applying database transactions if needed.
      */
     public function show()
     {

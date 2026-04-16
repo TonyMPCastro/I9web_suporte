@@ -109,6 +109,8 @@ function BSignatureDrawCapture(id, value, penColor, service_action, filehandle) 
     }
 
     this.send = function(form_data, uri) {
+
+        __adianti_block_ui();
         var xhr = new XMLHttpRequest();
         xhr.addEventListener('readystatechange', that.onReadyStateChange, false);
         xhr.open('POST', uri, true);
@@ -123,6 +125,7 @@ function BSignatureDrawCapture(id, value, penColor, service_action, filehandle) 
             status = evt.target.status;
         }
         catch(e) {
+            __adianti_unblock_ui();
             return;
         }
         
@@ -142,12 +145,15 @@ function BSignatureDrawCapture(id, value, penColor, service_action, filehandle) 
                     file_data.fileName = 'tmp/' + response.fileName;
 
                     that.setData(encodeURIComponent(JSON.stringify(file_data)));
+                    __adianti_unblock_ui();
                 }
                 else {
+                    __adianti_unblock_ui();
                     __adianti_error('Error', e.message);
                 }
             }
             catch (e) {
+                __adianti_unblock_ui();
                 __adianti_error('Error', e.message);
             }
         }
@@ -195,7 +201,7 @@ function bsignaturedrawcapture_set_value(id, value)
         data = JSON.parse(decodeURIComponent(value));
         value = data.fileName
     }
-    console.log($(`#image_${id}`), value);
+
     $(`#image_${id}`).css('background-image', `url('download.php?file=${value}')`);
 
     if (value) {

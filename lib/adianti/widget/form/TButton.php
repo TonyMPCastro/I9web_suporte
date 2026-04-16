@@ -15,6 +15,9 @@ use Exception;
 /**
  * Button Widget
  *
+ * This class represents a button component with support for actions, images, labels, and additional properties.
+ * It can be used within forms and supports JavaScript functions.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form
@@ -33,7 +36,14 @@ class TButton extends TField implements AdiantiWidgetInterface
     protected $formName;
     
     /**
-     * Create a button with icon and action
+     * Creates a button with an icon and an action.
+     *
+     * @param string   $name     Button name
+     * @param callable $callback Callback function for the button action
+     * @param string   $label    Button label
+     * @param string   $image    Path to the button icon
+     *
+     * @return TButton The created button instance
      */
     public static function create($name, $callback, $label, $image)
     {
@@ -44,7 +54,9 @@ class TButton extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Add CSS class
+     * Adds a CSS class to the button.
+     *
+     * @param string $class CSS class name(s) to be added
      */
     public function addStyleClass($class)
     {
@@ -63,9 +75,10 @@ class TButton extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the action of the button
-     * @param  $action TAction object
-     * @param  $label  Button's label
+     * Defines the action of the button.
+     *
+     * @param TAction     $action The TAction object representing the button action
+     * @param string|null $label  The button label (optional)
      */
     public function setAction(TAction $action, $label = NULL)
     {
@@ -74,7 +87,9 @@ class TButton extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Returns the buttona action
+     * Returns the button's action.
+     *
+     * @return TAction|null The TAction object assigned to the button, or null if no action is set
      */
     public function getAction()
     {
@@ -82,8 +97,9 @@ class TButton extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the tag name
-     * @param  $name  tag name
+     * Sets the tag name for the button.
+     *
+     * @param string $name The tag name to be used (e.g., 'button', 'a', 'div')
      */
     public function setTagName($name)
     {
@@ -91,8 +107,9 @@ class TButton extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the icon of the button
-     * @param  $image  image path
+     * Sets the icon/image of the button.
+     *
+     * @param string $image Path to the image file
      */
     public function setImage($image)
     {
@@ -100,8 +117,9 @@ class TButton extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the label of the button
-     * @param  $label button label
+     * Sets the label of the button.
+     *
+     * @param string $label The button label text
      */
     public function setLabel($label)
     {
@@ -109,7 +127,9 @@ class TButton extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Returns the button label
+     * Returns the button label.
+     *
+     * @return string|null The label text or null if not set
      */
     public function getLabel()
     {
@@ -117,9 +137,9 @@ class TButton extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Add a JavaScript function to be executed by the button
-     * @param $function A piece of JavaScript code
-     * @ignore-autocomplete on
+     * Adds a JavaScript function to be executed when the button is clicked.
+     *
+     * @param string $function JavaScript function code snippet
      */
     public function addFunction($function)
     {
@@ -130,9 +150,11 @@ class TButton extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define a field property
-     * @param $name  Property Name
-     * @param $value Property Value
+     * Sets a custom property for the button.
+     *
+     * @param string  $name    Property name
+     * @param mixed   $value   Property value
+     * @param boolean $replace Whether to replace an existing property (default: true)
      */
     public function setProperty($name, $value, $replace = TRUE)
     {
@@ -140,7 +162,11 @@ class TButton extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return field property
+     * Retrieves a property value of the button.
+     *
+     * @param string $name Property name
+     *
+     * @return mixed|null The property value or null if not set
      */
     public function getProperty($name)
     {
@@ -148,9 +174,10 @@ class TButton extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Enables the button in a specific form.
+     *
+     * @param string $form_name The name of the form
+     * @param string $field     The name of the button field
      */
     public static function enableField($form_name, $field)
     {
@@ -158,9 +185,10 @@ class TButton extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Disables the button in a specific form.
+     *
+     * @param string $form_name The name of the form
+     * @param string $field     The name of the button field
      */
     public static function disableField($form_name, $field)
     {
@@ -168,7 +196,11 @@ class TButton extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Show the widget at the screen
+     * Renders the button on the screen.
+     *
+     * This method generates the button element, applies the defined properties, and sets the action or JavaScript function.
+     *
+     * @throws Exception If the form name is not set when an action is assigned to the button
      */
     public function show()
     {
@@ -180,6 +212,11 @@ class TButton extends TField implements AdiantiWidgetInterface
                 throw new Exception(AdiantiCoreTranslator::translate('You must pass the ^1 (^2) as a parameter to ^3', __CLASS__, $label, 'TForm::setFields()') );
             }
             
+            if($this->action->isHidden())
+            {
+                return '';
+            }
+
             // get the action as URL
             $url = $this->action->serialize(FALSE);
             if ($this->action->isStatic())
@@ -200,6 +237,12 @@ class TButton extends TField implements AdiantiWidgetInterface
             $button->{'class'}   = 'btn btn-default btn-sm';
             $button->{'onclick'} = $action;
             $action = '';
+
+            if($this->action->isDisabled())
+            {
+                $button->onclick = '';
+                $button->disabled = 'disabled';
+            }
         }
         else
         {

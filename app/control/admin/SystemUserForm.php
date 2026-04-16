@@ -25,7 +25,7 @@ class SystemUserForm extends TPage
         // creates the form
         $this->form = new BootstrapFormBuilder('form_System_user');
         $this->form->setFormTitle( _t('User') );
-        
+
         // create the form fields
         $id            = new TEntry('id');
         $name          = new TEntry('name');
@@ -82,13 +82,31 @@ class SystemUserForm extends TPage
         $name->addValidation(_t('Name'), new TRequiredValidator);
         $login->addValidation('Login', new TRequiredValidator);
         $email->addValidation('Email', new TEmailValidator);
+
+        if(SystemPreferenceService::isStrongPasswordEnabled())
+        {
+            $password->enableStrongPasswordValidation(_t('Password'));
+            $repassword->enableStrongPasswordValidation(_t('Password confirmation'));
+        }
         
-        $this->form->addFields( [new TLabel('ID')], [$id],  [new TLabel(_t('Name'))], [$name] );
-        $this->form->addFields( [new TLabel(_t('Login'))], [$login],  [new TLabel(_t('Email'))], [$email] );
-        $this->form->addFields( [new TLabel(_t('Main unit'))], [$unit_id],  [new TLabel(_t('Front page'))], [$frontpage_id] );
-        $this->form->addFields( [new TLabel(_t('Password'))], [$password],  [new TLabel(_t('Password confirmation'))], [$repassword] );
+        $row = $this->form->addFields( [new TLabel('ID', null, null, null, '100%'),$id],  [new TLabel(_t('Name'), null, null, null, '100%'),$name] );
+        $row->layout = ['col-sm-6','col-sm-6'];
+        $row = $this->form->addFields( [new TLabel(_t('Login'), null, null, null, '100%'),$login],  [new TLabel(_t('Email'), null, null, null, '100%'),$email] );
+        $row->layout = ['col-sm-6','col-sm-6'];
+        $row = $this->form->addFields( [new TLabel(_t('Main unit'), null, null, null, '100%'),$unit_id],  [new TLabel(_t('Front page'), null, null, null, '100%'),$frontpage_id] );
+        $row->layout = ['col-sm-6','col-sm-6'];
+        $row = $this->form->addFields( [new TLabel(_t('Password'), null, null, null, '100%'),$password],  [new TLabel(_t('Password confirmation'), null, null, null, '100%'),$repassword] );
+        $row->layout = ['col-sm-6','col-sm-6'];
+
+        $row = $this->form->addContent(['']);
+        $row->layout = [' col-sm-12'];
+
         $this->form->addFields( [new TFormSeparator(_t('Units'))] );
         $this->form->addFields( [$units] );
+
+        $row = $this->form->addContent(['']);
+        $row->layout = [' col-sm-12'];
+
         $this->form->addFields( [new TFormSeparator(_t('Groups'))] );
         $this->form->addFields( [$groups] );
         
@@ -116,6 +134,9 @@ class SystemUserForm extends TPage
             }
         });
         
+        $row = $this->form->addContent(['']);
+        $row->layout = [' col-sm-12'];
+
         $this->form->addFields( [new TFormSeparator(_t('Programs'))] );
         $this->form->addFields( [$this->program_list] );
         
@@ -123,13 +144,23 @@ class SystemUserForm extends TPage
         $this->program_list->addItems( SystemProgram::get() );
         TTransaction::close();
         
-        $container = new TVBox;
-        $container->style = 'width: 100%';
-        $container->add(new TXMLBreadCrumb('menu.xml', 'SystemUserList'));
-        $container->add($this->form);
+        parent::setTargetContainer('adianti_right_panel');
 
+        $btnClose = new TButton('closeCurtain');
+        $btnClose->class = 'btn btn-sm btn-default';
+        $btnClose->style = 'margin-right:10px;';
+        $btnClose->onClick = "Template.closeRightPanel();";
+        $btnClose->setLabel(_t("Close"));
+        $btnClose->setImage('fas:times');
+
+        $this->form->addHeaderWidget($btnClose);
+        
         // add the container to the page
-        parent::add($container);
+        parent::add($this->form);
+
+        $style = new TStyle('right-panel > .container-part[page-name=SystemUserForm]');
+        $style->width = '70% !important';   
+        $style->show(true);
     }
 
     /**
@@ -145,6 +176,8 @@ class SystemUserForm extends TPage
             $data = $this->form->getData();
             $this->form->setData($data);
             
+            $this->form->validate();
+
             $object = new SystemUsers;
             $object->fromArray( (array) $data );
             
@@ -182,7 +215,7 @@ class SystemUserForm extends TPage
                 if( $object->password !== $param['repassword'] )
                     throw new Exception(_t('The passwords do not match'));
                 
-                $object->password = md5($object->password);
+                $object->password = password_hash($object->password, PASSWORD_BCRYPT);
             }
             else
             {
@@ -224,7 +257,9 @@ class SystemUserForm extends TPage
             TTransaction::close();
             
             // shows the success message
-            new TMessage('info', TAdiantiCoreTranslator::translate('Record saved'));
+            new TMessage('info', TAdiantiCoreTranslator::translate('Record saved'), new TAction(['SystemUserList', 'onReload']));
+            
+            TScript::create("Template.closeRightPanel();");
         }
         catch (Exception $e) // in case of exception
         {

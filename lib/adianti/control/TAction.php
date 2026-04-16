@@ -4,11 +4,14 @@ namespace Adianti\Control;
 use Adianti\Core\AdiantiCoreApplication;
 use Adianti\Core\AdiantiCoreTranslator;
 use Exception;
-// use Mad\Core\BuilderApplication;
+use Mad\Core\BuilderApplication;
 use ReflectionMethod;
 
 /**
  * Structure to encapsulate an action
+ *
+ * Represents an encapsulated action that can be executed dynamically.
+ * Supports defining parameters, enabling/disabling, hiding/showing, and serializing actions into URLs.
  *
  * @version    7.5
  * @package    control
@@ -25,9 +28,15 @@ class TAction
     protected $properties;
     
     /**
-     * Class Constructor
-     * @param $action Callback to be executed
-     * @param $parameters = array of parameters
+     * Class constructor.
+     *
+     * Initializes an action with an optional set of parameters. 
+     * It also verifies action permissions using BuilderApplication settings.
+     *
+     * @param callable $action The callback to be executed (array with class/method or function name).
+     * @param array|null $parameters Optional parameters for the action.
+     *
+     * @throws Exception If the provided action is invalid or does not exist.
      */
     public function __construct($action, $parameters = null)
     {
@@ -54,42 +63,78 @@ class TAction
             $this->param = $parameters;
         }
 
-        // if($verifyActionPermissionCallback = BuilderApplication::getVerifyActionPermission())
-        // {
-        //     if(!$verifyActionPermissionCallback($this))
-        //     {
-        //         if(BuilderApplication::isHideAction())
-        //         {
-        //             $this->hide();
-        //         }
+        if($verifyActionPermissionCallback = BuilderApplication::getVerifyActionPermission())
+        {
+            if(!$verifyActionPermissionCallback($this))
+            {
+                if(BuilderApplication::isHideAction())
+                {
+                    $this->hide();
+                }
 
-        //         $this->disable();
-        //     }
-        // }
+                $this->disable();
+            }
+        }
     }
     
+    /**
+     * Disables the action, preventing it from being executed.
+     */
     public function disable()
     {
         $this->disabled = true;
     }
     
+    /**
+     * Enables the action, allowing it to be executed.
+     */
+    public function enable()
+    {
+        $this->disabled = false;
+    }
+
+    /**
+     * Checks if the action is disabled.
+     *
+     * @return bool TRUE if the action is disabled, FALSE otherwise.
+     */
     public function isDisabled()
     {
         return $this->disabled;
     }
 
+    /**
+     * Hides the action, preventing it from being displayed.
+     */
     public function hide()
     {
         $this->hidden = true;
     }
 
+    /**
+     * Unhides the action, making it visible again.
+     */
+    public function unHide()
+    {
+        $this->hidden = false;
+    }
+
+    /**
+     * Checks if the action is hidden.
+     *
+     * @return bool TRUE if the action is hidden, FALSE otherwise.
+     */
     public function isHidden()
     {
         return $this->hidden;
     }
 
     /**
+     * Creates a clone of the current action with additional parameters.
      *
+     * @param array $parameters Additional parameters to set on the cloned action.
+     *
+     * @return TAction A new action instance with the specified parameters.
      */
     public function cloneWithParameters($parameters = [])
     {
@@ -107,7 +152,10 @@ class TAction
     }
     
     /**
-     * Return fields used in parameters
+     * Retrieves the list of dynamic field parameters used in the action.
+     * Parameters are enclosed in `{}` and replaced dynamically.
+     *
+     * @return array List of dynamic field parameters.
      */
     public function getFieldParameters()
     {
@@ -128,7 +176,9 @@ class TAction
     }
     
     /**
-     * Returns the action as a string
+     * Returns the action as a string representation.
+     *
+     * @return string The action in the format 'Class::Method' or function name.
      */
     public function toString()
     {
@@ -152,18 +202,23 @@ class TAction
     }
     
     /**
-     * Adds a parameter to the action
-     * @param  $param = parameter name
-     * @param  $value = parameter value
+     * Adds or updates a parameter in the action.
+     *
+     * @param string $param The name of the parameter.
+     *
+     * @param mixed $value The value to be assigned to the parameter.
      */
     public function setParameter($param, $value)
     {
         $this->param[$param] = $value;
     }
     
-    /**
-     * Set the parameters for the action
-     * @param  $parameters = array of parameters
+        /**
+     * Sets multiple parameters for the action.
+     *
+     * Removes special parameters such as 'class', 'method', and 'static' to prevent conflicts.
+     *
+     * @param array $parameters Associative array of parameters to set.
      */
     public function setParameters($parameters)
     {
@@ -176,8 +231,11 @@ class TAction
     }
     
     /**
-     * Returns a parameter
-     * @param  $param = parameter name
+     * Retrieves the value of a specific parameter.
+     *
+     * @param string $param The name of the parameter.
+     *
+     * @return mixed|null The value of the parameter, or NULL if not set.
      */
     public function getParameter($param)
     {
@@ -189,7 +247,9 @@ class TAction
     }
     
     /**
-     * Return the Action Parameters
+     * Retrieves all parameters of the action.
+     *
+     * @return array|null Associative array of parameters, or NULL if none are set.
      */
     public function getParameters()
     {
@@ -197,7 +257,9 @@ class TAction
     }
     
     /**
-     * Returns the current calback
+     * Retrieves the callback associated with this action.
+     *
+     * @return callable The callback function or method reference.
      */
     public function getAction()
     {
@@ -205,7 +267,10 @@ class TAction
     }
     
     /**
-     * Set property
+     * Sets a property in the action.
+     *
+     * @param string $property The property name.
+     * @param mixed $value     The value to assign to the property.
      */
     public function setProperty($property, $value)
     {
@@ -213,7 +278,11 @@ class TAction
     }
     
     /**
-     * Get property
+     * Retrieves the value of a specific property.
+     *
+     * @param string $property The property name.
+     *
+     * @return mixed|null The value of the property, or NULL if not set.
      */
     public function getProperty($property)
     {
@@ -221,9 +290,10 @@ class TAction
     }
 
     /**
-     * Adds a parameter to the action
-     * @param  $param = parameter name
-     * @param  $value = parameter value
+     * Adds a forced parameter to the action, ensuring it is always included.
+     *
+     * @param string $param The name of the parameter.
+     * @param mixed $value  The value to be assigned.
      */
     public function setForcedParameter($param, $value)
     {
@@ -232,8 +302,14 @@ class TAction
     }
     
     /**
-     * Prepare action for use over an object
-     * @param $object Data Object
+     * Prepares an action for execution with a given object.
+     *
+     * Replaces dynamic placeholders in parameters with actual values from the object.
+     *
+     * @param object $object The data object used for parameter substitution.
+     *
+     * @return TAction A new action instance with resolved parameters.
+     * @throws Exception If trying to access a non-existent property in the object.
      */
     public function prepare($object)
     {
@@ -267,9 +343,13 @@ class TAction
     }
     
     /**
-     * Replace a string with object properties within {pattern}
-     * @param $content String with pattern
-     * @param $object  Any object
+     * Replaces placeholders in a string with values from an object.
+     *
+     * @param string $content The content containing placeholders in the format {attribute}.
+     * @param object $object The object providing the replacement values.
+     *
+     * @return string The content with replaced values.
+     * @throws Exception If trying to access a non-existent property in the object.
      */
     private function replace($content, $object)
     {
@@ -309,8 +389,13 @@ class TAction
     }
     
     /**
-     * Converts the action into an URL
-     * @param  $format_action = format action with document or javascript (ajax=no)
+     * Serializes the action into a URL format.
+     *
+     * Generates a formatted URL with action and parameters, suitable for execution.
+     *
+     * @param bool $format_action If TRUE, formats as a document or JavaScript action; if FALSE, returns a raw query string.
+     *
+     * @return string The serialized action URL.
      */
     public function serialize($format_action = TRUE)
     {
@@ -398,7 +483,9 @@ class TAction
     }
     
     /**
-     * Validate action
+     * Validates if the specified action is a callable method of a valid class.
+     *
+     * @return bool TRUE if the action is valid, FALSE otherwise.
      */
     public function validate()
     {
@@ -418,7 +505,9 @@ class TAction
     }
     
     /**
-     * Returns if the action is static
+     * Determines if the action refers to a static method.
+     *
+     * @return bool TRUE if the action is static, FALSE otherwise.
      */
     public function isStatic()
     {

@@ -36,6 +36,9 @@ class SystemUsers extends TRecord
         parent::addAttribute('active');
         parent::addAttribute('accepted_term_policy');
         parent::addAttribute('accepted_term_policy_at');
+        parent::addAttribute('two_factor_enabled');
+        parent::addAttribute('two_factor_type');
+        parent::addAttribute('two_factor_secret');
     }
     
     /**
@@ -301,12 +304,37 @@ class SystemUsers extends TRecord
     public static function authenticate($login, $password)
     {
         $user = self::newFromLogin($login);
-        if ($user->password !== md5($password))
+
+        if (hash_equals($user->password, md5($password)))
         {
-            throw new Exception(_t('Wrong password'));
+            self::updatePasswordHash($user, $password);
         }
-        
+
+        if (password_verify($password, $user->password)) 
+        {
+            if (password_needs_rehash($user->password, PASSWORD_DEFAULT))
+            {
+                self::updatePasswordHash($user, $password);
+            }
+        }
+        else
+        {
+            throw new Exception(_t('Invalid username or password'));
+        }
+
         return $user;
+    }
+
+    /**
+     * Update the user password to a new algo
+     * @param $user SystemUsers
+     * @param $password String with user password
+     * @returns void
+     */
+    private static function updatePasswordHash($user, $userPassword)
+    {
+        $user->password = password_hash($userPassword, PASSWORD_DEFAULT);
+        $user->store();
     }
     
     /**
@@ -334,17 +362,15 @@ class SystemUsers extends TRecord
     {
         $programs = array();
         
-        foreach( $this->getSystemUserGroups() as $group )
+        $criteria = new TCriteria();
+        $criteria->add(new TFilter('id', 'IN', "(SELECT system_program_id FROM system_user_program WHERE system_user_id = {$this->id})"));
+        $criteria->add(new TFilter('id', 'IN', "(SELECT system_program_id FROM system_group_program WHERE system_group_id IN (SELECT system_group_id FROM system_user_group WHERE system_user_id = {$this->id}))"), TExpression::OR_OPERATOR);
+
+        $systemPrograms = SystemProgram::getObjects($criteria);
+
+        foreach($systemPrograms as $systemProgram)
         {
-            foreach( $group->getSystemPrograms() as $prog )
-            {
-                $programs[$prog->controller] = true;
-            }
-        }
-                
-        foreach( $this->getSystemUserPrograms() as $prog )
-        {
-            $programs[$prog->controller] = true;
+            $programs[$systemProgram->controller] = true;
         }
         
         return $programs;
@@ -372,6 +398,53 @@ class SystemUsers extends TRecord
         
         asort($programs);
         return $programs;
+    }
+
+    /**
+     * Return the action of programs the user has permission to run
+     */
+    public function getProgramsActions()
+    {
+        $programs_actions = [];
+    
+        foreach( $this->getSystemUserGroups() as $group )
+        {
+            foreach( $group->getSystemPrograms() as $prog )
+            {
+                if($prog->actions)
+                {
+                    if(empty($programs_actions[$prog->controller]))
+                    {
+                        $programs_actions[$prog->controller] = [];
+                    }
+
+                    $actions = array_map(function($actions){
+                        return $actions->action;
+                    },json_decode($prog->actions));
+
+                    $allowed_actions = json_decode($prog->allowed_actions);
+                    $allowed_actions = array_flip($allowed_actions);
+                    
+                    if($actions)
+                    {
+                        foreach($actions as $action)
+                        {
+                            if(!isset($programs_actions[$prog->controller][$action]))
+                            {
+                                $programs_actions[$prog->controller][$action] = false;
+                            }
+                            
+                            if(isset($allowed_actions[$action]))
+                            {
+                                $programs_actions[$prog->controller][$action] = true;
+                            }
+                        }   
+                    }
+                }
+            }
+        }
+        
+        return $programs_actions;
     }
     
     /**

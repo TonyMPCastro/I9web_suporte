@@ -12,7 +12,10 @@ use Adianti\Control\TAction;
 use Exception;
 
 /**
- * A Sortable list
+ * A Sortable list widget.
+ *
+ * This widget allows the user to create a sortable list with drag-and-drop functionality.
+ * It supports item icons, orientation settings, item limits, and connectivity to other lists.
  *
  * @version    7.5
  * @package    widget
@@ -38,8 +41,11 @@ class TSortList extends TField implements AdiantiWidgetInterface
     protected $separator;
     
     /**
-     * Class Constructor
-     * @param  $name widget's name
+     * Class Constructor.
+     *
+     * Initializes the sortable list with a unique identifier and default settings.
+     *
+     * @param string $name The widget's name.
      */
     public function __construct($name)
     {
@@ -58,8 +64,9 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define orientation
-     * @param $orienatation (horizontal, vertical)
+     * Sets the list orientation.
+     *
+     * @param string $orientation The orientation mode ('horizontal' or 'vertical').
      */
     public function setOrientation($orientation)
     {
@@ -67,7 +74,9 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define limit
+     * Sets the maximum number of items allowed in the list.
+     *
+     * @param int $limit The maximum number of items (-1 for no limit).
      */
     public function setLimit($limit)
     {
@@ -75,8 +84,9 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the item icon
-     * @param $image Item icon
+     * Sets the icon for list items.
+     *
+     * @param TImage $icon The image icon to be displayed with items.
      */
     public function setItemIcon(TImage $icon)
     {
@@ -84,7 +94,10 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the list size
+     * Sets the size of the sortable list.
+     *
+     * @param int|string $width  The width of the list (px or %).
+     * @param int|string|null $height The height of the list (px or %), optional.
      */
     public function setSize($width, $height = NULL)
     {
@@ -93,8 +106,9 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's separator
-     * @param $sep A string containing the field's separator
+     * Sets the separator for multiple values.
+     *
+     * @param string $sep The separator string.
      */
     public function setValueSeparator($sep)
     {
@@ -102,8 +116,9 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's value
-     * @param $value An array the field's values
+     * Sets the selected values in the list.
+     *
+     * @param array|string $value The selected values as an array or a delimited string.
      */
     public function setValue($value)
     {
@@ -138,8 +153,11 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Connect to another list
-     * @param $list Another TSortList
+     * Connects this list to another `TSortList`.
+     *
+     * Items from the connected list will be considered when setting values.
+     *
+     * @param TSortList $list Another instance of `TSortList`.
      */
     public function connectTo(TSortList $list)
     {
@@ -147,8 +165,9 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Add items to the sort list
-     * @param $items An indexed array containing the options
+     * Adds items to the sortable list.
+     *
+     * @param array $items An associative array of items where keys are identifiers and values are labels.
      */
     public function addItems($items)
     {
@@ -160,7 +179,9 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the sort items
+     * Retrieves the list of initial items.
+     *
+     * @return array The associative array of initial items.
      */
     public function getItems()
     {
@@ -168,7 +189,9 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the post data
+     * Retrieves the submitted data from the form.
+     *
+     * @return array|string The selected items as an array or a delimited string.
      */
     public function getPostData()
     {
@@ -190,8 +213,11 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the action to be executed when the user changes the combo
-     * @param $action TAction object
+     * Sets an action to be executed when the list order is changed.
+     *
+     * @param TAction $action The action object to be triggered.
+     *
+     * @throws Exception If the action is not static.
      */
     public function setChangeAction(TAction $action)
     {
@@ -207,7 +233,9 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Set change function
+     * Sets a JavaScript function to be executed when the list order is changed.
+     *
+     * @param string $function The JavaScript function code.
      */
     public function setChangeFunction($function)
     {
@@ -215,7 +243,10 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Enable the field
+     * Enables the sortable list field in the form.
+     *
+     * @param string $form_name The name of the form.
+     * @param string $field The name of the field.
      */
     public static function enableField($form_name, $field)
     {
@@ -223,7 +254,10 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable the field
+     * Disables the sortable list field in the form.
+     *
+     * @param string $form_name The name of the form.
+     * @param string $field The name of the field.
      */
     public static function disableField($form_name, $field)
     {
@@ -231,7 +265,10 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Clear the field
+     * Clears the values in the sortable list field.
+     *
+     * @param string $form_name The name of the form.
+     * @param string $field The name of the field.
      */
     public static function clearField($form_name, $field)
     {
@@ -239,7 +276,11 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Reload elements
+     * Reloads the list items dynamically.
+     *
+     * @param string $form_name The name of the form.
+     * @param string $field The name of the field.
+     * @param array $items An associative array of items to populate the list.
      */
     public static function reload($form_name, $field, $items)
     {
@@ -259,7 +300,11 @@ class TSortList extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Shows the widget at the screen
+     * Renders the sortable list widget.
+     *
+     * Generates the HTML structure and initializes JavaScript behavior for drag-and-drop sorting.
+     *
+     * @throws Exception If the change action is set but no form is associated.
      */
     public function show()
     {

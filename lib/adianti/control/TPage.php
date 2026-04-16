@@ -11,6 +11,9 @@ use ReflectionClass;
 /**
  * Page Controller Pattern: used as container for all elements inside a page and also as a page controller
  *
+ * This class represents a page structure and handles functionalities such as setting page titles, 
+ * including JavaScript and CSS files, managing target containers, and detecting mobile devices.
+ *
  * @version    7.5
  * @package    control
  * @author     Pablo Dall'Oglio
@@ -25,9 +28,13 @@ class TPage extends TElement
     private static $loadedjs;
     private static $loadedcss;
     private static $registeredcss;
+    protected $adianti_target_container;
     
     /**
      * Class Constructor
+     *
+     * Initializes a new page container as a <div> element, sets its properties, 
+     * and marks the object as constructed.
      */
     public function __construct()
     {
@@ -39,7 +46,9 @@ class TPage extends TElement
     }
     
     /**
-     * Set page name
+     * Set the page name
+     *
+     * @param string $name The name to assign to the page
      */
     public function setPageName($name)
     {
@@ -48,7 +57,9 @@ class TPage extends TElement
     }
     
     /**
-     * Return the Page name
+     * Get the class name of the current page instance
+     *
+     * @return string The short name of the class
      */
     public function getClassName()
     {
@@ -57,7 +68,9 @@ class TPage extends TElement
     }
     
     /**
-     * Change page title
+     * Change the page title
+     *
+     * @param string $title The title to be set on the page
      */
 	public static function setPageTitle($title)
     {
@@ -65,32 +78,41 @@ class TPage extends TElement
     }
     
     /**
-     * Set target container for page content
+     * Set the target container for page content
+     *
+     * @param string|null $container The target container identifier. If null, removes the container setting.
      */
     public function setTargetContainer($container)
     {
         if ($container)
         {
+            $this->adianti_target_container = $container;
             $this->setProperty('adianti_target_container', $container);
             $this->{'class'} = 'container-part';
         }
         else
         {
+            $this->adianti_target_container = null;
             unset($this->{'adianti_target_container'});
             unset($this->{'class'});
         }
     }
     
     /**
-     * Return target container
+     * Get the target container for the page content
+     *
+     * @return string|null The target container identifier, or null if not set
      */
     public function getTargetContainer()
     {
-        return $this->{'adianti_target_container'};
+        return $this->adianti_target_container;
     }
     
     /**
-     * Interprets an action based at the URL parameters
+     * Interpret an action based on URL parameters
+     *
+     * Executes a class method dynamically based on the 'class' and 'method' parameters in the URL.
+     * If no class is specified, it checks for a globally defined function.
      */
     public function run()
     {
@@ -115,8 +137,9 @@ class TPage extends TElement
     }
     
     /**
-     * Include a specific JavaScript function to this page
-     * @param $js JavaScript location
+     * Include a specific JavaScript file in the page
+     *
+     * @param string $js The JavaScript file location
      */
     public static function include_js($js)
     {
@@ -124,8 +147,9 @@ class TPage extends TElement
     }
     
     /**
-     * Include a specific Cascading Stylesheet to this page
-     * @param $css  Cascading Stylesheet 
+     * Include a specific Cascading Stylesheet (CSS) file in the page
+     *
+     * @param string $css The CSS file location
      */
     public static function include_css($css)
     {
@@ -133,9 +157,10 @@ class TPage extends TElement
     }
     
     /**
-     * Register a specific Cascading Stylesheet to this page
-     * @param $cssname  Cascading Stylesheet Name
-     * @param $csscode  Cascading Stylesheet Code
+     * Register a custom Cascading Stylesheet (CSS) definition
+     *
+     * @param string $cssname The name of the CSS rule
+     * @param string $csscode The actual CSS code
      */
     public static function register_css($cssname, $csscode)
     {
@@ -143,8 +168,10 @@ class TPage extends TElement
     }
     
     /**
-     * Open a File Dialog
-     * @param $file File Name
+     * Open a file in the browser for download
+     *
+     * @param string      $file     The file path to be opened
+     * @param string|null $basename The optional base name for the downloaded file
      */
     public static function openFile($file, $basename = null)
     {
@@ -152,7 +179,9 @@ class TPage extends TElement
     }
     
     /**
-     * Open a page in new tab
+     * Open a page in a new browser tab
+     *
+     * @param string $page The URL or page identifier to open
      */
     public static function openPage($page)
     {
@@ -160,8 +189,9 @@ class TPage extends TElement
     }
     
     /**
-     * Return the loaded Cascade Stylesheet files
-     * @ignore-autocomplete on
+     * Retrieve the loaded CSS files and registered styles
+     *
+     * @return string The HTML representation of the loaded CSS files and styles
      */
     public static function getLoadedCSS()
     {
@@ -191,8 +221,9 @@ class TPage extends TElement
     }
     
     /**
-     * Return the loaded JavaScript files
-     * @ignore-autocomplete on
+     * Retrieve the loaded JavaScript files
+     *
+     * @return string The HTML representation of the loaded JavaScript files
      */
     public static function getLoadedJS()
     {
@@ -209,7 +240,9 @@ class TPage extends TElement
     }
     
     /**
-     * Discover if the browser is mobile device
+     * Detect whether the browser is a mobile device
+     *
+     * @return bool True if the browser is identified as a mobile device, false otherwise
      */
     public static function isMobile()
     {
@@ -248,9 +281,10 @@ class TPage extends TElement
     }
     
     /**
-     * Intercepts whenever someones assign a new property's value
-     * @param $name     Property Name
-     * @param $value    Property Value
+     * Intercepts property assignments and sets their values
+     *
+     * @param string $name  The property name
+     * @param mixed  $value The property value
      */
     public function __set($name, $value)
     {
@@ -259,10 +293,20 @@ class TPage extends TElement
     }
     
     /**
-     * Decide wich action to take and show the page
+     * Determines the appropriate action to take and displays the page
+     *
+     * Runs the page's main method if it's not nested within another container.
+     * Throws an exception if the constructor was not called properly.
+     *
+     * @throws Exception If the constructor was not called
      */
     public function show()
     {
+        if($this->adianti_target_container)
+        {
+            parent::setProperty('adianti_target_container', $this->adianti_target_container);
+        }
+        
         // just execute run() from toplevel TPage's, not nested ones
         if (!$this->getIsWrapped())
         {

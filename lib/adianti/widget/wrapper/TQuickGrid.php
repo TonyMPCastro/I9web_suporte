@@ -7,7 +7,8 @@ use Adianti\Widget\Datagrid\TDataGridColumn;
 use Adianti\Widget\Datagrid\TDataGridAction;
 
 /**
- * Create quick datagrids through its simple interface
+ * Provides a simplified interface for creating data grids with columns and actions.
+ * This class extends TDataGrid and allows for quick setup of data grids.
  *
  * @version    7.5
  * @package    widget
@@ -19,12 +20,18 @@ use Adianti\Widget\Datagrid\TDataGridAction;
 class TQuickGrid extends TDataGrid
 {
     /**
-     * Add a column
-     * @param $label  Field Label
-     * @param $object Field Object
-     * @param $size   Field Size
+     * Adds a column to the data grid.
+     *
+     * @param string   $label   Column label.
+     * @param string   $name    Column field name.
+     * @param string   $align   Column alignment (default: 'left').
+     * @param int      $size    Column width in pixels (default: 200).
+     * @param TAction|null $action  Sorting action associated with the column (optional).
+     * @param array|null   $param   Parameters for the action (optional).
+     *
+     * @return TDataGridColumn The created data grid column instance.
      */
-    public function addQuickColumn($label, $name, $align = 'left', $size = 200, TAction $action = NULL, $param = NULL)
+    public function addQuickColumn($label, $name, $align = 'left', $size = 200, ?TAction $action = null, $param = NULL)
     {
         // creates a new column
         $object = new TDataGridColumn($name, $label, $align, $size);
@@ -41,10 +48,14 @@ class TQuickGrid extends TDataGrid
     }
     
     /**
-     * Add action to the datagrid
-     * @param $label  Action Label
-     * @param $action TAction Object
-     * @param $icon   Action Icon
+     * Adds an action to the data grid.
+     *
+     * @param string          $label  Action label.
+     * @param TDataGridAction $action Data grid action object.
+     * @param string|array    $field  Field(s) to be used in the action.
+     * @param string|null     $icon   Action icon (optional).
+     *
+     * @return TDataGridAction The created data grid action instance.
      */
     public function addQuickAction($label, TDataGridAction $action, $field, $icon = NULL)
     {

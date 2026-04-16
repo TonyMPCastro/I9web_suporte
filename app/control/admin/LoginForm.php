@@ -1,4 +1,7 @@
 <?php
+
+use Adianti\Database\TTransaction;
+
 /**
  * LoginForm
  *
@@ -12,7 +15,7 @@
 class LoginForm extends TPage
 {
     protected $form; // form
-    
+    private static $preferences;
     /**
      * Class constructor
      * Creates the page and the registration form
@@ -22,6 +25,10 @@ class LoginForm extends TPage
         parent::__construct();
         
         $ini  = AdiantiApplicationConfig::get();
+        
+        TTransaction::open('permission');
+        self::$preferences = SystemPreference::getAllPreferences();
+        TTransaction::close();
         
         $this->style = 'clear:both';
         // creates the form
@@ -95,7 +102,14 @@ class LoginForm extends TPage
             $row = $this->form->addFields( [$lang, $lang_id] );
             $row->layout = ['col-sm-12 display-flex'];
         }
-        
+
+        if (SystemPreferenceService::isGoogleRecaptchaEnabled())
+        {
+            $recaptcha = new BRecaptcha('recaptcha', self::$preferences['google_recaptcha_site_key']);
+            $row = $this->form->addFields([$recaptcha]);
+            $row->layout = ['col-sm-12 div-recaptcha'];
+        }
+
         $btn = $this->form->addAction('Entrar', new TAction(array($this, 'onLogin')), '');
         $btn->class = 'btn ';
         $btn->style = 'height: 40px;width: 90%;display: block;margin: auto;font-size:17px;';
@@ -204,8 +218,6 @@ class LoginForm extends TPage
      */
     public static function onLogin($param)
     {
-        $ini  = AdiantiApplicationConfig::get();
-        
         try
         {
             $data = (object) $param;
@@ -214,6 +226,13 @@ class LoginForm extends TPage
             
             (new TRequiredValidator)->validate( _t('Login'),    $data->login);
             (new TRequiredValidator)->validate( _t('Password'), $data->password);
+            
+            TTransaction::open('permission');
+
+            self::$preferences = SystemPreferenceService::getPreferences();
+            $ini  = AdiantiApplicationConfig::get();
+
+            self::handleRecaptcha($data);
             
             $ini  = AdiantiApplicationConfig::get();
             $multiunit = $ini['general']['multiunit'] ?? false;
@@ -224,10 +243,10 @@ class LoginForm extends TPage
             
             if ($multiunit == '1' && $request_unit_after_login == '1' && empty($data->unit_id))
             {
-                TTransaction::open('permission');
                 $units = $user->getSystemUserUnits();
                 if(count($units) > 1)
                 {
+                    TTransaction::close();
                     return self::showUnitForm($param, $units, $user);
                 }
                 elseif(!empty($units[0]->id))
@@ -235,7 +254,6 @@ class LoginForm extends TPage
                     $data->unit_id = $units[0]->id;
                     $param['unit_id'] = $data->unit_id;
                 }
-                TTransaction::close();
             }
             
             if ($multiunit == '1')
@@ -250,18 +268,19 @@ class LoginForm extends TPage
 
             TScript::create("__adianti_clear_tabs()");
 
-            $term_policy = SystemPreference::findInTransaction('permission', 'term_policy');
+            $term_policy = self::$preferences['term_policy'] ?? '';
 
             if (!empty($ini['general']['require_terms']) && $ini['general']['require_terms'] == '1' && $user->accepted_term_policy !== 'Y' && !empty($term_policy) && empty($data->accept))
             {
-                TSession::freeSession();
+                self::freeSession();
+
                 $param['usage_term_policy'] = 'Y';
                 $action = new TAction(['LoginForm', 'onLogin'], $param);
                 $form = new BootstrapFormBuilder('term_policy');
 
                 $content = new TElement('div');
                 $content->style = "max-height: 45vh; overflow: auto; margin-bottom: 10px;";
-                $content->add($term_policy->preference);
+                $content->add($term_policy);
 
                 $check = new TCheckGroup('accept');
                 $check->addItems(['Y' => _t('I have read and agree to the terms of use and privacy policy')]);
@@ -270,23 +289,27 @@ class LoginForm extends TPage
                 $form->addFields([$check]);
                 $form->addAction( _t('Accept'), $action, 'fas:check');
 
+                TTransaction::close();
                 return new TInputDialog(_t('Terms of use and privacy policy'), $form);
+            }
+            
+            if($twoFactor = self::handleTwoFactor($user, $param))
+            {
+                TTransaction::close();
+                return $twoFactor;
             }
             
             if (!empty($ini['general']['require_terms']) && $ini['general']['require_terms'] == '1' && $user->accepted_term_policy !== 'Y' && !empty($term_policy) && !empty($data->accept))
             {
-                TTransaction::open('permission');
                 $user->accepted_term_policy = 'Y';
                 $user->accepted_term_policy_at = date('Y-m-d H:i:s');
                 $user->store();
-                TTransaction::close();
             }
 
             if ($user)
             {
-                TTransaction::open('permission');
+                SystemPreferenceService::verifyMaintenanceEnabled($user);
                 ApplicationAuthenticationService::loadSessionVars($user, true);
-                TTransaction::close();
                 
                 ApplicationAuthenticationService::setUnit( $data->unit_id ?? null );
                 ApplicationAuthenticationService::setLang( $data->lang_id ?? null );
@@ -314,14 +337,230 @@ class LoginForm extends TPage
                     TSession::setValue('frontpage', 'EmptyPage');
                 }
             }
+
+            TTransaction::close();
         }
         catch (Exception $e)
         {
-            TSession::freeSession();
+            self::freeSession();
+
             new TMessage('error',$e->getMessage());
-            sleep(2);
             TTransaction::rollback();
+            sleep(2);
         }
+    }
+
+    public static function freeSession()
+    {
+        $recaptcha_verified = TSession::getValue('recaptcha_verified') ?? false;
+        TSession::freeSession();
+        TSession::setValue('recaptcha_verified', $recaptcha_verified);
+    }
+
+    /**
+     * Handle Google reCAPTCHA verification
+     * Verifies if reCAPTCHA is enabled in system preferences and validates the user response
+     * 
+     * @throws Exception When reCAPTCHA verification fails
+     * @static
+     * @access private
+     */
+    private static function handleRecaptcha()
+    {
+        if (SystemPreferenceService::isGoogleRecaptchaEnabled())
+        {
+            if(TSession::getValue('recaptcha_verified') == true)
+            {
+                return true;
+            }
+            
+            $recaptcha_response = $_POST['g-recaptcha-response'] ?? null;
+            if (!BRecaptcha::verify($recaptcha_response, self::$preferences['google_recaptcha_secret_key']))
+            {
+                throw new Exception(_t('reCAPTCHA verification failed. Please try again.'));
+            }
+            else
+            {
+                TSession::setValue('recaptcha_verified', true);
+            }
+        }
+    }
+
+    /**
+     * Handle two-factor authentication
+     * @param object $user User object
+     * @param array $param Form parameters
+     * @return mixed Returns form if needed or null to continue
+     */
+    private static function handleTwoFactor($user, $param)
+    {
+        if ($user->two_factor_enabled == 'Y')
+        {
+            if(SystemPreferenceService::isTwoFactorByEmailEnabled() && $user->two_factor_type == 'email' && !empty($param['two_factor_email']))
+            {
+                // Verify email code
+                if (!TwoFactorEmailService::verifyEmailCode($param['email_code']))
+                {
+                    TScript::create("\$('#two-factor-container input').val('')");
+                    throw new Exception(_t('Invalid verification code. Request a new code.'));
+                }
+            }
+            elseif(SystemPreferenceService::isTwoFactorByGoogleAuthEnabled() && $user->two_factor_type == 'google_authenticator' && !empty($param['two_factor_google']))
+            {
+                // Verify email code
+                if (!GoogleAuthenticator::verifyCode($user->two_factor_secret, $param['google_code']))
+                {
+                    TScript::create("\$('#two-factor-container input').val('')");
+                    throw new Exception(_t('Invalid verification code. Request a new code.'));
+                }
+            }
+            elseif (SystemPreferenceService::isTwoFactorByEmailEnabled() &&$user->two_factor_type == 'email')
+            {
+                self::freeSession();
+
+                TwoFactorEmailService::generateAndSendEmailCode($user->email, $user->name);
+                return self::showTwoFactorEmailForm($param);
+            }
+            else if (SystemPreferenceService::isTwoFactorByGoogleAuthEnabled() && $user->two_factor_type == 'google_authenticator')
+            {
+                self::freeSession();
+
+                return self::showTwoFactorGoogleForm($param);
+            }
+        }
+        
+        return null;
+    }
+    
+    public static function showTwoFactorEmailForm($param)
+    {
+        $param['two_factor_email'] = 'T';
+        $param['stay-open'] = 1;
+
+        $action = new TAction(['LoginForm', 'onLogin'], $param);
+        $form = new BootstrapFormBuilder('two_factor_email');
+        
+        $number1 = new TEntry('number1');
+        $number2 = new TEntry('number2');
+        $number3 = new TEntry('number3');
+        $number4 = new TEntry('number4');
+        $number5 = new TEntry('number5');
+        $number6 = new TEntry('number6');
+        $email_code = new THidden('email_code');
+        
+        $email_code->id = 'email_code';
+        $number1->focus = 'focus';
+        $number1->setMaxLength(1);
+        $number2->setMaxLength(1);
+        $number3->setMaxLength(1);
+        $number4->setMaxLength(1);
+        $number5->setMaxLength(1);
+        $number6->setMaxLength(1);
+
+        $content = new TElement('div');
+        $content->class = 'd-flex justify-content-center mb-2';
+        $content->id = 'two-factor-container';
+        $content->add($number1);
+        $content->add($number2);
+        $content->add($number3);
+        $content->add($number4);
+        $content->add($number5);
+        $content->add($number6);
+        
+        $subTitle = new TElement('p');
+        $subTitle->add(_t('Enter the 6-digit code sent to your email'));
+        $subTitle->class = 'subtitle text-center';
+
+        $subTitle->class = 'subtitle text-center';
+
+        $resendLink = new TActionLink('Reenviar código', new TAction(['LoginForm', 'resendTwoFactorEmailCode'], $param));
+        $resendLink->addStyleClass(' btn btn-link');
+        $resendLink->id = 'resend-link';
+
+        $resend = new TElement('p');
+        $resend->class = 'text-center mb-0';
+        $resend->add(_t("Haven't received the code?"));
+        $resend->add($resendLink);
+
+        $form->addContent([$subTitle]);
+        $form->addContent([$content]);
+        $form->addContent([$resend]);
+        $form->addContent([$email_code]);
+        $form->addContent([TScript::create('System.initTwoFactorEmailForm();', false, 1)])->style = 'display:none';
+
+        $btn = $form->addAction(_t('VERIFY'), $action, null);
+        $btn->style = 'width:100%;';
+        $btn->addStyleClass(' btn-primary ');
+        $btn->id = 'btn-two-factor';
+
+        return new TInputDialog(_t('Two-step verification'), $form);
+    }
+    
+    public static function showTwoFactorGoogleForm($param)
+    {
+        $param['two_factor_google'] = 'T';
+        $param['stay-open'] = 1;
+
+        $action = new TAction(['LoginForm', 'onLogin'], $param);
+        $form = new BootstrapFormBuilder('two_factor_google');
+        
+        $number1 = new TEntry('number1');
+        $number2 = new TEntry('number2');
+        $number3 = new TEntry('number3');
+        $number4 = new TEntry('number4');
+        $number5 = new TEntry('number5');
+        $number6 = new TEntry('number6');
+        $google_code = new THidden('google_code');
+        
+        $google_code->id = 'google_code';
+        $number1->focus = 'focus';
+        $number1->setMaxLength(1);
+        $number2->setMaxLength(1);
+        $number3->setMaxLength(1);
+        $number4->setMaxLength(1);
+        $number5->setMaxLength(1);
+        $number6->setMaxLength(1);
+
+        $content = new TElement('div');
+        $content->class = 'd-flex justify-content-center mb-2';
+        $content->id = 'two-factor-container';
+        $content->add($number1);
+        $content->add($number2);
+        $content->add($number3);
+        $content->add($number4);
+        $content->add($number5);
+        $content->add($number6);
+        
+        $subTitle = new TElement('p');
+        $subTitle->add(_t('Enter the 6-digit Google Authenticator code'));
+        $subTitle->class = 'subtitle text-center';
+
+        $form->addContent([$subTitle]);
+        $form->addContent([$content]);
+        $form->addContent([$google_code]);
+        $form->addContent([TScript::create('System.initTwoFactorGoogleForm();', false, 1)])->style = 'display:none';
+
+        $btn = $form->addAction(_t('VERIFY'), $action, null);
+        $btn->style = 'width:100%;';
+        $btn->addStyleClass('btn-primary');
+        $btn->id = 'btn-two-factor';
+        
+        return new TInputDialog(_t('Two-step verification'), $form);
+    }
+
+    public static function resendTwoFactorEmailCode($param)
+    {
+        TTransaction::open('permission');
+        
+        $user = ApplicationAuthenticationService::authenticate($param['login'], $param['password']);
+        
+        $recaptcha_verified = TSession::getValue('recaptcha_verified') ?? false;
+        TSession::freeSession();
+        TSession::setValue('recaptcha_verified', $recaptcha_verified);
+        
+        TwoFactorEmailService::generateAndSendEmailCode($user->email, $user->name);
+        
+        TTransaction::close();        
     }
     
     /** 

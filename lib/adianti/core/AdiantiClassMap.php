@@ -4,6 +4,10 @@ namespace Adianti\Core;
 /**
  * Class map
  *
+ * This class provides methods to retrieve the class map, 
+ * allowed classes for execution, internal classes, and aliases 
+ * for backward compatibility.
+ *
  * @version    7.5
  * @package    core
  * @author     Pablo Dall'Oglio
@@ -12,6 +16,11 @@ namespace Adianti\Core;
  */
 class AdiantiClassMap
 {
+    /**
+     * Retrieves the mapping of class names to their corresponding file paths.
+     *
+     * @return array Associative array where the keys are class names and the values are file paths.
+     */
     public static function getMap()
     {
         $classPath = array();
@@ -186,13 +195,29 @@ class AdiantiClassMap
         $classPath['BTreeView']                       = 'lib/mad/widget/form/BTreeView.php';
         $classPath['BDBRecursiveTreeView']            = 'lib/mad/widget/form/BDBRecursiveTreeView.php';
         $classPath['BDBTreeView']                     = 'lib/mad/widget/form/BDBTreeView.php';
+        $classPath['BRecaptcha']                      = 'lib/mad/widget/form/BRecaptcha.php';
+        $classPath['BDBSelectCheck']                  = 'lib/mad/widget/form/BDBSelectCheck.php';
+        $classPath['BSelectCheck']                    = 'lib/mad/widget/form/BSelectCheck.php';
         $classPath['DBQuery']                         = 'lib/mad/database/DBQuery.php';
+        $classPath['Crypt']                           = 'lib/mad/util/Crypt.php';
+        $classPath['BInfoCard']                       = 'lib/mad/widget/BInfoCard.php';
+        $classPath['BNotificationBanner']             = 'lib/mad/widget/BNotificationBanner.php';
+        $classPath['MadLogService']                   = 'lib/mad/service/MadLogService.php';
+        $classPath['BComboNoResultsService']          = 'lib/mad/service/BComboNoResultsService.php';
+        $classPath['RouteServiceProvider']            = 'lib/mad/rest/RouteServiceProvider.php';
+        $classPath['ResponseInterface']               = 'lib/mad/rest/ResponseInterface.php';
+        $classPath['ApiResourceController']           = 'lib/mad/rest/ApiResourceController.php';
+        $classPath['BRuntimeCache']                   = 'lib/mad/registry/BRuntimeCache.php';
+        $classPath['MADThumbnailGallery']             = 'lib/mad/widget/MADThumbnailGallery.php';
+        $classPath['BMadTable']                       = 'lib/mad/widget/report/BMadTable.php';
         
         return $classPath;
     }
     
     /**
-     * Return classes allowed to be directly executed
+     * Retrieves a list of classes that are allowed to be directly executed.
+     *
+     * @return array List of class names that can be executed.
      */
     public static function getAllowedClasses()
     {
@@ -200,7 +225,11 @@ class AdiantiClassMap
     }
     
     /**
-     * Return internal classes
+     * Retrieves a list of internal classes.
+     *
+     * Internal classes are those that are not included in the list of allowed classes.
+     *
+     * @return array List of internal class names.
      */
     public static function getInternalClasses()
     {
@@ -208,7 +237,9 @@ class AdiantiClassMap
     }
     
     /**
-     * Aliases for backward compatibility
+     * Retrieves an array of class aliases for backward compatibility.
+     *
+     * @return array Associative array where the keys are old class names and the values are their new corresponding names.
      */
     public static function getAliases()
     {

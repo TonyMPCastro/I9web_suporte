@@ -13,8 +13,12 @@ table.tfieldlist td {
 }
 
 /** TFile customs **/
-table.tfieldlist td .div_file {
+/* table.tfieldlist td .div_file {
     display: flex !important;
+} */
+
+table.tfieldlist td .div_file .file-response-icon{
+    top:15px !important;
 }
 
 table.tfieldlist td .tfile_row_wrapper {

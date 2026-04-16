@@ -3,7 +3,9 @@ namespace Adianti\Wrapper;
 use Adianti\Widget\Datagrid\TDataGrid;
 
 /**
- * Bootstrap datagrid decorator for Adianti Framework
+ * Bootstrap datagrid decorator for Adianti Framework.
+ *
+ * This class acts as a wrapper around TDataGrid, applying Bootstrap styles.
  *
  * @version    7.5
  * @package    wrapper
@@ -18,7 +20,10 @@ class BootstrapDatagridWrapper
     private $decorated;
     
     /**
-     * Constructor method
+     * Constructor method.
+     * Initializes the BootstrapDatagridWrapper and applies Bootstrap styling to the decorated datagrid.
+     *
+     * @param TDataGrid $datagrid The datagrid instance to be decorated.
      */
     public function __construct(TDataGrid $datagrid)
     {
@@ -28,7 +33,8 @@ class BootstrapDatagridWrapper
     }
     
     /**
-     * Clone datagrid
+     * Clone method.
+     * Clones the decorated datagrid instance to ensure a new independent copy.
      */
     public function __clone()
     {
@@ -36,7 +42,12 @@ class BootstrapDatagridWrapper
     }
     
     /**
-     * Redirect calls to decorated object
+     * Magic method to redirect method calls to the decorated datagrid.
+     *
+     * @param string $method     The method name being called.
+     * @param array  $parameters The arguments passed to the method.
+     *
+     * @return mixed The return value of the called method.
      */
     public function __call($method, $parameters)
     {
@@ -44,7 +55,10 @@ class BootstrapDatagridWrapper
     }
     
     /**
-     * Redirect calls to decorated object
+     * Magic method to set properties on the decorated datagrid.
+     *
+     * @param string $property The name of the property being set.
+     * @param mixed  $value    The value to be assigned to the property.
      */
     public function __set($property, $value)
     {
@@ -52,7 +66,11 @@ class BootstrapDatagridWrapper
     }
     
     /**
-     * Redirect calls to decorated object
+     * Magic method to get properties from the decorated datagrid.
+     *
+     * @param string $property The name of the property being accessed.
+     *
+     * @return mixed The value of the property.
      */
     public function __get($property)
     {
@@ -60,7 +78,8 @@ class BootstrapDatagridWrapper
     }
     
     /**
-     * Shows the decorated datagrid
+     * Renders the decorated datagrid with Bootstrap styles.
+     * Applies Bootstrap styling and ensures proper formatting of rows and sections.
      */
     public function show()
     {

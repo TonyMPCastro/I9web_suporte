@@ -3,7 +3,11 @@ use Adianti\Database\TSqlStatement;
 use Adianti\Database\TTransaction;
 
 /**
- * Provides an Interface to create SELECT statements
+ * Class BChartSqlSelect
+ *
+ * This class extends TSqlStatement to construct and generate SELECT SQL statements
+ * compatible with multiple database drivers, including standard open-source databases,
+ * SQL Server, Interbase, and Oracle.
  *
  * @version    7.3
  * @package    database
@@ -16,8 +20,9 @@ class BChartSqlSelect extends TSqlStatement
     private $columns;   // array with the column names to be returned
     
     /**
-     * Add a column name to be returned
-     * @param $column   A string containing a column name
+     * Adds a column name to be returned in the SELECT statement.
+     *
+     * @param string $column The name of the column to be included in the query.
      */
     public function addColumn($column)
     {
@@ -26,8 +31,12 @@ class BChartSqlSelect extends TSqlStatement
     }
     
     /**
-     * Returns the SELECT statement as an string according to the database driver
-     * @param $prepared Return a prepared Statement
+     * Generates the SELECT statement according to the database driver in use.
+     *
+     * @param bool $prepared Whether to return a prepared statement.
+     *
+     * @return string The generated SQL SELECT statement.
+     * @throws Exception If the database connection is not available.
      */
     public function getInstruction( $prepared = FALSE)
     {
@@ -53,8 +62,11 @@ class BChartSqlSelect extends TSqlStatement
     }
     
     /**
-     * Returns the SELECT statement as an string for standard open source drivers
-     * @param $prepared Return a prepared Statement
+     * Generates the standard SQL SELECT statement for open-source database drivers.
+     *
+     * @param bool $prepared Whether to return a prepared statement.
+     *
+     * @return string The generated SQL SELECT statement.
      */
     public function getStandardInstruction( $prepared )
     {
@@ -103,8 +115,11 @@ class BChartSqlSelect extends TSqlStatement
     }
     
     /**
-     * Returns the SELECT statement as an string for standard open source drivers
-     * @param $prepared Return a prepared Statement
+     * Generates the SQL SELECT statement for Firebird/Interbase databases.
+     *
+     * @param bool $prepared Whether to return a prepared statement.
+     *
+     * @return string The generated SQL SELECT statement.
      */
     public function getInterbaseInstruction( $prepared )
     {
@@ -162,8 +177,11 @@ class BChartSqlSelect extends TSqlStatement
     }
     
     /**
-     * Returns the SELECT statement as an string for mssql/dblib drivers
-     * @param $prepared Return a prepared Statement
+     * Generates the SQL SELECT statement for SQL Server (mssql/dblib/sqlsrv).
+     *
+     * @param bool $prepared Whether to return a prepared statement.
+     *
+     * @return string The generated SQL SELECT statement.
      */
     public function getSqlServerInstruction( $prepared )
     {
@@ -251,8 +269,11 @@ class BChartSqlSelect extends TSqlStatement
     }
     
     /**
-     * Returns the SELECT statement as an string for oci8 drivers
-     * @param $prepared Return a prepared Statement
+     * Generates the SQL SELECT statement for Oracle (oci/oci8).
+     *
+     * @param bool $prepared Whether to return a prepared statement.
+     *
+     * @return string The generated SQL SELECT statement.
      */
     public function getOracleInstruction( $prepared )
     {

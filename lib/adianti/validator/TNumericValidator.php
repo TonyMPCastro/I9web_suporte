@@ -8,6 +8,8 @@ use Exception;
 /**
  * Numeric validation
  *
+ * Validates that a given value is numeric.
+ *
  * @version    7.5
  * @package    validator
  * @author     Pablo Dall'Oglio
@@ -17,10 +19,13 @@ use Exception;
 class TNumericValidator extends TFieldValidator
 {
     /**
-     * Validate a given value
-     * @param $label Identifies the value to be validated in case of exception
-     * @param $value Value to be validated
-     * @param $parameters aditional parameters for validation (min value)
+     * Validates if the given value is numeric.
+     *
+     * @param string $label The label identifying the value to be validated.
+     * @param mixed $value The value to be validated.
+     * @param array|null $parameters Additional parameters (not used in this validation).
+     *
+     * @throws Exception If the value is not numeric.
      */
     public function validate($label, $value, $parameters = NULL)
     {

@@ -12,7 +12,9 @@ use Adianti\Control\TAction;
 use Exception;
 
 /**
- * Abstract Record Lookup Widget: Creates a lookup field used to search values from associated entities
+ * TDBSeekButton is a lookup field that allows users to search for values in an associated database entity.
+ *
+ * This widget extends TSeekButton and performs a lookup operation to retrieve values dynamically.
  *
  * @version    7.5
  * @package    widget
@@ -24,16 +26,23 @@ use Exception;
 class TDBSeekButton extends TSeekButton
 {
     /**
-     * Class Constructor
-     * @param  $name name of the form field
-     * @param  $database name of the database connection
-     * @param  $form name of the parent form
-     * @param  $model name of the Active Record to be searched
-     * @param  $display_field name of the field to be searched and shown
-     * @param  $receive_key name of the form field to receive the primary key
-     * @param  $receive_display_field name of the form field to receive the "display field"
+     * Constructor method
+     *
+     * Initializes the lookup field and sets up the action parameters for searching in the database.
+     *
+     * @param string      $name                  The name of the form field
+     * @param string      $database              The name of the database connection
+     * @param string      $form                  The name of the parent form
+     * @param string      $model                 The Active Record model to be searched
+     * @param string      $display_field         The field to be searched and displayed
+     * @param string|null $receive_key           The form field that receives the primary key (optional)
+     * @param string|null $receive_display_field The form field that receives the display field value (optional)
+     * @param TCriteria|null $criteria           The filtering criteria for search (optional)
+     * @param string      $operator              The comparison operator to use in search (default: 'like')
+     * 
+     * @throws Exception If any required parameter is missing
      */
-    public function __construct($name, $database, $form, $model, $display_field, $receive_key = null, $receive_display_field = null, TCriteria $criteria = NULL, $operator = 'like')
+    public function __construct($name, $database, $form, $model, $display_field, $receive_key = null, $receive_display_field = null, ?TCriteria $criteria = NULL, $operator = 'like')
     {
         parent::__construct($name);
         
@@ -73,7 +82,9 @@ class TDBSeekButton extends TSeekButton
     }
     
     /**
-     * Set search criteria
+     * Sets a search criteria for the lookup field.
+     *
+     * @param TCriteria $criteria The filtering criteria to be applied in the lookup search
      */
     public function setCriteria(TCriteria $criteria)
     {
@@ -81,7 +92,11 @@ class TDBSeekButton extends TSeekButton
     }
     
     /**
-     * Set operator
+     * Sets the search operator.
+     *
+     * Defines whether the search should use 'like' or 'ilike'.
+     *
+     * @param string $operator The search operator ('like' or 'ilike')
      */
     public function setOperator($operator)
     {
@@ -89,8 +104,9 @@ class TDBSeekButton extends TSeekButton
     }
     
     /**
-     * Set display mask
-     * @param $mask Display mask
+     * Sets the display mask for the lookup field.
+     *
+     * @param string $mask The format mask to be applied to the displayed value
      */
     public function setDisplayMask($mask)
     {
@@ -98,8 +114,9 @@ class TDBSeekButton extends TSeekButton
     }
     
     /**
-     * Set display label
-     * @param $mask Display label
+     * Sets the display label for the lookup field.
+     *
+     * @param string $label The label to be displayed
      */
     public function setDisplayLabel($label)
     {
@@ -107,8 +124,11 @@ class TDBSeekButton extends TSeekButton
     }
     
     /**
-     * Define the field's value
-     * @param $value Current value
+     * Defines the field's value and updates the auxiliary field if necessary.
+     *
+     * If a display field is available, it retrieves its value from the database.
+     *
+     * @param mixed $value The value to be assigned to the field
      */
     public function setValue($value)
     {

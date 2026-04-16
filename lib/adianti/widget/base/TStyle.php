@@ -5,7 +5,10 @@ use Adianti\Control\TPage;
 use Adianti\Widget\Base\TElement;
 
 /**
- * StyleSheet Manager
+ * Manages CSS styles for the application.
+ *
+ * This class allows the definition, retrieval, and display of CSS styles dynamically.
+ * Styles can be created, modified, and shown either inline or as external stylesheets.
  *
  * @version    7.5
  * @package    widget
@@ -23,7 +26,10 @@ class TStyle
     
     /**
      * Class Constructor
-     * @param $mame Name of the style
+     *
+     * Initializes a new style with a given name.
+     *
+     * @param string $name The name of the style.
      */
     public function __construct($name)
     {
@@ -32,8 +38,9 @@ class TStyle
     }
     
     /**
-     * Import style
-     * @param $style Style file name
+     * Imports and applies a CSS style from a file.
+     *
+     * @param string $filename The path to the CSS file.
      */
     public static function importFromFile($filename)
     {
@@ -43,7 +50,9 @@ class TStyle
     }
     
     /**
-     * Returns the style name
+     * Retrieves the name of the style.
+     *
+     * @return string The name of the style.
      */
     public function getName()
     {
@@ -51,8 +60,11 @@ class TStyle
     }
     
     /**
-     * Find a style by its properties
-     * @object style object
+     * Finds a style by its properties.
+     *
+     * @param object $object An object containing style properties.
+     *
+     * @return string|null The name of the matching style, or null if no match is found.
      */
     public static function findStyle($object)
     {
@@ -69,9 +81,12 @@ class TStyle
     }
     
     /**
-     * Executed whenever a property is assigned
-     * @param  $name    = property's name
-     * @param  $value   = property's value
+     * Sets a CSS property value.
+     *
+     * Automatically converts underscores to hyphens in property names.
+     *
+     * @param string $name  The name of the CSS property.
+     * @param string $value The value to be assigned to the CSS property.
      */
     public function __set($name, $value)
     {
@@ -83,8 +98,13 @@ class TStyle
     }
     
     /**
-     * Executed whenever a property is read
-     * @param  $name    = property's name
+     * Retrieves a CSS property value.
+     *
+     * Automatically converts underscores to hyphens in property names.
+     *
+     * @param string $name The name of the CSS property.
+     *
+     * @return string|null The value of the CSS property, or null if it is not set.
      */
     public function __get($name)
     {
@@ -95,7 +115,9 @@ class TStyle
     }
     
     /**
-     * Return if the style has any content
+     * Checks if the style has any defined properties.
+     *
+     * @return bool True if the style contains properties, false otherwise.
      */
     public function hasContent()
     {
@@ -103,7 +125,9 @@ class TStyle
     }
     
     /**
-     * Returns the style content
+     * Generates and returns the full CSS definition of the style.
+     *
+     * @return string The CSS content formatted as a class definition.
      */
     public function getContent()
     {
@@ -124,8 +148,10 @@ class TStyle
     }
     
     /**
-     * Return the style inline code
-     */ 
+     * Retrieves the style properties formatted for inline use.
+     *
+     * @return string The inline CSS string containing all style properties.
+     */
     public function getInline()
     {
         $style = '';
@@ -143,7 +169,12 @@ class TStyle
     }
     
     /**
-     * Show the style
+     * Displays the style.
+     *
+     * If the style has not been loaded yet, it is either printed inline or registered
+     * globally for the page.
+     *
+     * @param bool $inline Whether to output the style inline (true) or register it globally (false).
      */
     public function show( $inline = FALSE)
     {

@@ -57,6 +57,15 @@
                     <i class="fa fa-life-ring fa-fw"></i>
                 </a>
               </li>
+
+              <!--[IF-CHAT]-->
+              <li class="dropdown">
+                <a href='#' id="chat-start-icon">
+                  <i class="far fa-comments"></i>
+                  <span class="label label-danger" id="chat-count" data-count="0">0</span>
+                </a>
+              </li>
+              <!--[/IF-CHAT]-->
               
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -155,21 +164,33 @@
         <!--[IFADMIN]-->
         <a style="cursor:pointer; color: teal" href="#" onclick="BuilderEditorCss.initEditorCss(true)"> <i class="fas fa-hashtag" aria-hidden="true"></i> Editor de CSS </a> &nbsp;&nbsp;
         <a style="cursor:pointer; color: teal" generator="adianti" href="index.php?class=SystemModulesCheckView"> <i class="fa fa-code" aria-hidden="true"></i> PHP Modules </a> &nbsp;&nbsp;
-        <span style="cursor:pointer; color: teal" onclick="Adianti.showDebugPanel()"> <i class="fa fa-window-maximize" aria-hidden="true"></i> Debug Console </span>
         <!--[/IFADMIN]-->
       </footer>
-      
-      <div id="adianti_debug_panel" class="debug-panel">
-          <i onclick="Adianti.hideDebugPanel()" class="fa fa-times" aria-hidden="true" title="_t{Close}"></i>
-          <span > Request URL </span>
-          <span > Request Data </span>
-          <div id="request_url_panel"> </div>
-          <div id="request_data_panel"> </div>
-      </div>
       
       <div class="control-sidebar-bg"></div>
     </div>
 
+     <!--[IF-CHAT]-->
+     <div id="chat-container" style="display: none;">
+        <div id="chat-list-header">
+            Conversas
+            <div class="chat-list-header-actions">
+                <div class="dropdown">
+                    <span title = 'Nova conversa ou grupo' type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-plus"></i></span>
+
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a href="index.php?class=SystemNewChatForm&method=onShow" generator="adianti" id="newChatBtn" class="dropdown-item"> Nova conversa</a>
+                    <a href="index.php?class=SystemNewChatGroupForm&method=onShow" generator="adianti" id="newGroupBtn" class="dropdown-item"> Novo grupo</a>
+                    </div>
+                </div>
+                <span title='_t{Close}' id="chat-list-close-btn">×</span>
+            </div>
+        </div>
+        <div id="chat-list"></div>
+    </div>
+    <div id="chat-windows"></div>
+    <!--[/IF-CHAT]-->
+    
     <script>
 
       BuilderTemplate.init({
@@ -184,7 +205,16 @@
         verify_messages_menu : {verify_messages_menu},
         verify_notifications_menu : {verify_notifications_menu},
         public_layout: false,
-          dialog_box_type: '{dialog_box_type}'
+        firebase_token: '{firebase_token}',
+        firebase_config: {firebase_config},
+        theme: '{user_theme}',
+        dialog_box_type: '{dialog_box_type}',
+        user_id: '{user_id}',
+        login: '{login}',
+        users: {users},
+        chat_enabled: {chat_enabled},
+        single_tab_mode: {single_tab_mode},
+        mad_debug_console: {mad_debug_console}
       });
 
     </script>

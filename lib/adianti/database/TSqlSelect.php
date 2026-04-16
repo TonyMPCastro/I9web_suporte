@@ -9,6 +9,9 @@ use PDO;
 /**
  * Provides an Interface to create SELECT statements
  *
+ * Provides an interface to create and manage SELECT statements.
+ * This class extends `TSqlStatement` and allows building SQL SELECT queries dynamically.
+ *
  * @version    7.5
  * @package    database
  * @author     Pablo Dall'Oglio
@@ -20,8 +23,11 @@ class TSqlSelect extends TSqlStatement
     private $columns;   // array with the column names to be returned
     
     /**
-     * Add a column name to be returned
-     * @param $column   A string containing a column name
+     * Adds a column name to be included in the SELECT statement.
+     *
+     * @param string $column The name of the column to be selected.
+     *
+     * @return void
      */
     public function addColumn($column)
     {
@@ -30,8 +36,12 @@ class TSqlSelect extends TSqlStatement
     }
     
     /**
-     * Returns the SELECT statement as an string according to the database driver
-     * @param $prepared Return a prepared Statement
+     * Builds and returns the SQL SELECT statement based on the current database driver.
+     *
+     * @param bool $prepared Determines whether to return a prepared statement.
+     *
+     * @return string The generated SQL SELECT statement.
+     * @throws Exception If the database connection is not available.
      */
     public function getInstruction( $prepared = FALSE)
     {
@@ -66,8 +76,11 @@ class TSqlSelect extends TSqlStatement
     }
     
     /**
-     * Returns the SELECT statement as an string for standard open source drivers
-     * @param $prepared Return a prepared Statement
+     * Builds and returns the SQL SELECT statement for standard open-source database drivers.
+     *
+     * @param bool $prepared Determines whether to return a prepared statement.
+     *
+     * @return string The generated SQL SELECT statement.
      */
     public function getStandardInstruction( $prepared )
     {
@@ -116,8 +129,11 @@ class TSqlSelect extends TSqlStatement
     }
     
     /**
-     * Returns the SELECT statement as an string for standard open source drivers
-     * @param $prepared Return a prepared Statement
+     * Builds and returns the SQL SELECT statement for Firebird/Interbase databases.
+     *
+     * @param bool $prepared Determines whether to return a prepared statement.
+     *
+     * @return string The generated SQL SELECT statement.
      */
     public function getInterbaseInstruction( $prepared )
     {
@@ -175,8 +191,12 @@ class TSqlSelect extends TSqlStatement
     }
     
     /**
-     * Returns the SELECT statement as an string for mssql/dblib drivers
-     * @param $prepared Return a prepared Statement
+     * Builds and returns the SQL SELECT statement for Microsoft SQL Server (MSSQL, DBLIB, SQLSRV).
+     * This method uses `ROW_NUMBER()` to handle pagination when needed.
+     *
+     * @param bool $prepared Determines whether to return a prepared statement.
+     *
+     * @return string The generated SQL SELECT statement.
      */
     public function getSqlServerInstruction( $prepared )
     {
@@ -250,8 +270,12 @@ class TSqlSelect extends TSqlStatement
     }
     
     /**
-     * Returns the SELECT statement as an string for oci8 drivers
-     * @param $prepared Return a prepared Statement
+     * Builds and returns the SQL SELECT statement for Oracle (OCI8) databases.
+     * This method handles pagination using `rownum`.
+     *
+     * @param bool $prepared Determines whether to return a prepared statement.
+     *
+     * @return string The generated SQL SELECT statement.
      */
     public function getOracleInstruction( $prepared )
     {
@@ -317,6 +341,13 @@ class TSqlSelect extends TSqlStatement
         return $this->sql;
     }
 
+    /**
+     * Removes double quotes from SQL aliases.
+     *
+     * @param string $sql The SQL query string.
+     *
+     * @return string The modified SQL query with aliases without double quotes.
+     */
     public static function  removeDoubleQuotesFromAliases($sql) {
         // Expressão regular para encontrar alias com aspas duplas
         $pattern = '/\bas\s+"([^"]+)"/i';

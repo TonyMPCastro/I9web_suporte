@@ -6,11 +6,15 @@ use Adianti\Widget\Base\TElement;
 use Adianti\Widget\Base\TScript;
 use Adianti\Widget\Form\TEntry;
 use Adianti\Database\TCriteria;
+use Adianti\Widget\Form\TForm;
 
 use Exception;
 
 /**
  * Database Entry Widget
+ *
+ * This widget is an enhanced text entry that integrates with a database model.
+ * It supports autocomplete functionality based on a specified model column.
  *
  * @version    7.5
  * @package    widget
@@ -33,14 +37,19 @@ class TDBEntry extends TEntry
     
     /**
      * Class Constructor
-     * @param  $name     widget's name
-     * @param  $database database name
-     * @param  $model    model class name
-     * @param  $value    table field to be listed in the combo
-     * @param  $ordercolumn column to order the fields (optional)
-     * @param  $criteria criteria (TCriteria object) to filter the model (optional)
+     *
+     * Initializes a database entry widget with autocomplete functionality.
+     *
+     * @param string     $name       Widget name
+     * @param string     $database   Database connection name
+     * @param string     $model      Model class name
+     * @param string     $value      Column name used for autocomplete search
+     * @param string|null $orderColumn Column used to order results (optional)
+     * @param TCriteria|null $criteria Filtering criteria (optional)
+     *
+     * @throws Exception If any of the required parameters is missing
      */
-    public function __construct($name, $database, $model, $value, $orderColumn = NULL, TCriteria $criteria = NULL)
+    public function __construct($name, $database, $model, $value, $orderColumn = NULL, ?TCriteria $criteria = NULL)
     {
         // executes the parent class constructor
         parent::__construct($name);
@@ -74,8 +83,9 @@ class TDBEntry extends TEntry
     }
     
     /**
-     * Define the display mask
-     * @param $mask Show mask
+     * Sets the display mask for the autocomplete results.
+     *
+     * @param string $mask Mask format for display
      */
     public function setDisplayMask($mask)
     {
@@ -83,8 +93,9 @@ class TDBEntry extends TEntry
     }
     
     /**
-     * Define the search service
-     * @param $service Search service
+     * Defines the autocomplete search service to be used.
+     *
+     * @param string $service Name of the search service
      */
     public function setService($service)
     {
@@ -92,7 +103,9 @@ class TDBEntry extends TEntry
     }
     
     /**
-     * Define the minimum length for search
+     * Sets the minimum length of input required to trigger the search.
+     *
+     * @param int $length Minimum number of characters before searching
      */
     public function setMinLength($length)
     {
@@ -100,8 +113,9 @@ class TDBEntry extends TEntry
     }
     
     /**
-     * Define the search operator
-     * @param $operator Search operator
+     * Sets the search operator (e.g., '=', 'LIKE', etc.).
+     *
+     * @param string $operator SQL operator used for filtering
      */
     public function setOperator($operator)
     {
@@ -109,11 +123,34 @@ class TDBEntry extends TEntry
     }
     
     /**
-     * Shows the widget
+     * Renders the widget and initializes the autocomplete functionality.
      */
     public function show()
     {
+        if (isset($this->exitAction))
+        {
+            if (!TForm::getFormByName($this->formName) instanceof TForm)
+            {
+                throw new Exception(AdiantiCoreTranslator::translate('You must pass the ^1 (^2) as a parameter to ^3', __CLASS__, $this->name, 'TForm::setFields()') );
+            }
+            $string_action = $this->exitAction->serialize(FALSE);
+            $this->setProperty('exitaction', "setTimeout( function(){ __adianti_post_lookup('{$this->formName}', '{$string_action}', '{$this->id}', 'callback'); }, 250)");
+
+            // just aggregate onBlur, if the previous one does not have return clause
+            if (strstr((string) $this->getProperty('onBlur'), 'return') == FALSE)
+            {
+                $this->setProperty('onBlur', $this->getProperty('exitaction'), FALSE);
+            }
+            else
+            {
+                $this->setProperty('onBlur', $this->getProperty('exitaction'), TRUE);
+            }
+
+            $this->exitAction = null;
+        }
+
         parent::show();
+        
         
         $min = $this->minLength;
         $orderColumn = isset($this->orderColumn) ? $this->orderColumn : $this->column;

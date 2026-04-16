@@ -7,6 +7,8 @@ use Adianti\Widget\Form\AdiantiWidgetInterface;
 /**
  * Unique Search Widget
  *
+ * This widget extends TMultiSearch and ensures that only one item can be selected.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form
@@ -20,7 +22,10 @@ class TUniqueSearch extends TMultiSearch implements AdiantiWidgetInterface
     
     /**
      * Class Constructor
-     * @param  $name Widget's name
+     *
+     * Initializes the unique search widget, ensuring that only one item can be selected.
+     *
+     * @param string $name The widget's name
      */
     public function __construct($name)
     {
@@ -35,6 +40,11 @@ class TUniqueSearch extends TMultiSearch implements AdiantiWidgetInterface
     
     /**
      * Set value
+     *
+     * Assigns a value to the widget. This method avoids using the parent setValue() 
+     * to maintain compatibility.
+     *
+     * @param mixed $value The value to be set
      */
     public function setValue($value)
     {
@@ -43,6 +53,10 @@ class TUniqueSearch extends TMultiSearch implements AdiantiWidgetInterface
     
     /**
      * Return the post data
+     *
+     * Retrieves the posted data for this widget.
+     *
+     * @return mixed The posted value or an empty string if not set
      */
     public function getPostData()
     {
@@ -59,6 +73,10 @@ class TUniqueSearch extends TMultiSearch implements AdiantiWidgetInterface
     
     /**
      * Returns the size
+     *
+     * Retrieves the size of the widget.
+     *
+     * @return mixed The size of the widget
      */
     public function getSize()
     {
@@ -67,6 +85,8 @@ class TUniqueSearch extends TMultiSearch implements AdiantiWidgetInterface
     
     /**
      * Show the component
+     *
+     * Renders the widget, setting its name attribute and calling the parent show() method.
      */
     public function show()
     {

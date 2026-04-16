@@ -2,7 +2,11 @@
 namespace Adianti\Widget\Base;
 
 /**
- * Base class for all HTML Elements
+ * Represents an HTML element, allowing attributes, child elements, and rendering.
+ *
+ * This class provides methods to create, modify, and render HTML elements dynamically.
+ * It supports setting properties, adding children, managing attributes, and defining 
+ * behavior such as wrapping and visibility.
  *
  * @version    7.5
  * @package    widget
@@ -24,8 +28,9 @@ class TElement
     private $hidden;
     
     /**
-     * Class Constructor
-     * @param $tagname  tag name
+     * Initializes an HTML element with a given tag name.
+     *
+     * @param string $tagname The name of the HTML tag.
      */
     public function __construct($tagname)
     {
@@ -45,10 +50,13 @@ class TElement
     }
     
     /**
-     * Create an element
-     * @param $tagname Element name
-     * @param $value Element value
-     * @param $attributes Element attributes
+     * Creates a new HTML element with specified attributes and content.
+     *
+     * @param string       $tagname    The name of the HTML tag.
+     * @param string|array $value      The content of the element, can be a string or an array of elements.
+     * @param array|null   $attributes An associative array of attributes (optional).
+     *
+     * @return TElement The created HTML element.
      */
     public static function tag($tagname, $value, $attributes = NULL)
     {
@@ -78,7 +86,7 @@ class TElement
     }
     
     /**
-     * hide object
+     * Hides the element, preventing it from being rendered.
      */
     public function hide()
     {
@@ -86,7 +94,9 @@ class TElement
     }
     
     /**
-     * Insert element after
+     * Inserts an element after the current element.
+     *
+     * @param TElement|string $element The element or content to be added after the current element.
      */
     public function after($element)
     {
@@ -94,7 +104,9 @@ class TElement
     }
     
     /**
-     * Return the after element
+     * Retrieves the element set to appear after this element.
+     *
+     * @return TElement|string|null The after-element or null if not set.
      */
     public function getAfterElement()
     {
@@ -102,8 +114,9 @@ class TElement
     }
     
     /**
-     * Change the element name
-     * @param $tagname Element name
+     * Sets the tag name of the element.
+     *
+     * @param string $tagname The new tag name.
      */
     public function setName($tagname)
     {
@@ -111,7 +124,9 @@ class TElement
     }
     
     /**
-     * Returns tag name
+     * Retrieves the tag name of the element.
+     *
+     * @return string The tag name.
      */
     public function getName()
     {
@@ -119,8 +134,9 @@ class TElement
     }
     
     /**
-     * Define if the element is wrapped inside another one
-     * @param @bool Boolean TRUE if is wrapped
+     * Defines whether this element is wrapped inside another element.
+     *
+     * @param bool $bool TRUE if wrapped, FALSE otherwise.
      */
     public function setIsWrapped($bool)
     {
@@ -128,7 +144,9 @@ class TElement
     }
     
     /**
-     * Return if the element is wrapped inside another one
+     * Checks whether this element is wrapped inside another element.
+     *
+     * @return bool TRUE if wrapped, FALSE otherwise.
      */
     public function getIsWrapped()
     {
@@ -136,9 +154,10 @@ class TElement
     }
     
     /**
-     * Set tag property
-     * @param $name     Property Name
-     * @param $value    Property Value
+     * Sets an HTML attribute for the element.
+     *
+     * @param string $name  The attribute name.
+     * @param mixed  $value The attribute value (must be a scalar).
      */
     public function setProperty($name, $value)
     {
@@ -151,7 +170,9 @@ class TElement
     }
     
     /**
-     * Set element properties
+     * Sets multiple HTML attributes at once.
+     *
+     * @param array $properties An associative array of attribute names and values.
      */
     public function setProperties($properties)
     {
@@ -169,8 +190,11 @@ class TElement
     }
     
     /**
-     * Return a property
-     * @param $name property name
+     * Retrieves the value of a specific attribute.
+     *
+     * @param string $name The attribute name.
+     *
+     * @return mixed|null The attribute value or null if not set.
      */
     public function getProperty($name)
     {
@@ -178,7 +202,9 @@ class TElement
     }
     
     /**
-     * Return element properties
+     * Retrieves all attributes of the element.
+     *
+     * @return array An associative array of attributes.
      */
     public function getProperties()
     {
@@ -186,9 +212,10 @@ class TElement
     }
     
     /**
-     * Intercepts whenever someones assign a new property's value
-     * @param $name     Property Name
-     * @param $value    Property Value
+     * Dynamically sets an attribute for the element.
+     *
+     * @param string $name  The attribute name.
+     * @param mixed  $value The attribute value (must be a scalar).
      */
     public function __set($name, $value)
     {
@@ -201,8 +228,9 @@ class TElement
     }
     
     /**
-     * Intercepts whenever someones unset a property's value
-     * @param $name     Property Name
+     * Removes an attribute from the element.
+     *
+     * @param string $name The attribute name.
      */
     public function __unset($name)
     {
@@ -210,8 +238,11 @@ class TElement
     }
     
     /**
-     * Returns a property's value
-     * @param $name     Property Name
+     * Dynamically retrieves an attribute value.
+     *
+     * @param string $name The attribute name.
+     *
+     * @return mixed|null The attribute value or null if not set.
      */
     public function __get($name)
     {
@@ -222,8 +253,11 @@ class TElement
     }
     
     /**
-     * Returns is a property's is set
-     * @param $name     Property Name
+     * Checks if a specific attribute is set.
+     *
+     * @param string $name The attribute name.
+     *
+     * @return bool TRUE if the attribute is set, FALSE otherwise.
      */
     public function __isset($name)
     {
@@ -231,7 +265,7 @@ class TElement
     }
     
     /**
-     * Clone the object
+     * Creates a deep copy of the element, cloning its children.
      */
     public function __clone()
     {
@@ -254,8 +288,9 @@ class TElement
     }
     
     /**
-     * Add an child element
-     * @param $child Any object that implements the show() method
+     * Adds a child element to this element.
+     *
+     * @param mixed $child The child element or content to be added.
      */
     public function add($child)
     {
@@ -267,9 +302,10 @@ class TElement
     }
     
     /**
-     * Insert an child element
-     * @param $position Element position
-     * @param $child Any object that implements the show() method
+     * Inserts a child element at a specific position.
+     *
+     * @param int   $position The index where the child should be inserted.
+     * @param mixed $child    The child element or content to be added.
      */
     public function insert($position, $child)
     {
@@ -281,8 +317,9 @@ class TElement
     }
     
     /**
-     * Set the use of linebreaks
-     * @param $linebreaks boolean
+     * Sets whether line breaks should be used when rendering the element.
+     *
+     * @param bool $linebreaks TRUE to use line breaks, FALSE otherwise.
      */
     public function setUseLineBreaks($linebreaks)
     {
@@ -290,8 +327,9 @@ class TElement
     }
     
     /**
-     * Set the use of single quotes
-     * @param $singlequotes boolean
+     * Sets whether attributes should use single quotes in the output.
+     *
+     * @param bool $singlequotes TRUE to use single quotes, FALSE for double quotes.
      */
     public function setUseSingleQuotes($singlequotes)
     {
@@ -299,8 +337,9 @@ class TElement
     }
     
     /**
-     * Del an child element
-     * @param $child Any object that implements the show() method
+     * Removes a specific child element.
+     *
+     * @param mixed $object The child element to be removed.
      */
     public function del($object)
     {
@@ -314,7 +353,9 @@ class TElement
     }
 
     /**
-     * get children
+     * Retrieves all child elements of this element.
+     *
+     * @return array The list of child elements.
      */
     public function getChildren()
     {
@@ -322,9 +363,12 @@ class TElement
     }
     
     /**
-     * Find child element
-     * @param $element tag name
-     * @param $properties match properties
+     * Searches for child elements by tag name and optional attributes.
+     *
+     * @param string $element    The tag name to search for.
+     * @param array|null $properties Optional key-value pairs to match against attributes.
+     *
+     * @return array A list of matching elements.
      */
     public function find($element, $properties = null)
     {
@@ -361,8 +405,11 @@ class TElement
     }
     
     /**
-     * Get an child element
-     * @param $position Element position
+     * Retrieves a child element by position.
+     *
+     * @param int $position The index of the child element.
+     *
+     * @return mixed|null The child element or null if not found.
      */
     public function get($position)
     {
@@ -370,7 +417,7 @@ class TElement
     }
     
     /**
-     * Opens the tag
+     * Outputs the opening tag of the element with its attributes.
      */
     public function openTag()
     {
@@ -405,7 +452,7 @@ class TElement
     }
     
     /**
-     * BC only
+     * Alias for `openTag()`, maintains backward compatibility.
      */
     public function open()
     {
@@ -413,7 +460,7 @@ class TElement
     }
     
     /**
-     * Shows the tag
+     * Displays the element, including its children and attributes.
      */
     public function show()
     {
@@ -469,7 +516,7 @@ class TElement
     }
     
     /**
-     * Closes the tag
+     * Outputs the closing tag of the element.
      */
     public function closeTag()
     {
@@ -481,7 +528,7 @@ class TElement
     }
     
     /**
-     * BC only
+     * Alias for `closeTag()`, maintains backward compatibility.
      */
     public function close()
     {
@@ -489,7 +536,9 @@ class TElement
     }
     
     /**
-     * Converts the object into a string
+     * Converts the element to a string representation.
+     *
+     * @return string The HTML string representation of the element.
      */
     public function __toString()
     {
@@ -497,7 +546,9 @@ class TElement
     }
     
     /**
-     * Returns the element content as a string
+     * Retrieves the element's contents as a string.
+     *
+     * @return string The rendered HTML content.
      */
     public function getContents()
     {
@@ -509,7 +560,7 @@ class TElement
     }
     
     /**
-     * Clear element children
+     * Removes all child elements from this element.
      */
     public function clearChildren()
     {

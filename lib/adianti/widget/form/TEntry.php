@@ -13,6 +13,9 @@ use Exception;
 /**
  * Entry Widget
  *
+ * Represents a text input field widget for forms, supporting masks, numeric formatting,
+ * auto-completion, and other advanced input handling.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form
@@ -34,6 +37,7 @@ class TEntry extends TField implements AdiantiWidgetInterface
     protected $replaceOnPost;
     protected $exitFunction;
     protected $exitAction;
+    protected $enterAction;
     protected $id;
     protected $formName;
     protected $name;
@@ -45,7 +49,10 @@ class TEntry extends TField implements AdiantiWidgetInterface
     
     /**
      * Class Constructor
-     * @param  $name name of the field
+     *
+     * Initializes a new instance of the TEntry class with a given name.
+     *
+     * @param string $name The name of the input field.
      */
     public function __construct($name)
     {
@@ -61,7 +68,12 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Enable toggle visible
+     * Enables or disables the toggle visibility functionality.
+     *
+     * When enabled, an eye icon is added to the field, allowing users to toggle the visibility
+     * of the input content (useful for password fields).
+     *
+     * @param bool $toggleVisibility Whether to enable or disable toggle visibility (default: TRUE).
      */
     public function enableToggleVisibility($toggleVisibility = TRUE)
     {
@@ -74,7 +86,9 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Define input type
+     * Sets the input type of the field (e.g., text, password, email).
+     *
+     * @param string $type The type of the input field.
      */
     public function setInputType($type)
     {
@@ -82,7 +96,10 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the Inner icon
+     * Sets an inner icon to the input field.
+     *
+     * @param TImage $image The icon image.
+     * @param string $side The position of the icon ('left' or 'right', default: 'right').
      */
     public function setInnerIcon(TImage $image, $side = 'right')
     {
@@ -96,7 +113,7 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Turn on exit on enter
+     * Enables form submission when the Enter key is pressed.
      */
     public function exitOnEnter()
     {
@@ -104,8 +121,10 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's mask
-     * @param $mask A mask for input data
+     * Sets an input mask for the field.
+     *
+     * @param string $mask The mask pattern.
+     * @param bool $replaceOnPost Whether to replace the input value on postback (default: FALSE).
      */
     public function setMask($mask, $replaceOnPost = FALSE)
     {
@@ -114,11 +133,14 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's numeric mask (available just in web)
-     * @param $decimals Sets the number of decimal points.
-     * @param $decimalsSeparator Sets the separator for the decimal point.
-     * @param $thousandSeparator Sets the thousands separator.
-     * @param $allowNegative Sets negative allowed.
+     * Sets a numeric input mask for the field.
+     *
+     * @param int $decimals Number of decimal places.
+     * @param string $decimalsSeparator The character used as a decimal separator.
+     * @param string $thousandSeparator The character used as a thousand separator.
+     * @param bool $replaceOnPost Whether to replace the value on postback (default: FALSE).
+     * @param bool $reverse Whether to enable reverse mode (default: FALSE).
+     * @param bool $allowNegative Whether negative values are allowed (default: TRUE).
      */
     public function setNumericMask($decimals, $decimalsSeparator, $thousandSeparator, $replaceOnPost = FALSE, $reverse = FALSE, $allowNegative = TRUE)
     {
@@ -150,8 +172,11 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's value
-     * @param $value A string containing the field's value
+     * Sets the value of the input field.
+     *
+     * If a numeric mask or another transformation is applied, the value is formatted accordingly.
+     *
+     * @param string|float|int|null $value The value to set.
      */
     public function setValue($value)
     {
@@ -177,7 +202,9 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the post data
+     * Retrieves the value of the field from a form submission (POST request).
+     *
+     * @return string|float The submitted value, formatted based on mask settings.
      */
     public function getPostData()
     {
@@ -216,8 +243,9 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define max length
-     * @param  $length Max length
+     * Sets the maximum length allowed for the input field.
+     *
+     * @param int $length The maximum number of characters.
      */
     public function setMaxLength($length)
     {
@@ -228,8 +256,9 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define options for completion
-     * @param $options array of options for completion
+     * Sets the auto-completion options for the input field.
+     *
+     * @param array $options An array of completion options.
      */
     function setCompletion($options)
     {
@@ -237,8 +266,11 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the action to be executed when the user leaves the form field
-     * @param $action TAction object
+     * Sets an action to be executed when the user leaves the input field.
+     *
+     * @param TAction $action The action object.
+     *
+     * @throws Exception If the action is not static.
      */
     function setExitAction(TAction $action)
     {
@@ -254,8 +286,19 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the javascript function to be executed when the user leaves the form field
-     * @param $function Javascript function
+     * Sets an action to be executed when the user leaves the input field.
+     *
+     * @param TAction $action The action object.
+     */
+    function setEnterAction(TAction $action)
+    {
+        $this->enterAction = $action;
+    }
+    
+    /**
+     * Sets a JavaScript function to be executed when the user leaves the input field.
+     *
+     * @param string $function The JavaScript function code.
      */
     public function setExitFunction($function)
     {
@@ -263,7 +306,7 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable auto complete
+     * Disables the browser's autocomplete feature for the input field.
      */
     public function disableAutoComplete()
     {
@@ -272,7 +315,7 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Force lower case
+     * Forces the input text to be converted to lowercase.
      */
     public function forceLowerCase()
     {
@@ -283,7 +326,7 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Force upper case
+     * Forces the input text to be converted to uppercase.
      */
     public function forceUpperCase()
     {
@@ -294,8 +337,9 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Set autocomplete delimiter
-     * @param $delimiter autocomplete delimiter
+     * Sets the delimiter used for auto-completion.
+     *
+     * @param string $delimiter The delimiter character.
      */
     public function setDelimiter($delimiter)
     {
@@ -303,7 +347,9 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the minimum length for search
+     * Sets the minimum length required before triggering auto-completion.
+     *
+     * @param int $length The minimum number of characters.
      */
     public function setMinLength($length)
     {
@@ -311,12 +357,13 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Reload completion
-     * 
-     * @param $field Field name or id
-     * @param $options array of options for autocomplete
+     * Reloads the auto-completion list dynamically.
+     *
+     * @param string $field The field name or ID.
+     * @param array $list The array of options for auto-completion.
+     * @param array|null $options Additional auto-completion options (optional).
      */
-    public static function reloadCompletion($field, $list, $options = null)
+    public static function reloadCompletion($field, $list, $options = null, $timeout = null)
     {
         $list_json = json_encode($list);
         if (is_null($options))
@@ -325,14 +372,25 @@ class TEntry extends TField implements AdiantiWidgetInterface
         }
         
         $options_json = json_encode( $options );
-        TScript::create(" tentry_autocomplete_by_name( '{$field}', {$list_json}, '{$options_json}'); ");
+
+        if($timeout)
+        {
+            TScript::create(" tentry_autocomplete_by_name( '{$field}', {$list_json}, '{$options_json}'); ", true, $timeout);
+        }
+        else
+        {
+            TScript::create(" tentry_autocomplete_by_name( '{$field}', {$list_json}, '{$options_json}'); ");
+        }
+        
     }
     
     /**
-     * Apply mask
-     * 
-     * @param $mask  Mask
-     * @param $value Value
+     * Applies a formatting mask to a given value.
+     *
+     * @param string $mask The mask pattern.
+     * @param string|array $value The value to be formatted.
+     *
+     * @return string|array The formatted value.
      */
     protected function formatMask($mask, $value)
     {
@@ -372,7 +430,11 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Change mask dynamically
+     * Dynamically changes the mask of an input field.
+     *
+     * @param string $formName The name of the form.
+     * @param string $name The name of the input field.
+     * @param string $mask The new mask pattern.
      */
     public static function changeMask($formName, $name, $mask)
     {
@@ -380,7 +442,11 @@ class TEntry extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Shows the widget at the screen
+     * Renders the input field widget on the screen.
+     *
+     * Applies all defined properties, masks, completion, icons, and event bindings before displaying the field.
+     *
+     * @throws Exception If the form field is not properly associated with a TForm.
      */
     public function show()
     {
@@ -415,40 +481,55 @@ class TEntry extends TField implements AdiantiWidgetInterface
             $this->setProperty('exitaction', "__adianti_post_lookup('{$this->formName}', '{$string_action}', '{$this->id}', 'callback')");
         }
         
-        // verify if the widget is non-editable
-        if (parent::getEditable())
+        if (isset($this->exitAction))
         {
-            if (isset($this->exitAction))
+            // just aggregate onBlur, if the previous one does not have return clause
+            if (strstr((string) $this->getProperty('onBlur'), 'return') == FALSE)
             {
-                // just aggregate onBlur, if the previous one does not have return clause
-                if (strstr((string) $this->getProperty('onBlur'), 'return') == FALSE)
-                {
-                    $this->setProperty('onBlur', $this->getProperty('exitaction'), FALSE);
-                }
-                else
-                {
-                    $this->setProperty('onBlur', $this->getProperty('exitaction'), TRUE);
-                }
+                $this->setProperty('onBlur', $this->getProperty('exitaction'), FALSE);
             }
-            
-            if (isset($this->exitFunction))
+            else
             {
-                if (strstr((string) $this->getProperty('onBlur'), 'return') == FALSE)
-                {
-                    $this->setProperty('onBlur', $this->exitFunction, FALSE);
-                }
-                else
-                {
-                    $this->setProperty('onBlur', $this->exitFunction, TRUE);
-                }
+                $this->setProperty('onBlur', $this->getProperty('exitaction'), TRUE);
             }
         }
-        else
+
+        if (isset($this->enterAction))
+        {
+            if (!TForm::getFormByName($this->formName) instanceof TForm)
+            {
+                throw new Exception(AdiantiCoreTranslator::translate('You must pass the ^1 (^2) as a parameter to ^3', __CLASS__, $this->name, 'TForm::setFields()') );
+            }
+            $url = $this->enterAction->serialize(FALSE);
+            if ($this->enterAction->isStatic())
+            {
+                $url .= '&static=1';
+            }
+            $url = htmlspecialchars($url);
+
+            $wait_message = AdiantiCoreTranslator::translate('Loading');
+
+            $this->setProperty('data-enteraction', "Adianti.waitMessage = '$wait_message'; __adianti_post_data('{$this->formName}', '{$url}'); return false;");
+
+            $this->exitOnEnterOn = true;
+        }
+
+        if (!parent::getEditable())
         {
             $this->tag->{'readonly'} = "1";
             $this->tag->{'class'} .= ' tfield_disabled'; // CSS
-            $this->tag->{'tabindex'} = '-1';
-            $this->tag->{'onmouseover'} = "style.cursor='default'";
+        }
+        
+        if (isset($this->exitFunction))
+        {
+            if (strstr((string) $this->getProperty('onBlur'), 'return') == FALSE)
+            {
+                $this->setProperty('onBlur', $this->exitFunction, FALSE);
+            }
+            else
+            {
+                $this->setProperty('onBlur', $this->exitFunction, TRUE);
+            }
         }
         
         if ($this->mask)
@@ -488,6 +569,7 @@ class TEntry extends TField implements AdiantiWidgetInterface
             $list = json_encode($this->completion);
             TScript::create(" tentry_autocomplete( '{$this->id}', $list, '{$options_json}'); ");
         }
+        
         if ($this->numericMask)
         {
             $reverse = $this->reverse ? 'true' : 'false';

@@ -12,7 +12,10 @@ use Adianti\Widget\Form\TForm;
 use Exception;
 
 /**
- * Arrow Step
+ * Class TArrowStep
+ *
+ * This class represents a step-based navigation component using arrows.
+ * It allows users to navigate through different steps visually and interactively.
  *
  * @version    7.5
  * @package    widget
@@ -46,6 +49,10 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
 
     /**
      * Constructor
+     *
+     * Initializes the TArrowStep component with default values.
+     *
+     * @param string $name The name of the component.
      */
     public function __construct($name)
     {
@@ -77,9 +84,10 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Disable field
-     * 
-     * @param $name name of arrow steps
+     * Disables the arrow step field.
+     *
+     * @param string $formName The name of the form containing the field.
+     * @param string $name     The name of the arrow step field to disable.
      */
     public static function disableField($formName, $name)
     {
@@ -87,9 +95,10 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Enable field
-     * 
-     * @param $name name of arrow steps
+     * Enables the arrow step field.
+     *
+     * @param string $formName The name of the form containing the field.
+     * @param string $name     The name of the arrow step field to enable.
      */
     public static function enableField($formName, $name)
     {
@@ -98,9 +107,10 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
 
 
     /**
-     * Clear currents item on steps
-     * 
-     * @param $name name of arrow steps
+     * Clears the currently selected item in the arrow step field.
+     *
+     * @param string $formName The name of the form containing the field.
+     * @param string $name     The name of the arrow step field to clear.
      */
     public static function clearField($formName, $name)
     {
@@ -108,10 +118,10 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Define current item on steps
-     * 
-     * @param $name name of arrow steps
-     * @param $value value current
+     * Sets the current step in the arrow step field.
+     *
+     * @param string $name  The name of the arrow step field.
+     * @param string $value The value of the step to set as current.
      */
     public static function defineCurrent($name, $value)
     {
@@ -119,8 +129,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define if the field is editable
-     * @param $editable A boolean
+     * Sets whether the field is editable.
+     *
+     * @param bool $editable True to make the field editable, false otherwise.
      */
     public function setEditable($editable)
     {
@@ -128,8 +139,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Returns if the field is editable
-     * @return A boolean
+     * Checks if the field is editable.
+     *
+     * @return bool True if the field is editable, false otherwise.
      */
     public function getEditable()
     {
@@ -137,7 +149,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Return the post data
+     * Retrieves the posted data for the arrow step field.
+     *
+     * @return mixed|null The posted value or null if not set.
      */
     public function getPostData()
     {
@@ -150,7 +164,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set form name
+     * Sets the form name associated with the field.
+     *
+     * @param string $name The name of the form.
      */
     public function setFormName($name)
     {
@@ -158,15 +174,19 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set name
-     */
+     * Sets the name of the field.
+    *
+    * @param string $name The field name.
+    */
     public function setName($name)
     {
         $this->name = $name;
     }
 
     /**
-     * Get name
+     * Retrieves the name of the field.
+     *
+     * @return string The field name.
      */
     public function getName()
     {
@@ -174,7 +194,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set value current step
+     * Sets the value of the currently selected step.
+     *
+     * @param mixed $value The value of the selected step.
      */
     public function setValue($value)
     {
@@ -182,7 +204,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Get value current step
+     * Gets the value of the currently selected step.
+     *
+     * @return mixed|null The selected step value or null if not set.
      */
     public function getValue()
     {
@@ -190,8 +214,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set hide text
-     * @param $hide bool
+     * Defines whether the step text should be hidden.
+     *
+     * @param bool $hide True to hide text, false to display it.
      */
     public function setHideText(bool $hide = true)
     {
@@ -199,8 +224,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set font size
-     * @param $size string to color 
+     * Sets the font size for the step text.
+     *
+     * @param string|int $fontSize The font size (e.g., '14px' or '100%').
      */
     public function setFontSize($fontSize)
     {
@@ -210,9 +236,10 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set color arrows
-     * @param $color string to color 
-     * @param $fontColor string to color font
+     * Sets the color for filled (active) steps.
+     *
+     * @param string      $color     The background color.
+     * @param string|null $fontColor (Optional) The font color.
      */
     public function setFilledColor(string $color, $fontColor = null)
     {
@@ -225,8 +252,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set font color arrows
-     * @param $color string to color 
+     * Sets the font color for filled (active) steps.
+     *
+     * @param string $fontColor The font color.
      */
     public function setFilledFontColor(string $fontColor)
     {
@@ -234,9 +262,10 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set color arrows
-     * @param $color string to color 
-     * @param $fontColor string to color font
+     * Sets the color for unfilled (inactive) steps.
+     *
+     * @param string      $color     The background color.
+     * @param string|null $fontColor (Optional) The font color.
      */
     public function setUnfilledColor(string $color, $fontColor = null)
     {
@@ -249,8 +278,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set color arrows
-     * @param $fontColor string to color font
+     * Sets the font color for unfilled (inactive) steps.
+     *
+     * @param string $color The font color.
      */
     public function setUnfilledFontColor(string $color)
     {
@@ -258,8 +288,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Set width
-     * @param $width int|float to width
+     * Sets the width of the component.
+     *
+     * @param int|string $width The width in pixels or as a percentage.
      */
     public function setWidth($width)
     {
@@ -274,7 +305,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Get width
+     * Retrieves the width of the component.
+     *
+     * @return string The width value.
      */
     public function getWidth()
     {
@@ -282,9 +315,10 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set sizes
-     * @param $width
-     * @param $height
+     * Sets both the width and height of the component.
+     *
+     * @param int|string      $width  The width in pixels or as a percentage.
+     * @param int|string|null $height (Optional) The height in pixels.
      */
     public function setSize($width, $height = null)
     {
@@ -297,8 +331,11 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set height arrows
-     * @param $height int|float to height 
+     * Sets the height of the component.
+     *
+     * @param int $height The height in pixels.
+     *
+     * @throws Exception If the height is not numeric.
      */
     public function setHeight($height)
     {
@@ -311,7 +348,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Get heigth
+     * Retrieves the height of the component.
+     *
+     * @return int The height in pixels.
      */
     public function getHeight()
     {
@@ -319,7 +358,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Get size
+     * Retrieves the size of the component.
+     *
+     * @return null Always returns null.
      */
     public function getSize()
     {
@@ -327,10 +368,11 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Add an item
-     * @param $title    Item title
-     * @param $id       Item id
-     * @param $color    Item color
+     * Adds an item to the step navigation.
+     *
+     * @param string      $title The step title.
+     * @param string|null $id    (Optional) The step ID.
+     * @param string|null $color (Optional) The step color.
      */
     public function addItem($title, $id = null, $color = null)
     {
@@ -347,8 +389,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set color items
-     * @param $colorItems  Items
+     * Sets the colors for specific items.
+     *
+     * @param array $colorItems Associative array of item colors.
      */
     public function setColorItems($colorItems)
     {
@@ -356,8 +399,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Set items
-     * @param $item  Items
+     * Sets the items for the step navigation.
+     *
+     * @param array $items Associative array of items with keys as IDs and values as titles.
      */
     public function setItems($items)
     {
@@ -373,8 +417,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Add items
-     * @param $item  Items
+     * Adds multiple items to the step navigation.
+     *
+     * @param array $items Associative array of items with keys as IDs and values as titles.
      */
     public function addItems($items)
     {
@@ -388,8 +433,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Get items
-     * 
+     * Retrieves all items in the step navigation.
+     *
+     * @return array The list of items.
      */
     public function getItems()
     {
@@ -397,8 +443,11 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Get item
-     * 
+     * Retrieves a specific item from the step navigation.
+     *
+     * @param string $key The key of the item.
+     *
+     * @return string|null The item title or null if not found.
      */
     public function getItem($key)
     {
@@ -406,9 +455,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set action
-     * 
-     * @param $action Action
+     * Sets an action to be executed when a step is clicked.
+     *
+     * @param TAction $action The action object.
      */
     public function setAction(TAction $action)
     {
@@ -416,8 +465,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Get action
-     * 
+     * Retrieves the action associated with the steps.
+     *
+     * @return TAction|null The action object or null if not set.
      */
     public function getAction()
     {
@@ -425,7 +475,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Select current item
+     * Sets the currently selected step by its key.
+     *
+     * @param string $key The key of the step.
      */
     public function setCurrentKey($key)
     {
@@ -433,7 +485,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Get current item
+     * Retrieves the currently selected step key.
+     *
+     * @return string|null The selected step key or null if none selected.
      */
     public function getCurrent()
     {
@@ -441,7 +495,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Select current item
+     * Sets the currently selected step by its title.
+     *
+     * @param string $title The title of the step.
      */
     public function setCurrent($title)
     {
@@ -452,7 +508,13 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Get action in serialized way
+     * Generates a serialized action for a given step.
+     *
+     * @param string  $key      The key of the step.
+     * @param string  $value    The value of the step.
+     * @param bool    $selected Whether the step is selected.
+     *
+     * @return string The serialized JavaScript action.
      */
     private function getSerializedAction($key, $value, $selected = false)
     {
@@ -474,7 +536,11 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Make a html of item
+     * Creates an HTML representation of a step item.
+     *
+     * @param string  $key      The key of the step.
+     * @param string  $value    The displayed text of the step.
+     * @param bool    $selected Whether the step is selected.
      */
     private function makeItem($key, $value, $selected = false)
     {
@@ -511,7 +577,9 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Make component style
+     * Generates and applies CSS styles for the component.
+     *
+     * It defines styles for steps, colors, and different states (selected, unselected).
      */
     private function makeStyle()
     {
@@ -578,7 +646,7 @@ class TArrowStep extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Show component
+     * Renders the component and outputs it as HTML.
      */
     public function show()
     {

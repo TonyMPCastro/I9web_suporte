@@ -11,6 +11,12 @@ use Adianti\Database\TTransaction;
 use Exception;
 use Mad\Widget\Form\BTreeView;
 
+/**
+ * @version    4.0
+ * @package    widget
+ * @author     Matheus Agnes Dias
+ * @copyright  Copyright (c) 2025 Mad Solutions Ltd. (http://www.madbuilder.com.br)
+ */
 class BDBRecursiveTreeView extends BTreeView
 {
     private $model;
@@ -20,7 +26,22 @@ class BDBRecursiveTreeView extends BTreeView
     private $ordercolumn;
     private $criteria;
     
-    public function __construct($name, $database, $model, $key, $value, $recusive_column, $ordercolumn = NULL, TCriteria $criteria = NULL)
+    /**
+     * Class constructor
+     *
+     * Initializes the recursive tree view with the given database and model parameters.
+     * Loads the hierarchical data structure from the specified model.
+     *
+     * @param string     $name           Name of the tree view
+     * @param string     $database       Database connection name
+     * @param string     $model          Model class name
+     * @param string     $key            Primary key field
+     * @param string     $value          Display value field
+     * @param string     $recusive_column Recursive column field (parent reference)
+     * @param string|null $ordercolumn   Column used for ordering (optional)
+     * @param TCriteria|null $criteria   Additional filtering criteria (optional)
+     */
+    public function __construct($name, $database, $model, $key, $value, $recusive_column, $ordercolumn = NULL, ?TCriteria $criteria = NULL)
     {
         parent::__construct($name);
         
@@ -35,11 +56,31 @@ class BDBRecursiveTreeView extends BTreeView
         $this->setItems($this->getItemsFromModel());
     }
     
+    /**
+     * Organizes objects into hierarchical groups
+     *
+     * Calls the recursive method to build the hierarchical structure.
+     *
+     * @param object $object The database object to be grouped
+     *
+     * @return array The hierarchical structure of grouped objects
+     */
     private function makeGroups($object)
     {
         return $this->recursiveGroup($object, []);
     }
     
+    /**
+     * Recursively organizes objects into hierarchical groups
+     *
+     * Constructs a hierarchical array of grouped objects based on the recursive column field.
+     *
+     * @param object $object    The database object being processed
+     * @param array  $arrayItem The array representing the current hierarchical structure
+     * @param bool   $isChild   Whether the object is a child node
+     *
+     * @return array The updated hierarchical structure
+     */
     private function recursiveGroup($object, $arrayItem, $isChild = false)
     {
         $groupCriteria = clone $this->criteria;
@@ -80,6 +121,14 @@ class BDBRecursiveTreeView extends BTreeView
         return $items;
     }
     
+    /**
+     * Loads hierarchical data from the database model
+     *
+     * Fetches records from the database and organizes them into a tree structure based on the recursive column.
+     *
+     * @throws Exception If required parameters are not set (database, model, key, or value)
+     * @return array The hierarchical data structure
+     */
     public function getItemsFromModel()
     {
         $items = [];
@@ -147,7 +196,24 @@ class BDBRecursiveTreeView extends BTreeView
         return $items;
     }
     
-    public static function reloadFromModel($formname, $name, $database, $model, $key, $value, $recusive_column, $ordercolumn = NULL, TCriteria $criteria = NULL, $options = [])
+    /**
+     * Reloads tree view items from the database model
+     *
+     * Creates a new instance of the tree view, retrieves the hierarchical structure, 
+     * and reloads it into the specified form.
+     *
+     * @param string       $formname       Form name where the tree view is used
+     * @param string       $name           Field name of the tree view
+     * @param string       $database       Database connection name
+     * @param string       $model          Model class name
+     * @param string       $key            Primary key field
+     * @param string       $value          Display value field
+     * @param string       $recusive_column Recursive column field (parent reference)
+     * @param string|null  $ordercolumn    Column used for ordering (optional)
+     * @param TCriteria|null $criteria     Additional filtering criteria (optional)
+     * @param array        $options        Additional options for rendering (optional)
+     */
+    public static function reloadFromModel($formname, $name, $database, $model, $key, $value, $recusive_column, $ordercolumn = NULL, ?TCriteria $criteria = NULL, $options = [])
     {
         $field = new self($name, $database, $model, $key, $value, $recusive_column, $ordercolumn, $criteria, $options);
         $items = $field->getItemsFromModel();
@@ -155,6 +221,11 @@ class BDBRecursiveTreeView extends BTreeView
         self::reload($formname, $name, $items, $options);
     }
     
+    /**
+     * Displays the tree view
+     *
+     * Reloads the hierarchical structure and renders the tree view.
+     */
     public function show()
     {
         $this->setItems($this->getItemsFromModel());

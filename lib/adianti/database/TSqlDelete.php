@@ -6,6 +6,9 @@ use Adianti\Database\TSqlStatement;
 /**
  * Provides an Interface to create DELETE statements
  *
+ * This class provides an interface to construct and retrieve DELETE SQL statements
+ * with optional filtering criteria.
+ *
  * @version    7.5
  * @package    database
  * @author     Pablo Dall'Oglio
@@ -18,8 +21,15 @@ class TSqlDelete extends TSqlStatement
     protected $criteria;    // stores the select criteria
     
     /**
-     * Returns a string containing the DELETE plain statement
-     * @param $prepared Return a prepared Statement
+     * Returns the DELETE SQL statement as a string.
+     *
+     * This method generates and returns a DELETE SQL statement. If a criteria is set,
+     * it appends a WHERE clause to filter the deletion. Additionally, it checks the 
+     * database configuration for case insensitivity and adjusts the criteria accordingly.
+     *
+     * @param bool $prepared Whether to return a prepared statement format.
+     *
+     * @return string The DELETE SQL statement.
      */
     public function getInstruction( $prepared = FALSE )
     {

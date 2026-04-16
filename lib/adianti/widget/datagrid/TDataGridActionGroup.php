@@ -6,6 +6,8 @@ use Adianti\Control\TAction;
 /**
  * Represents a group of Actions for datagrids
  *
+ * This class allows grouping multiple actions together, including separators and headers.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage datagrid
@@ -23,9 +25,12 @@ class TDataGridActionGroup
     private $index;
     
     /**
-     * Constructor
-     * @param $label Action Group label
-     * @param $icon  Action Group icon
+     * Class constructor.
+     *
+     * Initializes the action group with a label and an optional icon.
+     *
+     * @param string      $label Action group label.
+     * @param string|null $icon  Action group icon (optional).
      */
     public function __construct( $label, $icon = NULL)
     {
@@ -36,7 +41,9 @@ class TDataGridActionGroup
     }
     
     /**
-     * Returns the Action Group label
+     * Returns the label of the action group.
+     *
+     * @return string The action group label.
      */
     public function getLabel()
     {
@@ -44,27 +51,45 @@ class TDataGridActionGroup
     }
     
     /**
-     * Returns the Action Group icon
+     * Returns the icon of the action group.
+     *
+     * @return string|null The action group icon or null if not set.
      */
     public function getIcon()
     {
         return $this->icon;
     }
 
-    
+    /**
+     * Sets the icon for the action group.
+     *
+     * @param string|null $icon The icon to be set.
+     *
+     * @return void
+     */
     public function setIcon($icon)
     {
         $this->icon = $icon;
     }
 
+    /**
+     * Sets the label for the action group.
+     *
+     * @param string $label The label to be set.
+     *
+     * @return void
+     */
     public function setLabel($label)
     {
         $this->label = $label;
     }
     
     /**
-     * Add an action to the actions group
-     * @param $action TAction object
+     * Adds an action to the action group.
+     *
+     * @param TAction $action The action to be added.
+     *
+     * @return void
      */
     public function addAction(TAction $action)
     {
@@ -73,7 +98,11 @@ class TDataGridActionGroup
     }
     
     /**
-     * Add a separator
+     * Adds a separator to the action group.
+     *
+     * Separators visually divide actions within the group.
+     *
+     * @return void
      */
     public function addSeparator()
     {
@@ -82,8 +111,13 @@ class TDataGridActionGroup
     }
     
     /**
-     * Add a header
-     * @param $header Options header
+     * Adds a header to the action group.
+     *
+     * Headers are used to group related actions under a common title.
+     *
+     * @param string $header The header text.
+     *
+     * @return void
      */
     public function addHeader($header)
     {
@@ -92,7 +126,9 @@ class TDataGridActionGroup
     }
     
     /**
-     * Returns the actions
+     * Retrieves the list of actions in the group.
+     *
+     * @return TAction[] An array of actions in the group.
      */
     public function getActions()
     {
@@ -100,7 +136,9 @@ class TDataGridActionGroup
     }
     
     /**
-     * Returns the headers
+     * Retrieves the list of headers in the group.
+     *
+     * @return array|null An associative array of headers indexed by position, or null if no headers exist.
      */
     public function getHeaders()
     {
@@ -108,7 +146,9 @@ class TDataGridActionGroup
     }
     
     /**
-     * Returns the separators
+     * Retrieves the list of separators in the group.
+     *
+     * @return array|null An associative array of separators indexed by position, or null if no separators exist.
      */
     public function getSeparators()
     {

@@ -35,20 +35,21 @@ class SystemUnitForm extends TStandardForm
         $name = new TEntry('name');
         
         // add the fields
-        $this->form->addFields( [new TLabel('Id')], [$id] );
-        $this->form->addFields( [new TLabel(_t('Name'))], [$name] );
+        $row = $this->form->addFields( [new TLabel('ID', null, null, null, '100%'), $id], [new TLabel(_t('Name'), null, null, null, '100%'), $name] );
+        $row->layout = ['col-sm-2','col-sm-10'];
         
         if (!empty($ini['general']['multi_database']) and $ini['general']['multi_database'] == '1')
         {
             $database = new TCombo('connection_name');
             $database->addItems( SystemDatabaseInformationService::getConnections() );
-            $this->form->addFields( [new TLabel(_t('Database'))], [$database] );
-            $database->setSize('70%');
+            $row = $this->form->addFields( [new TLabel(_t('Database'), null, null, null, '100%'), $database] );
+            $row->layout = ['col-sm-12'];
+            $database->setSize('100%');
         }
         
         $id->setEditable(FALSE);
-        $id->setSize('30%');
-        $name->setSize('70%');
+        $id->setSize('100%');
+        $name->setSize('100%');
         $name->addValidation( _t('Name'), new TRequiredValidator );
         
         // create the form actions
@@ -57,12 +58,22 @@ class SystemUnitForm extends TStandardForm
         $this->form->addActionLink(_t('Clear'),  new TAction(array($this, 'onEdit')), 'fa:eraser red');
         $this->form->addActionLink(_t('Back'),new TAction(array('SystemUnitList','onReload')),'far:arrow-alt-circle-left blue');
         
-        // vertical box container
-        $container = new TVBox;
-        $container->style = 'width: 100%';
-        $container->add(new TXMLBreadCrumb('menu.xml', 'SystemUnitList'));
-        $container->add($this->form);
+        parent::setTargetContainer('adianti_right_panel');
+
+        $btnClose = new TButton('closeCurtain');
+        $btnClose->class = 'btn btn-sm btn-default';
+        $btnClose->style = 'margin-right:10px;';
+        $btnClose->onClick = "Template.closeRightPanel();";
+        $btnClose->setLabel(_t("Close"));
+        $btnClose->setImage('fas:times');
+
+        $this->form->addHeaderWidget($btnClose);
         
-        parent::add($container);
+        // add the container to the page
+        parent::add($this->form);
+
+        $style = new TStyle('right-panel > .container-part[page-name=SystemUnitForm]');
+        $style->width = '70% !important';   
+        $style->show(true);
     }
 }

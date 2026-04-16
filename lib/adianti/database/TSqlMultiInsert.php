@@ -9,6 +9,9 @@ use Exception;
 /**
  * Provides an Interface to create an MULTI INSERT statement
  *
+ * Provides an interface to create a MULTI INSERT SQL statement.
+ * This class extends TSqlStatement and allows batch insert operations.
+ *
  * @version    7.5
  * @package    database
  * @author     Pablo Dall'Oglio
@@ -21,7 +24,8 @@ class TSqlMultiInsert extends TSqlStatement
     private $rows;
     
     /**
-     * Constructor method
+     * Initializes the TSqlMultiInsert object.
+     * This constructor initializes an empty array to store multiple rows for insertion.
      */
     public function __construct()
     {
@@ -29,8 +33,9 @@ class TSqlMultiInsert extends TSqlStatement
     }
     
     /**
-     * Add a row data
-     * @param $row Row data
+     * Adds a row of data to the insert statement.
+     *
+     * @param array $row An associative array containing the column names as keys and their respective values.
      */
     public function addRowValues($row)
     {
@@ -38,9 +43,12 @@ class TSqlMultiInsert extends TSqlStatement
     }
     
     /**
-     * Transform the value according to its PHP type before send it to the database
-     * @param $value    Value to be transformed
-     * @return       Transformed Value
+     * Transforms a value according to its PHP type before sending it to the database.
+     * This method ensures proper formatting of scalar values such as strings, booleans, and nulls.
+     *
+     * @param mixed $value The value to be transformed.
+     *
+     * @return mixed The transformed value, properly formatted for SQL insertion.
      */
     private function transform($value)
     {
@@ -75,9 +83,11 @@ class TSqlMultiInsert extends TSqlStatement
     }
     
     /**
-     * this method doesn't exist in this class context
-     * @param $criteria A TCriteria object, specifiyng the filters
-     * @exception       Exception in any case
+     * Throws an exception, as criteria are not applicable for multi-insert statements.
+     *
+     * @param TCriteria $criteria A TCriteria object, specifying filters (not applicable in this context).
+     *
+     * @throws Exception Always throws an exception since criteria cannot be set in a multi-insert statement.
      */
     public function setCriteria(TCriteria $criteria)
     {
@@ -85,8 +95,12 @@ class TSqlMultiInsert extends TSqlStatement
     }
     
     /**
-     * Returns the INSERT plain statement
-     * @param $prepared Return a prepared Statement
+     * Builds and returns the SQL INSERT statement.
+     * If multiple rows are provided, they are formatted into a batch insert statement.
+     *
+     * @param bool $prepared Whether to return a prepared statement (not currently implemented).
+     *
+     * @return string|null The generated SQL INSERT statement, or null if no rows are provided.
      */
     public function getInstruction( $prepared = FALSE )
     {

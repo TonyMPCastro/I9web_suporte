@@ -15,7 +15,9 @@ use ReflectionClass;
 use Closure;
 
 /**
- * Base class to construct all the widgets
+ * Base abstract class to construct all the widgets
+ *
+ * Provides base functionality for form widgets, including validation, properties, and rendering.
  *
  * @version    7.5
  * @package    widget
@@ -36,11 +38,17 @@ abstract class TField
     protected $label;
     protected $properties;
     protected $valueCallback;
+    protected $hidden;
     private   $validations;
     
     /**
      * Class Constructor
-     * @param  $name name of the field
+     *
+     * Initializes the field with a name, sets default properties, and creates the input element.
+     *
+     * @param string $name The name of the field (required)
+     *
+     * @throws Exception If the field name is empty
      */
     public function __construct($name)
     {
@@ -60,6 +68,8 @@ abstract class TField
         $this->validations = [];
         $this->properties  = [];
         
+        $this->hidden = false;
+
         // creates a <input> tag
         $this->tag = new TElement('input');
         $this->tag->{'class'} = 'tfield';   // classe CSS
@@ -67,7 +77,9 @@ abstract class TField
     }
     
     /**
-     * Change input tag name
+     * Changes the input tag name.
+     *
+     * @param string $name The new tag name
      */
     public function setTagName($name)
     {
@@ -75,9 +87,10 @@ abstract class TField
     }
     
     /**
-     * Intercepts whenever someones assign a new property's value
-     * @param $name     Property Name
-     * @param $value    Property Value
+     * Magic method to set a property dynamically.
+     *
+     * @param string $name  Property name
+     * @param mixed  $value Property value (only scalar values are allowed)
      */
     public function __set($name, $value)
     {
@@ -90,8 +103,11 @@ abstract class TField
     }
     
     /**
-     * Returns a property value
-     * @param $name     Property Name
+     * Magic method to retrieve a property value.
+     *
+     * @param string $name Property name
+     *
+     * @return mixed The property value
      */
     public function __get($name)
     {
@@ -99,8 +115,11 @@ abstract class TField
     }
     
     /**
-     * Returns if the property is set
-     * @param $name     Property Name
+     * Magic method to check if a property is set.
+     *
+     * @param string $name Property name
+     *
+     * @return bool True if the property is set, false otherwise
      */
     public function __isset($name)
     {
@@ -108,7 +127,8 @@ abstract class TField
     }
     
     /**
-     * Clone the object
+     * Magic method to clone the object.
+     * Ensures the cloned object has a separate instance of the tag element.
      */
     function __clone()
     {
@@ -116,9 +136,13 @@ abstract class TField
     }
     
     /**
-     * Redirects function call
-     * @param $method Method name
-     * @param $param  Array of parameters
+     * Magic method to redirect function calls to the internal tag element.
+     *
+     * @param string $method Method name
+     * @param array  $param  Array of parameters
+     *
+     * @return mixed The result of the called method
+     * @throws Exception If the method does not exist
      */
     public function __call($method, $param)
     {
@@ -133,7 +157,18 @@ abstract class TField
     }
     
     /**
-     * Set callback for setValue method
+     * hide object
+     */
+    public function hide()
+    {
+        $this->hidden = true;
+        $this->tag->hide();
+    }
+
+    /**
+     * Sets a callback function to be executed when setting the field value.
+     *
+     * @param Closure $callback The callback function
      */
     public function setValueCallback($callback)
     {
@@ -141,8 +176,9 @@ abstract class TField
     }
     
     /**
-     * Define the field's label
-     * @param $label   A string containing the field's label
+     * Defines the field's label.
+     *
+     * @param string $label The label text
      */
     public function setLabel($label)
     {
@@ -150,7 +186,9 @@ abstract class TField
     }
 
     /**
-     * Returns the field's label
+     * Retrieves the field's label.
+     *
+     * @return string|null The label text or null if not set
      */
     public function getLabel()
     {
@@ -158,8 +196,9 @@ abstract class TField
     }
     
     /**
-     * Define the field's name
-     * @param $name   A string containing the field's name
+     * Sets the field's name.
+     *
+     * @param string $name The field name
      */
     public function setName($name)
     {
@@ -167,7 +206,9 @@ abstract class TField
     }
 
     /**
-     * Returns the field's name
+     * Retrieves the field's name.
+     *
+     * @return string The field name
      */
     public function getName()
     {
@@ -175,8 +216,9 @@ abstract class TField
     }
     
     /**
-     * Define the field's id
-     * @param $id A string containing the field's id
+     * Sets the field's ID.
+     *
+     * @param string $id The field ID
      */
     public function setId($id)
     {
@@ -184,7 +226,9 @@ abstract class TField
     }
 
     /**
-     * Returns the field's id
+     * Retrieves the field's ID.
+     *
+     * @return string The field ID
      */
     public function getId()
     {
@@ -192,8 +236,9 @@ abstract class TField
     }
     
     /**
-     * Define the field's value
-     * @param $value A string containing the field's value
+     * Sets the field's value and executes the callback if defined.
+     *
+     * @param mixed $value The field value
      */
     public function setValue($value)
     {
@@ -207,7 +252,9 @@ abstract class TField
     }
     
     /**
-     * Returns the field's value
+     * Retrieves the field's value.
+     *
+     * @return mixed The field value
      */
     public function getValue()
     {
@@ -215,9 +262,9 @@ abstract class TField
     }
     
     /**
-     * Define the name of the form to wich the field is attached
-     * @param $name    A string containing the name of the form
-     * @ignore-autocomplete on
+     * Defines the name of the form to which the field belongs.
+     *
+     * @param string $name The form name
      */
     public function setFormName($name)
     {
@@ -225,7 +272,9 @@ abstract class TField
     }
     
     /**
-     * Return the name of the form to wich the field is attached
+     * Retrieves the name of the form to which the field belongs.
+     *
+     * @return string The form name
      */
     public function getFormName()
     {
@@ -233,8 +282,9 @@ abstract class TField
     }
     
     /**
-     * Define the field's tooltip
-     * @param $name   A string containing the field's tooltip
+     * Defines the field's tooltip.
+     *
+     * @param string $tip The tooltip text
      */
     public function setTip($tip)
     {
@@ -242,7 +292,9 @@ abstract class TField
     }
     
     /**
-     * Return the post data
+     * Retrieves the posted data for the field.
+     *
+     * @return mixed The posted value or an empty string if not set
      */
     public function getPostData()
     {
@@ -257,8 +309,9 @@ abstract class TField
     }
     
     /**
-     * Define if the field is editable
-     * @param $editable A boolean
+     * Sets whether the field is editable.
+     *
+     * @param bool $editable True if editable, false otherwise
      */
     public function setEditable($editable)
     {
@@ -266,8 +319,9 @@ abstract class TField
     }
 
     /**
-     * Returns if the field is editable
-     * @return A boolean
+     * Checks if the field is editable.
+     *
+     * @return bool True if editable, false otherwise
      */
     public function getEditable()
     {
@@ -275,9 +329,11 @@ abstract class TField
     }
     
     /**
-     * Define a field property
-     * @param $name  Property Name
-     * @param $value Property Value
+     * Sets a field property.
+     *
+     * @param string  $name    Property name
+     * @param mixed   $value   Property value
+     * @param bool    $replace Whether to replace the existing value (default: true)
      */
     public function setProperty($name, $value, $replace = TRUE)
     {
@@ -305,7 +361,11 @@ abstract class TField
     }
     
     /**
-     * Get properties as string
+     * Retrieves properties as a string.
+     *
+     * @param string|null $filter Optional filter to include only properties matching a substring
+     *
+     * @return string The formatted property string
      */
     public function getPropertiesAsString($filter = null)
     {
@@ -327,9 +387,11 @@ abstract class TField
     }
     
     /**
-     * Return a field property
-     * @param $name  Property Name
-     * @param $value Property Value
+     * Retrieves a specific property value.
+     *
+     * @param string $name Property name
+     *
+     * @return mixed The property value
      */
     public function getProperty($name)
     {
@@ -337,8 +399,10 @@ abstract class TField
     }
     
     /**
-     * Define the Field's width
-     * @param $width Field's width in pixels
+     * Defines the field's width.
+     *
+     * @param int      $width  The field width in pixels
+     * @param int|null $height (Unused) Optional height parameter
      */
     public function setSize($width, $height = NULL)
     {
@@ -346,7 +410,9 @@ abstract class TField
     }
     
     /**
-     * Returns the field size
+     * Retrieves the field's size.
+     *
+     * @return int The field width in pixels
      */
     public function getSize()
     {
@@ -354,10 +420,11 @@ abstract class TField
     }
     
     /**
-     * Add a field validator
-     * @param $label Field name
-     * @param $validator TFieldValidator object
-     * @param $parameters Aditional parameters
+     * Adds a validation rule to the field.
+     *
+     * @param string            $label      Field label for validation messages
+     * @param TFieldValidator   $validator  The validation rule object
+     * @param mixed             $parameters Additional parameters for the validator
      */
     public function addValidation($label, TFieldValidator $validator, $parameters = NULL)
     {
@@ -385,7 +452,9 @@ abstract class TField
     }
     
     /**
-     * Returns field validations
+     * Retrieves the field's validation rules.
+     *
+     * @return array The list of validation rules
      */
     public function getValidations()
     {
@@ -393,7 +462,9 @@ abstract class TField
     }
     
     /**
-     * Returns if the field is required
+     * Checks if the field is required.
+     *
+     * @return bool True if the field has a required validation rule, false otherwise
      */
     public function isRequired()
     {
@@ -412,7 +483,9 @@ abstract class TField
     }
     
     /**
-     * Validate a field
+     * Validates the field using the assigned validation rules.
+     *
+     * @throws Exception If validation fails
      */
     public function validate()
     {
@@ -430,7 +503,9 @@ abstract class TField
     }
     
     /**
-     * Converts the object into a string
+     * Converts the object to a string representation.
+     *
+     * @return string The rendered HTML of the field
      */
     public function __toString()
     {
@@ -438,7 +513,9 @@ abstract class TField
     }
     
     /**
-     * Returns the element content as a string
+     * Retrieves the element content as a string.
+     *
+     * @return string The rendered HTML content
      */
     public function getContents()
     {
@@ -450,9 +527,10 @@ abstract class TField
     }
     
     /**
-     * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Enables the specified field in the given form.
+     *
+     * @param string $form_name The form name
+     * @param string $field     The field name
      */
     public static function enableField($form_name, $field)
     {
@@ -460,9 +538,10 @@ abstract class TField
     }
     
     /**
-     * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Disables the specified field in the given form.
+     *
+     * @param string $form_name The form name
+     * @param string $field     The field name
      */
     public static function disableField($form_name, $field)
     {
@@ -470,9 +549,10 @@ abstract class TField
     }
     
     /**
-     * Clear the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Clears the value of the specified field in the given form.
+     *
+     * @param string $form_name The form name
+     * @param string $field     The field name
      */
     public static function clearField($form_name, $field)
     {

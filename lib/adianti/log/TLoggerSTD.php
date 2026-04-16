@@ -6,6 +6,9 @@ use Adianti\Log\TLogger;
 /**
  * Register LOG in Standard Output
  *
+ * Logger that outputs log messages to standard output.
+ * Messages are printed directly to the console or web page.
+ *
  * @version    7.5
  * @package    log
  * @author     Pablo Dall'Oglio
@@ -15,8 +18,10 @@ use Adianti\Log\TLogger;
 class TLoggerSTD extends TLogger
 {
     /**
-     * Writes an message in the LOG file
-     * @param  $message Message to be written
+     * Writes a log message to the standard output.
+     * Messages are printed with a timestamp and log level.
+     *
+     * @param string $message The message to be displayed.
      */
     public function write($message)
     {

@@ -10,7 +10,11 @@ use Adianti\Widget\Form\TForm;
 use Adianti\Widget\Util\TImage;
 
 /**
- * Signature pad Widget (also known as Memo)
+ * Class BSignatureDrawCapture
+ *
+ * A widget that provides a signature drawing pad functionality.
+ * It extends TField and implements AdiantiWidgetInterface, allowing 
+ * users to draw signatures and handle file storage options.
  *
  * @version    7.3
  * @package    widget
@@ -34,8 +38,11 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
     protected $drawHeight;
     
     /**
-     * Class Constructor
-     * @param $name Widet's name
+     * BSignatureDrawCapture constructor.
+     *
+     * Initializes the signature drawing pad with default settings.
+     *
+     * @param string $name The widget's name.
      */
     public function __construct($name)
     {
@@ -54,7 +61,9 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Get pen color
+     * Retrieves the pen color used in the signature pad.
+     *
+     * @return string The pen color in hexadecimal format.
      */
     public function getPenColor()
     {
@@ -62,9 +71,9 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set pen color
-     * 
-     * @param $color color pen
+     * Sets the pen color for the signature pad.
+     *
+     * @param string $color The pen color in hexadecimal format.
      */
     public function setPenColor($color)
     {
@@ -72,7 +81,9 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the post data
+     * Retrieves the posted data for this widget.
+     *
+     * @return string The signature data or an empty string if no data is posted.
      */
     public function getPostData()
     {
@@ -89,9 +100,10 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the widget's size
-     * @param  $width   Widget's width
-     * @param  $height  Widget's height
+     * Defines the widget's dimensions.
+     *
+     * @param string|int $width  The width of the widget (e.g., '100%', '300px').
+     * @param string|int|null $height The height of the widget (optional).
      */
     public function setSize($width, $height = NULL)
     {
@@ -108,8 +120,9 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the widget's size
-     * @param  $height  Widget's height
+     * Defines the preview height of the signature pad.
+     *
+     * @param string|int $height The height value (e.g., '100%', '300px').
      */
     public function setheightPreview($height)
     {
@@ -117,9 +130,10 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the widget's size of draw
-     * @param  $width   Draw's width
-     * @param  $height  Draw's height
+     * Defines the drawing area size within the signature pad.
+     *
+     * @param string|int $width  The width of the drawing area.
+     * @param string|int|null $height The height of the drawing area (optional).
      */
     public function setDrawSize($width, $height = NULL)
     {
@@ -132,7 +146,9 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
     
 
     /**
-     * Get the widget's size
+     * Retrieves the widget's dimensions.
+     *
+     * @return array An array containing the width and height of the widget.
      */
     public function getSize()
     {
@@ -140,7 +156,7 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Enable file handling
+     * Enables file handling, allowing the signature to be processed as a file.
      */
     public function enableFileHandling()
     {
@@ -148,7 +164,7 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Disable file handling
+     * Disables file handling, treating the signature as raw data.
      */
     public function disableFileHandling()
     {
@@ -156,9 +172,9 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Icon
-     * 
-     * @param $icon Icone
+     * Sets an image as a placeholder for the signature pad.
+     *
+     * @param TImage $icon The image to be used as a placeholder.
      */
     public function setImagePlaceholder(TImage $icon)
     {
@@ -166,7 +182,9 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the clear action
+     * Defines the action to be executed when the signature changes.
+     *
+     * @param TAction $action The action to be executed.
      */
     public function setChangeAction(TAction $action)
     {
@@ -174,7 +192,9 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the service class for response
+     * Defines the service class responsible for handling the uploaded signature.
+     *
+     * @param string $service The service class name.
      */
     public function setService($service)
     {
@@ -182,7 +202,12 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Set field value
+     * Sets the value of the signature pad.
+     *
+     * If file handling is enabled, the value is encoded as a JSON object containing
+     * file metadata.
+     *
+     * @param mixed $value The value to be set (raw signature data or file reference).
      */
     public function setValue($value)
     {
@@ -190,7 +215,7 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
         {
             if ($this->fileHandling)
             {
-                if (strpos($value, '%7B') === false)
+                if (substr( (string) $value, 0, 3) !== '%7B')
                 {
                     if (!empty($value))
                     {
@@ -225,7 +250,13 @@ class BSignatureDrawCapture extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Show the widget
+     * Displays the signature pad widget.
+     *
+     * This method renders the canvas for signature drawing, 
+     * along with buttons for clearing, adding, and closing the pad.
+     * It also integrates with file handling if enabled.
+     *
+     * @throws Exception If the widget is not properly associated with a form.
      */
     public function show()
     {

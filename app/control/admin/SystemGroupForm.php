@@ -1,4 +1,5 @@
 <?php
+
 /**
  * SystemGroupForm
  *
@@ -32,47 +33,68 @@ class SystemGroupForm extends TPage
         $name = new TEntry('name');
         
         // define the sizes
-        $id->setSize('30%');
-        $name->setSize('70%');
+        $id->setSize('100%');
+        $name->setSize('100%');
 
-        // validations
         $name->addValidation('name', new TRequiredValidator);
         
-        // outras propriedades
         $id->setEditable(false);
         
-        $this->form->addFields( [new TLabel('ID')], [$id]);
-        $this->form->addFields( [new TLabel(_t('Name'))], [$name]);
+        $row = $this->form->addFields( [new TLabel('ID', null, null, null, '100%'), $id], [new TLabel(_t('Name'), null, null, null, '100%'), $name] );
+        $row->layout = ['col-sm-2','col-sm-10'];
         
         $this->program_list = new TCheckList('program_list');
         $this->program_list->setIdColumn('id');
         $this->program_list->addColumn('id',    'ID',    'center',  '10%');
-        $col_name    = $this->program_list->addColumn('name', _t('Name'),    'left',   '50%');
-        $col_program = $this->program_list->addColumn('controller', _t('Menu path'),    'left',   '40%');
-        $col_program->enableAutoHide(500);
-        $this->program_list->setHeight(350);
+        $col_name    = $this->program_list->addColumn('name', _t('Name'),    'left',   '90%');
+
+        $this->program_list->setHeight(450);
         $this->program_list->makeScrollable();
         
         $col_name->enableSearch();
         $search_program = $col_name->getInputSearch();
         $search_program->placeholder = _t('Search');
         $search_program->style = 'margin-left: 4px; border-radius: 4px';
-        
-        $col_program->setTransformer( function($value, $object, $row) {
-            $menuparser = new TMenuParser('menu.xml');
-            $paths = $menuparser->getPath($value);
+
+        $col_name->setTransformer( function($value, $object, $row) {
             
-            if ($paths)
+            if($object->actions)
             {
-                return implode(' &raquo; ', $paths);
+                $actions = json_decode($object->actions);
+                if($actions)
+                {
+                    foreach($actions as $action)
+                    {
+                        $items[$action->action] = "{$action->name} <small>({$action->action})</small>";
+                    }
+                }
+
+                $programMethodsChecks = new TCheckGroup("{$object->id}_actions");
+                $programMethodsChecks->addItems($items);
+                $programMethodsChecks->setLayout('horizontal');
+
+                $div = new TElement('div');
+                $div->add("{$object->name} <small>({$object->controller})</small>");
+                
+                $container = new BContainer('checks');
+                $container->setTagName('div');
+                $container->setTitle('Ações', '', '13px');
+                $container->addContent([$programMethodsChecks]);
+                $div->add($container);
+
+                return $div;
+
             }
+
+            return "{$object->name} <small>({$object->controller})</small>";
+
         });
         
         $this->user_list = new TCheckList('user_list');
         $this->user_list->setIdColumn('id');
         $this->user_list->addColumn('id',    'ID',    'center',  '10%');
         $col_user = $this->user_list->addColumn('name', _t('Name'),    'left',   '90%');
-        $this->user_list->setHeight(350);
+        $this->user_list->setHeight(400);
         $this->user_list->makeScrollable();
         
         $col_user->enableSearch();
@@ -96,19 +118,43 @@ class SystemGroupForm extends TPage
         $this->user_list->addItems( SystemUsers::get() );
         TTransaction::close();
         
-        $btn = $this->form->addAction( _t('Save'), new TAction(array($this, 'onSave')), 'far:save' );
+        $btn = $this->form->addAction( _t('Save'), new TAction(array($this, 'onSave'), ['static' => 1]), 'far:save' );
         $btn->class = 'btn btn-sm btn-primary';
         
         $this->form->addActionLink( _t('Clear'), new TAction(array($this, 'onEdit')),  'fa:eraser red' );
         $this->form->addActionLink( _t('Back'), new TAction(array('SystemGroupList','onReload')),  'far:arrow-alt-circle-left blue' );
         
-        $container = new TVBox;
-        $container->style = 'width:100%';
-        $container->add(new TXMLBreadCrumb('menu.xml', 'SystemGroupList'));
-        $container->add($this->form);
+        parent::setTargetContainer('adianti_right_panel');
+
+        $btnClose = new TButton('closeCurtain');
+        $btnClose->class = 'btn btn-sm btn-default';
+        $btnClose->style = 'margin-right:10px;';
+        $btnClose->onClick = "Template.closeRightPanel();";
+        $btnClose->setLabel(_t("Close"));
+        $btnClose->setImage('fas:times');
+
+        $this->form->addHeaderWidget($btnClose);
         
-        // add the form to the page
-        parent::add($container);
+        // add the container to the page
+        parent::add($this->form);
+
+        $style = new TStyle('right-panel > .container-part[page-name=SystemGroupForm]');
+        $style->width = '70% !important';   
+        $style->show(true);
+
+        
+        $style = new TStyle('bContainer-fieldset .panel-body');
+        $style->padding = '3px 0px 0px 0px !important';   
+        $style->show(true);
+
+        $style = new TStyle('card-body [widget="bootstrapformbuilder"]:not(.bContainer-fieldset) .card-body .tab-pane');
+        $style->padding = '10px 10px 0px 10px !important';   
+        $style->show(true);
+
+
+        $style = new TStyle('bContainer-fieldset');
+        $style->position = 'relative';   
+        $style->show(true);
     }
     
     /**
@@ -130,12 +176,16 @@ class SystemGroupForm extends TPage
             $object->fromArray( (array) $data );
             $object->store();
             $object->clearParts();
-            
+
             if (!empty($data->program_list))
             {
                 foreach ($data->program_list as $program_id)
                 {
-                    $object->addSystemProgram( new SystemProgram( $program_id ) );
+                    $groupProgram = new SystemGroupProgram;
+                    $groupProgram->system_program_id = $program_id;
+                    $groupProgram->system_group_id = $object->id;
+                    $groupProgram->actions = json_encode($param["{$program_id}_actions"]??[]);
+                    $groupProgram->store();
                 }
             }
             
@@ -152,7 +202,11 @@ class SystemGroupForm extends TPage
             TForm::sendData('form_System_group', $data);
             
             TTransaction::close(); // close the transaction
-            new TMessage('info', _t('Record saved')); // shows the success message
+            
+            new TMessage('info', TAdiantiCoreTranslator::translate('Record saved'), new TAction(['SystemGroupList', 'onReload']));
+            
+            TScript::create("Template.closeRightPanel();");
+
         }
         catch (Exception $e) // in case of exception
         {
@@ -180,10 +234,17 @@ class SystemGroupForm extends TPage
                 // instantiates object System_group
                 $object = new SystemGroup($key);
                 
+                $data = new stdClass;
+                
                 $program_ids = array();
-                foreach ($object->getSystemPrograms() as $program)
+                $system_group_programs = SystemGroupProgram::where('system_group_id', '=', $key)->load();
+                foreach ($system_group_programs as $program)
                 {
-                    $program_ids[] = $program->id;
+                    $program_ids[] = $program->system_program_id;
+                    if($program->actions)
+                    {
+                        $data->{"{$program->system_program_id}_actions"} = json_decode($program->actions);
+                    }
                 }
                 
                 $object->program_list = $program_ids;
@@ -197,6 +258,7 @@ class SystemGroupForm extends TPage
                 
                 $object->user_list = $user_ids;
                 
+                TForm::sendData('form_System_group', $data);
                 // fill the form with the active record data
                 $this->form->setData($object);
                 

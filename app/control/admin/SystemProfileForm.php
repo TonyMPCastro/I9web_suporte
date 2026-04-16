@@ -17,6 +17,11 @@ class SystemProfileForm extends TPage
     {
         parent::__construct();
         
+        if(!empty($param['target_container']))
+        {
+            $this->adianti_target_container = $param['target_container'];
+        }
+        
         $this->form = new BootstrapFormBuilder;
         $this->form->setFormTitle(_t('Profile'));
         $this->form->setClientValidation(true);
@@ -26,32 +31,57 @@ class SystemProfileForm extends TPage
         $login = new TEntry('login');
         $email = new TEntry('email');
         $photo = new TFile('photo');
+        $photo->enablePHPFileUploadLimit();
         $password1 = new TPassword('password1');
         $password2 = new TPassword('password2');
         $login->setEditable(FALSE);
         $photo->setAllowedExtensions( ['jpg'] );
+        $photo->setLimitUploadSize(2);
         
-        $name->setSize('80%');
-        $login->setSize('80%');
-        $email->setSize('80%');
-        $photo->setSize('80%');
-        $password1->setSize('80%');
-        $password2->setSize('80%');
+        $name->setSize('100%');
+        $login->setSize('100%');
+        $email->setSize('100%');
+        $photo->setSize('100%');
+        $password1->setSize('100%');
+        $password2->setSize('100%');
         
         $name->addValidation(_t('Name'), new TRequiredValidator);
         $login->addValidation(_t('Name'), new TRequiredValidator);
         $email->addValidation(_t('Name'), new TRequiredValidator);
         $email->addValidation( _t('Email'), new TEmailValidator);
+
+        if(SystemPreferenceService::isStrongPasswordEnabled())
+        {
+            $password1->enableStrongPasswordValidation(_t('Password'));
+            $password2->enableStrongPasswordValidation(_t('Password confirmation'));
+        }
         
-        $this->form->addFields( [new TLabel(_t('Name'))],  [$name]);
-        $this->form->addFields( [new TLabel(_t('Login'))], [$login]);
-        $this->form->addFields( [new TLabel(_t('Email'))], [$email]);
-        $this->form->addFields( [new TLabel(_t('Photo'))], [$photo]);
-        $this->form->addFields( [new TLabel(_t('Password'))], [$password1]);
-        $this->form->addFields( [new TLabel(_t('Password confirmation'))], [$password2]);
+        $row = $this->form->addFields( [new TLabel(_t('Name'), '#ff0000', '14px', null, '100%'),$name]);
+        $row->layout = [' col-sm-12'];
+        $row = $this->form->addFields( [new TLabel(_t('Login'), '#ff0000', '14px', null, '100%'),$login]);
+        $row->layout = [' col-sm-12'];
+        $row = $this->form->addFields( [new TLabel(_t('Email'), '#ff0000', '14px', null, '100%'),$email]);
+        $row->layout = [' col-sm-12'];
+        $row = $this->form->addFields( [new TLabel(_t('Photo').'<small>(.jpg) </small> ', '#ff0000', '14px', null, '100%'),$photo]);
+        $row->layout = [' col-sm-12'];
+        $row = $this->form->addFields( [new TLabel(_t('Password'), '#ff0000', '14px', null, '100%'),$password1]);
+        $row->layout = [' col-sm-12'];
+        $row = $this->form->addFields( [new TLabel(_t('Password confirmation'), '#ff0000', '14px', null, '100%'),$password2]);
+        $row->layout = [' col-sm-12'];
         
         $btn = $this->form->addAction(_t('Save'), new TAction([$this, 'onSave']), 'fa:save');
         $btn->class = 'btn btn-sm btn-primary';
+        
+        parent::setTargetContainer('adianti_right_panel');
+
+        $btnClose = new TButton('closeCurtain');
+        $btnClose->class = 'btn btn-sm btn-default';
+        $btnClose->style = 'margin-right:10px;';
+        $btnClose->onClick = "Template.closeRightPanel();";
+        $btnClose->setLabel(_t("Close"));
+        $btnClose->setImage('fas:times');
+
+        $this->form->addHeaderWidget($btnClose);
         
         parent::add($this->form);
     }
@@ -94,7 +124,7 @@ class SystemProfileForm extends TPage
                     throw new Exception(_t('The passwords do not match'));
                 }
                 
-                $user->password = md5($object->password1);
+                $user->password = password_hash($object->password1, PASSWORD_BCRYPT);
             }
             else
             {
@@ -109,7 +139,7 @@ class SystemProfileForm extends TPage
                 $target_file   = 'app/images/photos/' . TSession::getValue('login') . '.jpg';
                 $finfo         = new finfo(FILEINFO_MIME_TYPE);
                 
-                if (file_exists($source_file) AND $finfo->file($source_file) == 'image/jpeg')
+                if (file_exists($source_file))
                 {
                     // move to the target directory
                     rename($source_file, $target_file);

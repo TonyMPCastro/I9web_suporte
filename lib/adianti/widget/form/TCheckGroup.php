@@ -14,7 +14,11 @@ use Adianti\Widget\Form\TCheckButton;
 use Exception;
 
 /**
- * A group of CheckButton's
+ * Represents a group of checkboxes.
+ *
+ * This class allows the creation and management of multiple checkboxes as a group.
+ * It supports various layouts, different display styles (such as buttons or switches),
+ * and dynamic reloading of checkbox items.
  *
  * @version    7.5
  * @package    widget
@@ -41,8 +45,9 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     protected $value;
     
     /**
-     * Class Constructor
-     * @param  $name name of the field
+     * Initializes a new instance of the TCheckGroup class.
+     *
+     * @param string $name The name of the field.
      */
     public function __construct($name)
     {
@@ -54,7 +59,7 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Clone object
+     * Clones the object, ensuring that checkboxes and labels are duplicated correctly.
      */
     public function __clone()
     {
@@ -79,7 +84,7 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Check all options
+     * Marks all checkboxes as checked.
      */
     public function checkAll()
     {
@@ -87,8 +92,9 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the direction of the options
-     * @param $direction String (vertical, horizontal)
+     * Defines the layout of the checkboxes.
+     *
+     * @param string $dir The layout direction ('vertical' or 'horizontal').
      */
     public function setLayout($dir)
     {
@@ -96,7 +102,9 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Get the direction (vertical or horizontal)
+     * Retrieves the current layout direction of the checkboxes.
+     *
+     * @return string The layout direction ('vertical' or 'horizontal').
      */
     public function getLayout()
     {
@@ -104,7 +112,9 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define after how much items, it will break
+     * Defines after how many items a line break should be added.
+     *
+     * @param int $breakItems The number of items after which a break occurs.
      */
     public function setBreakItems($breakItems)
     {
@@ -112,7 +122,7 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Show as button
+     * Displays checkboxes as buttons instead of standard checkboxes.
      */
     public function setUseButton()
     {
@@ -121,7 +131,10 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Show as switch
+     * Displays checkboxes as switches.
+     *
+     * @param bool   $useSwitch  Whether to use switch style.
+     * @param string $labelClass The CSS class for switch labels.
      */
     public function setUseSwitch($useSwitch = TRUE, $labelClass = 'blue')
     {
@@ -130,8 +143,9 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Add items to the check group
-     * @param $items An indexed array containing the options
+     * Adds items to the checkbox group.
+     *
+     * @param array $items An associative array of key-value pairs where the key is the item value, and the value is the item label.
      */
     public function addItems($items)
     {
@@ -155,7 +169,9 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the items
+     * Retrieves the list of items in the checkbox group.
+     *
+     * @return array|null The list of items or null if none are set.
      */
     public function getItems()
     {
@@ -163,7 +179,9 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the option buttons
+     * Retrieves the checkbox button elements.
+     *
+     * @return array|null The list of checkbox button elements.
      */
     public function getButtons()
     {
@@ -171,7 +189,9 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Return the option labels
+     * Retrieves the checkbox label elements.
+     *
+     * @return array|null The list of label elements.
      */
     public function getLabels()
     {
@@ -179,8 +199,9 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's separator
-     * @param $sep A string containing the field's separator
+     * Sets the separator used when handling multiple selected values.
+     *
+     * @param string $sep The separator string.
      */
     public function setValueSeparator($sep)
     {
@@ -188,8 +209,11 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's value
-     * @param $value A string containing the field's value
+     * Sets the selected value(s) of the checkbox group.
+     *
+     * If a separator is defined, the value will be split into an array.
+     *
+     * @param string|array|null $value The selected value(s).
      */
     public function setValue($value)
     {
@@ -211,7 +235,9 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the post data
+     * Retrieves the submitted values from the form post request.
+     *
+     * @return array|string The submitted values as an array, or a string if a separator is defined.
      */
     public function getPostData()
     {
@@ -233,8 +259,11 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the action to be executed when the user changes the combo
-     * @param $action TAction object
+     * Defines an action to be executed when the checkbox group value changes.
+     *
+     * @param TAction $action The action to execute.
+     *
+     * @throws Exception If the action is not static.
      */
     public function setChangeAction(TAction $action)
     {
@@ -250,7 +279,9 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Set change function
+     * Sets a JavaScript function to be executed when the checkbox group value changes.
+     *
+     * @param string $function The JavaScript function.
      */
     public function setChangeFunction($function)
     {
@@ -258,16 +289,29 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Reload checkbox items after it is already shown
-     * @param $formname form name (used in gtk version)
-     * @param $name field name
-     * @param $items array with items
-     * @param $options array of options [layout, size, breakItems, useButton, valueSeparator, value, changeAction, changeFunction, checkAll]
+     * Dynamically reloads the checkbox items after the component has been rendered.
+     *
+     * @param string $formname The name of the form.
+     * @param string $name     The name of the field.
+     * @param array  $items    The new items to populate the field.
+     * @param array  $options  Additional options for reloading:
+     *                         - layout: The layout direction.
+     *                         - size: The size of the component.
+     *                         - breakItems: Number of items before a break.
+     *                         - useButton: Whether to use button style.
+     *                         - valueSeparator: Separator for values.
+     *                         - value: Default selected value(s).
+     *                         - changeAction: Action to trigger on change.
+     *                         - changeFunction: JavaScript function for change event.
+     *                         - checkAll: Whether to check all items by default.
      */
     public static function reload($formname, $name, $items, $options)
     {
         $field = new self($name);
         $field->addItems($items);
+
+        $form = new TForm($formname);
+        $form->addField($field);
 
         if (! empty($options['layout']))
         {
@@ -320,9 +364,10 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Enables the checkbox group field in the form.
+     *
+     * @param string $form_name The name of the form.
+     * @param string $field     The name of the field.
      */
     public static function enableField($form_name, $field)
     {
@@ -330,9 +375,10 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Disables the checkbox group field in the form.
+     *
+     * @param string $form_name The name of the form.
+     * @param string $field     The name of the field.
      */
     public static function disableField($form_name, $field)
     {
@@ -340,9 +386,10 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * clear the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Clears the values of the checkbox group field.
+     *
+     * @param string $form_name The name of the form.
+     * @param string $field     The name of the field.
      */
     public static function clearField($form_name, $field)
     {
@@ -350,7 +397,10 @@ class TCheckGroup extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Shows the widget at the screen
+     * Renders the checkbox group component on the screen.
+     *
+     * This method generates the necessary HTML structure for the checkbox group,
+     * including button-based or switch-based display if enabled.
      */
     public function show()
     {

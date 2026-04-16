@@ -13,6 +13,9 @@ use Exception;
 /**
  * List Export Trait
  *
+ * This trait provides methods to export data in CSV, XLS, XML, and PDF formats.
+ * It handles file creation, formatting, and display operations.
+ *
  * @version    7.5
  * @package    base
  * @author     Pablo Dall'Oglio
@@ -22,7 +25,11 @@ use Exception;
 trait AdiantiStandardListExportTrait
 {
     /**
-     * Export to CSV
+     * Exports the data to a CSV file and opens it.
+     *
+     * @param array $param Request parameters.
+     *
+     * @return void
      */
     public function onExportCSV($param)
     {
@@ -39,7 +46,11 @@ trait AdiantiStandardListExportTrait
     }
     
     /**
-     * Export to XLS
+     * Exports the data to an XLS file and opens it.
+     *
+     * @param array $param Request parameters.
+     *
+     * @return void
      */
     public function onExportXLS($param)
     {
@@ -56,7 +67,11 @@ trait AdiantiStandardListExportTrait
     }
     
     /**
-     * Export to XML
+     * Exports the data to an XML file and opens it.
+     *
+     * @param array $param Request parameters.
+     *
+     * @return void
      */
     public function onExportXML($param)
     {
@@ -73,7 +88,11 @@ trait AdiantiStandardListExportTrait
     }
     
     /**
-     * Export datagrid as PDF
+     * Exports the datagrid as a PDF file and opens it in a modal window.
+     *
+     * @param array $param Request parameters.
+     *
+     * @return void
      */
     public function onExportPDF($param)
     {
@@ -97,8 +116,12 @@ trait AdiantiStandardListExportTrait
     }
     
     /**
-     * Export to CSV
-     * @param $output Output file
+     * Generates and saves the datagrid data in CSV format.
+     *
+     * @param string $output Path of the output CSV file.
+     *
+     * @throws Exception If file permissions are insufficient.
+     * @return void
      */
     public function exportToCSV($output)
     {
@@ -150,8 +173,12 @@ trait AdiantiStandardListExportTrait
     }
     
     /**
-     * Export to CSV
-     * @param $output Output file
+     * Generates and saves the datagrid data in XLS format.
+     *
+     * @param string $output Path of the output XLS file.
+     *
+     * @throws Exception If file permissions are insufficient.
+     * @return void
      */
     public function exportToXLS($output)
     {
@@ -229,8 +256,12 @@ trait AdiantiStandardListExportTrait
     }
     
     /**
-     * Export to XML
-     * @param $output Output file
+     * Generates and saves the datagrid data in XML format.
+     *
+     * @param string $output Path of the output XML file.
+     *
+     * @throws Exception If file permissions are insufficient.
+     * @return void
      */
     public function exportToXML($output)
     {
@@ -282,8 +313,14 @@ trait AdiantiStandardListExportTrait
     }
     
     /**
-     * Export to PDF
-     * @param $output Output file
+     * Generates and saves the datagrid data in PDF format.
+     *
+     * Uses DomPDF to convert HTML to PDF and saves it to a file.
+     *
+     * @param string $output Path of the output PDF file.
+     *
+     * @throws Exception If file permissions are insufficient.
+     * @return void
      */
     public function exportToPDF($output)
     {

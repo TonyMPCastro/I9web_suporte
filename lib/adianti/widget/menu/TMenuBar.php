@@ -9,7 +9,8 @@ use Adianti\Util\AdiantiStringConversion;
 use SimpleXMLElement;
 
 /**
- * Menubar Widget
+ * Represents a navigation menu bar.
+ * The menu bar can be built dynamically from an XML file and allows for hierarchical menus.
  *
  * @version    7.5
  * @package    widget
@@ -20,6 +21,9 @@ use SimpleXMLElement;
  */
 class TMenuBar extends TElement
 {
+    /**
+     * Initializes a new instance of the TMenuBar class.
+     */
     public function __construct()
     {
         parent::__construct('div');
@@ -28,9 +32,15 @@ class TMenuBar extends TElement
     }
     
     /**
-     * Build a MenuBar from a XML file
-     * @param $xml_file path for the file
-     * @param $permission_callback check permission callback
+     * Creates a new TMenuBar instance from an XML file.
+     *
+     * @param string $xml_file Path to the XML file defining the menu structure.
+     * @param callable|null $permission_callback Optional callback function to check permissions for menu items.
+     * @param string $bar_class The CSS class for the navigation bar container.
+     * @param string $menu_class The CSS class for submenus.
+     * @param string $item_class The CSS class for individual menu items.
+     *
+     * @return TMenuBar|null Returns a TMenuBar instance if the file is valid, otherwise null.
      */
     public static function newFromXML($xml_file, $permission_callback = NULL, $bar_class = 'nav navbar-nav', $menu_class = 'dropdown-menu', $item_class = '')
     {
@@ -71,7 +81,7 @@ class TMenuBar extends TElement
     }
     
     /**
-     * Show
+     * Renders the menu bar.
      */
     public function show()
     {

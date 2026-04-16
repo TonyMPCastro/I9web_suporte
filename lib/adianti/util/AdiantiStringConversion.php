@@ -4,6 +4,10 @@ namespace Adianti\Util;
 /**
  * String manipulation
  *
+ * Provides various string manipulation utilities, such as conversions between 
+ * camel case and underscore notation, removing accents, ensuring encoding formats, 
+ * and generating slugs.
+ *
  * @version    7.5
  * @package    util
  * @author     Pablo Dall'Oglio
@@ -13,7 +17,12 @@ namespace Adianti\Util;
 class AdiantiStringConversion
 {
     /**
-     * Returns camel case string from underscore string
+     * Converts an underscore-separated string into camel case format.
+     *
+     * @param string $string The input string in underscore notation.
+     * @param bool $spaces If true, spaces are added between words instead of joining them.
+     *
+     * @return string The converted string in camel case format.
      */
     public static function camelCaseFromUnderscore($string, $spaces = FALSE)
     {
@@ -33,7 +42,12 @@ class AdiantiStringConversion
     }
 
     /**
-     * Returns underscore string from camel case string
+     * Converts a camel case string into an underscore-separated format.
+     *
+     * @param string $string The input string in camel case notation.
+     * @param bool $spaces If true, spaces are replaced by underscores.
+     *
+     * @return string The converted string in underscore notation.
      */
     public static function underscoreFromCamelCase($string, $spaces = FALSE)
     {
@@ -47,7 +61,12 @@ class AdiantiStringConversion
     }
     
     /**
-     * Remove accents from string
+     * Removes accents from a given string, converting accented characters
+     * to their closest ASCII equivalents.
+     *
+     * @param string $str The input string containing accented characters.
+     *
+     * @return string The processed string with accents removed.
      */
     public static function removeAccent($str)
     {
@@ -57,7 +76,11 @@ class AdiantiStringConversion
     }
     
     /**
-     * Returns the string as Unicode when needed
+     * Ensures that a given string is properly encoded in UTF-8 format.
+     *
+     * @param string $content The input string to be checked and converted.
+     *
+     * @return string The UTF-8 encoded string.
      */
     public static function assureUnicode($content)
     {
@@ -87,7 +110,11 @@ class AdiantiStringConversion
     }
 
     /**
-     * Returns the string as Iso when needed
+     * Ensures that a given string is properly encoded in ISO-8859-1 format.
+     *
+     * @param string $content The input string to be checked and converted.
+     *
+     * @return string The ISO-8859-1 encoded string.
      */
     public static function assureIso($content)
     {
@@ -118,7 +145,12 @@ class AdiantiStringConversion
     }
 
     /**
-     * Returns the slug from string
+     * Generates a URL-friendly slug from a given string.
+     *
+     * @param string $content The input string to be converted into a slug.
+     * @param string $separator The character to use as a separator in the slug (default: '-').
+     *
+     * @return string The generated slug.
      */
     public static function slug($content, $separator = '-')
     {
@@ -151,12 +183,15 @@ class AdiantiStringConversion
     }
     
     /**
-     * Replace text between
-     * @param $str Text to be replaced
-     * @param $needle_start Start mark
-     * @param $needle_end End mark
-     * @param $replacement Text to be inserted
-     * @param $include_limits if the mark limits will be replaced
+     * Replaces text between two specified delimiters within a string.
+     *
+     * @param string $str The input string.
+     * @param string $needle_start The starting delimiter.
+     * @param string $needle_end The ending delimiter.
+     * @param string $replacement The replacement string.
+     * @param bool $include_limits If true, the delimiters are also replaced; otherwise, they are preserved.
+     *
+     * @return string The modified string with the specified section replaced.
      */
     public static function replaceBetween($str, $needle_start, $needle_end, $replacement, $include_limits = true)
     {
@@ -178,12 +213,14 @@ class AdiantiStringConversion
     }
     
     /**
-     * Replace text between
-     * @param $str Text to be replaced
-     * @param $needle_start Start mark
-     * @param $needle_end End mark
-     * @param $replacement Text to be inserted
-     * @param $include_limits if the mark limits will be replaced
+     * Extracts text between two specified delimiters within a string.
+     *
+     * @param string $str The input string.
+     * @param string $needle_start The starting delimiter.
+     * @param string $needle_end The ending delimiter.
+     * @param bool $include_limits If true, includes the delimiters in the extracted text.
+     *
+     * @return string The extracted text, or an empty string if the delimiters are not found.
      */
     public static function getBetween($str, $needle_start, $needle_end, $include_limits = true)
     {
@@ -206,6 +243,13 @@ class AdiantiStringConversion
         return substr($str, $start, $end - $start);
     }
 
+    /**
+     * Converts a string from ISO-8859-1 to UTF-8 encoding.
+     *
+     * @param string $s The input string in ISO-8859-1 encoding.
+     *
+     * @return string The UTF-8 encoded string.
+     */
     protected static function utf8_encode($s)
     {
         $s = (string) $s;
@@ -254,6 +298,13 @@ class AdiantiStringConversion
         return substr($s, 0, $j);
     }
 
+    /**
+     * Converts a string from UTF-8 to ISO-8859-1 encoding.
+     *
+     * @param string $s The input string in UTF-8 encoding.
+     *
+     * @return string The ISO-8859-1 encoded string.
+     */
     public static function utf8_decode($s)
     {
         $s = (string) $s;
@@ -270,7 +321,7 @@ class AdiantiStringConversion
         
         if (class_exists('UConverter'))
         {
-            return UConverter::transcode( $s, 'ISO-8859-1', 'UTF8');
+            return \UConverter::transcode( $s, 'ISO-8859-1', 'UTF8');
         }
         
         if (function_exists('iconv'))

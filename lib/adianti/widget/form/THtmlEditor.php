@@ -9,7 +9,9 @@ use Adianti\Widget\Form\TField;
 use Adianti\Widget\Util\TImage;
 
 /**
- * Html Editor
+ * Html Editor Widget
+ *
+
  *
  * @version    7.5
  * @package    widget
@@ -31,7 +33,10 @@ class THtmlEditor extends TField implements AdiantiWidgetInterface
     
     /**
      * Class Constructor
-     * @param $name Widet's name
+     *
+     * Initializes the HTML Editor widget, setting default properties and creating the underlying `textarea` element.
+     *
+     * @param string $name The name of the widget
      */
     public function __construct($name)
     {
@@ -46,8 +51,9 @@ class THtmlEditor extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define max length
-     * @param  $length Max length
+     * Sets the maximum length of the editor's content.
+     *
+     * @param int $length The maximum number of characters allowed
      */
     public function setMaxLength($length)
     {
@@ -58,8 +64,14 @@ class THtmlEditor extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Set extra calendar options
+     * Sets an option for the HTML editor.
+     *
+     * Available options are listed in the Summernote documentation.
+     *
      * @link https://summernote.org/deep-dive/
+     *
+     * @param string $option The name of the option
+     * @param mixed  $value  The value to set for the option
      */
     public function setOption($option, $value)
     {
@@ -67,13 +79,17 @@ class THtmlEditor extends TField implements AdiantiWidgetInterface
     }
 
     /**
-     * Add custom button
+     * Adds a custom button to the editor toolbar.
+     *
+     * Custom buttons allow adding new functionality to the editor.
      *
      * @link https://summernote.org/deep-dive/#custom-button
-     * @param $name     String  name action
-     * @param $function String  function(context){  }
-     * @param $title    String  title icon
-     * @param $icon     TImage  toolbar icon
+     *
+     * @param string  $name      The name of the custom button
+     * @param string  $function  JavaScript function to be executed when the button is clicked
+     * @param string  $title     Tooltip text for the button
+     * @param TImage  $icon      Icon for the button
+     * @param bool    $showLabel Whether to display the button label (default: false)
      */
     public function addCustomButton($name, $function, $title, TImage $icon, $showLabel = false)
     {
@@ -87,9 +103,10 @@ class THtmlEditor extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the widget's size
-     * @param  $width   Widget's width
-     * @param  $height  Widget's height
+     * Sets the size of the editor.
+     *
+     * @param int|string $width  The width of the editor (e.g., "100%", "500px")
+     * @param int|null   $height The height of the editor (optional)
      */
     public function setSize($width, $height = NULL)
     {
@@ -101,8 +118,9 @@ class THtmlEditor extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Returns the size
-     * @return array(width, height)
+     * Gets the current size of the editor.
+     *
+     * @return array An array containing the width and height of the editor
      */
     public function getSize()
     {
@@ -110,7 +128,9 @@ class THtmlEditor extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable toolbar
+     * Disables the toolbar, enabling air mode.
+     *
+     * Air mode removes the toolbar and provides an inline editing experience.
      */
     public function disableToolbar()
     {
@@ -118,8 +138,9 @@ class THtmlEditor extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Define options for completion
-     * @param $options array of options for completion
+     * Sets autocomplete options for the editor.
+     *
+     * @param array $options An array of options for autocomplete suggestions
      */
     function setCompletion($options)
     {
@@ -127,9 +148,10 @@ class THtmlEditor extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Enables the HTML editor field.
+     *
+     * @param string $form_name The name of the form containing the field
+     * @param string $field     The name of the field to enable
      */
     public static function enableField($form_name, $field)
     {
@@ -137,9 +159,10 @@ class THtmlEditor extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Disables the HTML editor field.
+     *
+     * @param string $form_name The name of the form containing the field
+     * @param string $field     The name of the field to disable
      */
     public static function disableField($form_name, $field)
     {
@@ -147,9 +170,10 @@ class THtmlEditor extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Clear the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Clears the content of the HTML editor field.
+     *
+     * @param string $form_name The name of the form containing the field
+     * @param string $field     The name of the field to clear
      */
     public static function clearField($form_name, $field)
     {
@@ -157,10 +181,10 @@ class THtmlEditor extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Reload completion
-     * 
-     * @param $field Field name or id
-     * @param $options array of options for autocomplete
+     * Reloads the autocomplete suggestions for the editor.
+     *
+     * @param string $field   The name or ID of the editor field
+     * @param array  $options The new set of autocomplete options
      */
     public static function reloadCompletion($field, $options)
     {
@@ -169,10 +193,11 @@ class THtmlEditor extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Insert text
-     * @param $form_name Form name
-     * @param $field Field name
-     * @param $content Text content
+     * Inserts text into the HTML editor at the current cursor position.
+     *
+     * @param string $form_name The name of the form containing the field
+     * @param string $field     The name of the field where text will be inserted
+     * @param string $content   The text content to insert
      */
     public static function insertText($form_name, $field, $content)
     {
@@ -180,7 +205,9 @@ class THtmlEditor extends TField implements AdiantiWidgetInterface
     }
     
     /**
-     * Show the widget
+     * Displays the HTML editor widget.
+     *
+     * This method initializes the editor, applies its settings, and inserts the appropriate JavaScript for rendering.
      */
     public function show()
     {

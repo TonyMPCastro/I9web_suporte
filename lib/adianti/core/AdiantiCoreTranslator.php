@@ -4,6 +4,10 @@ namespace Adianti\Core;
 /**
  * Framework translation class for internal messages
  *
+ * Handles internal framework translations.
+ * This class follows a singleton pattern and provides methods for translating messages
+ * across different languages.
+ *
  * @version    7.5
  * @package    core
  * @author     Pablo Dall'Oglio
@@ -18,7 +22,8 @@ class AdiantiCoreTranslator
     private $lang;            // target language
     
     /**
-     * Class Constructor
+     * Initializes the translation messages for different languages.
+     * This method is private to enforce the singleton pattern.
      */
     private function __construct()
     {
@@ -167,7 +172,15 @@ class AdiantiCoreTranslator
         $this->messages['en'][] = 'Medium';
         $this->messages['en'][] = 'Small';
         $this->messages['en'][] = 'Condensed';
-        
+        $this->messages['en'][] = 'At least 1 number';
+        $this->messages['en'][] = 'At least 1 lowercase letter';
+        $this->messages['en'][] = 'At least 1 uppercase letter';
+        $this->messages['en'][] = 'At least 1 special character';
+        $this->messages['en'][] = 'characters';
+        $this->messages['en'][] = 'The field ^1 must have';
+        $this->messages['en'][] = 'Allowed extensions';
+        $this->messages['en'][] = 'Drag and drop your file here or click to select!';
+
         $this->messages['pt'][] = 'Carregando';
         $this->messages['pt'][] = 'Arquivo não encontrado';
         $this->messages['pt'][] = 'Buscar';
@@ -312,6 +325,15 @@ class AdiantiCoreTranslator
         $this->messages['pt'][] = 'Médio';
         $this->messages['pt'][] = 'Pequeno';
         $this->messages['pt'][] = 'Condensado';
+        $this->messages['pt'][] = 'Ao menos 1 número';
+        $this->messages['pt'][] = 'Ao menos 1 letra minúscula';
+        $this->messages['pt'][] = 'Ao menos 1 letra maiúscula';
+        $this->messages['pt'][] = 'Ao menos 1 caracter especial';
+        $this->messages['pt'][] = 'caracteres';
+        $this->messages['pt'][] = 'O campo ^1 deve conter';
+        $this->messages['pt'][] = 'Extensões permitidas';
+        $this->messages['pt'][] = 'Arraste e solte seu arquivo aqui ou clique para selecionar!';
+        
         
         $this->messages['es'][] = 'Cargando';
         $this->messages['es'][] = 'Archivo no encontrado';
@@ -457,11 +479,20 @@ class AdiantiCoreTranslator
         $this->messages['es'][] = 'Medio';
         $this->messages['es'][] = 'Pequeño';
         $this->messages['es'][] = 'Condensado';
+        $this->messages['es'][] = 'Al menos 1 número';
+        $this->messages['es'][] = 'Al menos 1 letra minúscula';
+        $this->messages['es'][] = 'Al menos 1 letra mayúscula';
+        $this->messages['es'][] = 'Al menos 1 carácter especial';
+        $this->messages['es'][] = 'caracteres';
+        $this->messages['es'][] = 'El campo ^1 debe contener';
+        $this->messages['es'][] = 'Extensiones permitidas';
+        $this->messages['es'][] = 'Arrastra y suelta tu archivo aqui o haz clic para seleccionar!';
     }
     
     /**
-     * Returns the singleton instance
-     * @return AdiantiCoreTranslator
+     * Returns the singleton instance of the translator.
+     *
+     * @return AdiantiCoreTranslator The singleton instance.
      */
     public static function getInstance()
     {
@@ -476,8 +507,9 @@ class AdiantiCoreTranslator
     }
     
     /**
-     * Define the target language
-     * @param $lang Target language index
+     * Sets the target language for translations.
+     *
+     * @param string $lang The target language index (e.g., 'en', 'pt', 'es').
      */
     public static function setLanguage($lang)
     {
@@ -490,7 +522,9 @@ class AdiantiCoreTranslator
     }
     
     /**
-     * Returns the target language
+     * Retrieves the currently set target language.
+     *
+     * @return string|null The target language index, or null if not set.
      */
     public static function getLanguage()
     {
@@ -499,8 +533,15 @@ class AdiantiCoreTranslator
     }
     
     /**
-     * Translate a word to the target language
-     * @param $word     Word to be translated
+     * Translates a given word into the target language.
+     *
+     * @param string      $word   The word to be translated.
+     * @param string|null $param1 Optional placeholder replacement value.
+     * @param string|null $param2 Optional placeholder replacement value.
+     * @param string|null $param3 Optional placeholder replacement value.
+     * @param string|null $param4 Optional placeholder replacement value.
+     *
+     * @return string The translated word, or an error message if not found.
      */
     public static function translate($word, $param1 = NULL, $param2 = NULL, $param3 = NULL, $param4 = NULL)
     {

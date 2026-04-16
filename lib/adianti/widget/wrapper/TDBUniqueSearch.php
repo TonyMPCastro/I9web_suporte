@@ -14,6 +14,8 @@ use Exception;
 /**
  * DBUnique Search Widget
  *
+ * This widget extends TDBMultiSearch and allows selecting a single value retrieved from a database table.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form
@@ -33,9 +35,20 @@ class TDBUniqueSearch extends TDBMultiSearch implements AdiantiWidgetInterface
     
     /**
      * Class Constructor
-     * @param  $name Widget's name
+     *
+     * Initializes the database-driven unique search widget.
+     *
+     * @param string     $name        Widget's name
+     * @param string     $database    Database connection name
+     * @param string     $model       Model class name
+     * @param string     $key         Table field to be used as the key in the search
+     * @param string     $value       Table field to be displayed in the search options
+     * @param string|null $orderColumn Column name to order the values (optional)
+     * @param TCriteria|null $criteria Criteria object to filter the model records (optional)
+     *
+     * @throws Exception If any error occurs during instantiation
      */
-    public function __construct($name, $database, $model, $key, $value, $orderColumn = NULL, TCriteria $criteria = NULL)
+    public function __construct($name, $database, $model, $key, $value, $orderColumn = NULL, ?TCriteria $criteria = NULL)
     {
         // executes the parent class constructor
         parent::__construct($name, $database, $model, $key, $value, $orderColumn, $criteria);
@@ -47,14 +60,26 @@ class TDBUniqueSearch extends TDBMultiSearch implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the field's value
-     * @param $value Current value
+     * Set the field's value
+     *
+     * This method assigns a value to the field and retrieves its description from the database.
+     *
+     * @param mixed $value The value to be set
+     *
+     * @throws Exception If the database transaction fails
      */
     public function setValue($value)
     {
         if (is_scalar($value) && !empty($value))
-        {
-            TTransaction::open($this->database);
+        {   
+            
+            $close = false;
+            if (!TTransaction::hasConnection($this->database))
+            {
+                TTransaction::openFake($this->database);
+                $close = true;
+            }
+            
             $model = $this->model;
             
             $pk = constant("{$model}::PRIMARYKEY");
@@ -76,7 +101,10 @@ class TDBUniqueSearch extends TDBMultiSearch implements AdiantiWidgetInterface
                 parent::addItems( [$value => $description ] );
             }
             
-            TTransaction::close();
+            if ($close)
+            {
+                TTransaction::close();
+            }
         }
         else
         {
@@ -85,7 +113,11 @@ class TDBUniqueSearch extends TDBMultiSearch implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the post data
+     * Retrieve the posted data
+     *
+     * This method extracts the data submitted through the form.
+     *
+     * @return string The submitted value or an empty string if no value was provided
      */
     public function getPostData()
     {
@@ -111,7 +143,9 @@ class TDBUniqueSearch extends TDBMultiSearch implements AdiantiWidgetInterface
     }
     
     /**
-     * Returns the size
+     * Get the field size
+     *
+     * @return mixed The field size
      */
     public function getSize()
     {
@@ -119,7 +153,9 @@ class TDBUniqueSearch extends TDBMultiSearch implements AdiantiWidgetInterface
     }
     
     /**
-     * Show the component
+     * Render the widget
+     *
+     * This method outputs the HTML representation of the widget.
      */
     public function show()
     {

@@ -154,7 +154,7 @@ class BuilderViewsDiffForm extends TPage
 		}
 		elseif($type == 'drop')
 		{
-			$divHelp->add('View não encontrada no Adianti Builde e será removida');
+			$divHelp->add('View não encontrada no Mad Builder e será removida');
 		}
 		else
 		{

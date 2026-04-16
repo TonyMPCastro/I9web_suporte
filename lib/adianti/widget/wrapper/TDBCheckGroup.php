@@ -9,6 +9,8 @@ use Exception;
 /**
  * Database CheckBox Widget
  *
+ * This widget represents a checkbox group component that fetches data from a database.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage wrapper
@@ -24,15 +26,18 @@ class TDBCheckGroup extends TCheckGroup
     
     /**
      * Class Constructor
-     * @param  $name     widget's name
-     * @param  $database database name
-     * @param  $model    model class name
-     * @param  $key      table field to be used as key in the combo
-     * @param  $value    table field to be listed in the combo
-     * @param  $ordercolumn column to order the fields (optional)
-     * @param  $criteria criteria (TCriteria object) to filter the model (optional)
+     *
+     * Initializes the checkbox group and loads items from the database.
+     *
+     * @param string     $name        Widget name
+     * @param string     $database    Database name
+     * @param string     $model       Model class name
+     * @param string     $key         Table field to be used as key in the checkboxes
+     * @param string     $value       Table field to be displayed in the checkboxes
+     * @param string|null $ordercolumn Column to order the fields (optional)
+     * @param TCriteria|null $criteria Criteria to filter the model (optional)
      */
-    public function __construct($name, $database, $model, $key, $value, $ordercolumn = NULL, TCriteria $criteria = NULL)
+    public function __construct($name, $database, $model, $key, $value, $ordercolumn = NULL, ?TCriteria $criteria = NULL)
     {
         // executes the parent class constructor
         parent::__construct($name);
@@ -42,16 +47,17 @@ class TDBCheckGroup extends TCheckGroup
     }
 
     /**
-     * Reload checkbox from model data
-     * @param  $formname    form name
-     * @param  $field       field name
-     * @param  $database    database name
-     * @param  $model       model class name
-     * @param  $key         table field to be used as key in the checkbox
-     * @param  $value       table field to be listed in the checkbox
-     * @param  $ordercolumn column to order the fields (optional)
-     * @param  $criteria    criteria (TCriteria object) to filter the model (optional)
-     * @param  $options     array of options [layout, breakItems, useButton, value, valueSeparator, changeAction, changeFunction]
+     * Reloads the checkbox group with data from the database.
+     * 
+     * @param string     $formname    Form name
+     * @param string     $field       Field name
+     * @param string     $database    Database name
+     * @param string     $model       Model class name
+     * @param string     $key         Table field to be used as key in the checkboxes
+     * @param string     $value       Table field to be displayed in the checkboxes
+     * @param string|null $ordercolumn Column to order the fields (optional)
+     * @param TCriteria|null $criteria Criteria to filter the model (optional)
+     * @param array      $options     Additional options (layout, breakItems, useButton, etc.)
      */
     public static function reloadFromModel($formname, $field, $database, $model, $key, $value, $ordercolumn = NULL, $criteria = NULL, $options = [])
     {

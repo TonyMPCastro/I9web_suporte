@@ -7,7 +7,8 @@ use Adianti\Widget\Base\TElement;
 use SimpleXMLElement;
 
 /**
- * Menu Widget
+ * Represents a hierarchical menu widget that can be generated from an XML structure.
+ * This class allows adding menu items and supports permission-based filtering.
  *
  * @version    7.5
  * @package    widget
@@ -27,8 +28,16 @@ class TMenu extends TElement
     private $menu_transformer;
     
     /**
-     * Class Constructor
-     * @param $xml SimpleXMLElement parsed from XML Menu
+     * Initializes a new instance of the TMenu class.
+     *
+     * @param SimpleXMLElement $xml The XML structure defining the menu.
+     * @param callable|null $permission_callback Optional callback function to check permissions for menu items.
+     * @param int $menu_level The hierarchical level of the menu (default: 1).
+     * @param string $menu_class The CSS class for the menu container.
+     * @param string $item_class The CSS class for individual menu items.
+     * @param string $link_class The CSS class for menu item links.
+     * @param callable|null $item_transformer Optional transformation function for menu items.
+     * @param callable|null $menu_transformer Optional transformation function for menus.
      */
     public function __construct($xml, $permission_callback = NULL, $menu_level = 1, $menu_class = 'dropdown-menu', $item_class = '', $link_class = 'dropdown-toggle', $item_transformer = null, $menu_transformer = null)
     {
@@ -50,8 +59,9 @@ class TMenu extends TElement
     }
     
     /**
-     * Add a MenuItem
-     * @param $menuitem A TMenuItem Object
+     * Adds a menu item to the menu.
+     *
+     * @param TMenuItem $menuitem The menu item to be added.
      */
     public function addMenuItem(TMenuItem $menuitem)
     {
@@ -63,7 +73,9 @@ class TMenu extends TElement
     }
     
     /**
-     * Return the menu items
+     * Retrieves the menu items stored in this menu.
+     *
+     * @return TMenuItem[] An array of TMenuItem objects.
      */
     public function getMenuItems()
     {
@@ -71,9 +83,10 @@ class TMenu extends TElement
     }
     
     /**
-     * Parse a XMLElement reading menu entries
-     * @param $xml A SimpleXMLElement Object
-     * @param $permission_callback check permission callback
+     * Parses an XML structure to populate the menu with items.
+     *
+     * @param SimpleXMLElement $xml The XML structure defining the menu.
+     * @param callable|null $permission_callback Optional callback function to check permissions for menu items.
      */
     public function parse($xml, $permission_callback = NULL)
     {
@@ -136,7 +149,7 @@ class TMenu extends TElement
     }
     
     /**
-     * Shows the widget at the screen
+     * Renders the menu and its items.
      */
     public function show()
     {

@@ -5,6 +5,12 @@ use Adianti\Core\AdiantiCoreTranslator;
 use Adianti\Widget\Base\TElement;
 use Adianti\Widget\Util\TImage;
 
+/**
+ * Class BHelper
+ *
+ * A helper widget that displays an icon with a popover containing additional information.
+ * The popover can have customizable content, title, size, side positioning, and an optional action.
+ */
 class BHelper extends TElement
 {
     private $id;
@@ -17,9 +23,11 @@ class BHelper extends TElement
     private $content;
 
     /**
-     * Class Constructor
-     * @param  string $title        widget's title
-     * @param  TImage $icon         widget's icon
+     * BHelper constructor.
+     *
+     * Initializes the helper widget with an optional icon.
+     *
+     * @param TImage|null $icon The icon to be displayed. If null, a default question mark icon is used.
      */
     public function __construct(TImage $icon = null)
     {
@@ -36,9 +44,11 @@ class BHelper extends TElement
     }
 
     /**
-     * Define side popover
+     * Defines the popover side positioning.
      *
-     * @param string $side ['auto', 'top', 'right', 'bottom', 'left']
+     * @param string $side The popover side. Accepted values: ['auto', 'top', 'right', 'bottom', 'left'].
+     *
+     * @throws Exception If an invalid side parameter is provided.
      */
     public function setSide($side)
     {
@@ -51,9 +61,9 @@ class BHelper extends TElement
     }
 
     /**
-     * Set content popover
-     * 
-     * @param string $content
+     * Sets the popover content.
+     *
+     * @param string $content The content to be displayed inside the popover.
      */
     public function setContent($content)
     {
@@ -61,8 +71,9 @@ class BHelper extends TElement
     }
     
     /**
-     * Get content popover
-     * @return string $content
+     * Gets the popover content.
+     *
+     * @return string|null The popover content.
      */
     public function getContent()
     {
@@ -70,8 +81,9 @@ class BHelper extends TElement
     }
     
     /**
-     * Get size
-     * @return int $size
+     * Gets the size of the helper component.
+     *
+     * @return int|null The size of the component. Returns null if not set.
      */
     public function getSize()
     {
@@ -79,8 +91,9 @@ class BHelper extends TElement
     }
 
     /**
-     * Enable hover
-     * @return bool $hover
+     * Enables or disables hover functionality for the helper.
+     *
+     * @param bool $hover If true, the popover will appear on hover. Default is true.
      */
     public function enableHover($hover = true)
     {
@@ -88,8 +101,9 @@ class BHelper extends TElement
     }
 
     /**
-     * Set size
-     * @return int $size
+     * Sets the size of the helper icon.
+     *
+     * @param int $size The font size (in pixels) of the icon.
      */
     public function setSize(int $size)
     {
@@ -97,8 +111,9 @@ class BHelper extends TElement
     }
 
     /**
-     * Get action
-     * @return TAction $action
+     * Gets the assigned action for the helper component.
+     *
+     * @return TAction|null The associated action or null if no action is set.
      */
     public function getAction()
     {
@@ -106,8 +121,9 @@ class BHelper extends TElement
     }
 
     /**
-     * Set click action
-     * @return TAction $action
+     * Sets the action to be executed when the helper is clicked.
+     *
+     * @param TAction $action The action to be executed.
      */
     public function setAction(TAction $action)
     {
@@ -115,8 +131,9 @@ class BHelper extends TElement
     }
 
     /**
-     * Get title
-     * @return string $title
+     * Gets the title of the helper.
+     *
+     * @return string|null The title of the helper.
      */
     public function getTitle()
     {
@@ -124,8 +141,9 @@ class BHelper extends TElement
     }
 
     /**
-     * Get icon
-     * @return TImage $icon
+     * Gets the icon of the helper component.
+     *
+     * @return TImage The icon object associated with the helper.
      */
     public function getIcon()
     {
@@ -133,8 +151,9 @@ class BHelper extends TElement
     }
 
     /**
-     * Set title component
-     * @param string $title title shown on hover component
+     * Sets the title of the helper component.
+     *
+     * @param string $title The title to be displayed when hovering over the component.
      */
     public function setTitle(string $title)
     {
@@ -142,8 +161,9 @@ class BHelper extends TElement
     }
 
     /**
-     * Set icon component
-     * @param TImage $icon icon shown on component
+     * Sets the icon for the helper component.
+     *
+     * @param TImage $icon The icon object to be displayed.
      */
     public function setIcon(TImage $icon)
     {
@@ -151,7 +171,10 @@ class BHelper extends TElement
     }
 
     /**
-     * Show component on screen
+     * Displays the helper component on the screen.
+     *
+     * This method renders the icon and configures the popover behavior, including title,
+     * content, size, action, and hover settings.
      */
     public function show()
     {
@@ -199,8 +222,8 @@ class BHelper extends TElement
         
         $this->icon->{'id'} = $this->id;
         $this->icon->{'data-popover'} ="true";
-        $this->icon->{'poptitle'} = htmlspecialchars(str_replace("\n", '', nl2br($this->title)));
-        $this->icon->{'popcontent'} = htmlspecialchars(str_replace("\n", '', nl2br($this->content)));
+        $this->icon->{'poptitle'} = htmlspecialchars(str_replace("\n", '', nl2br((string) $this->title)));
+        $this->icon->{'popcontent'} = htmlspecialchars(str_replace("\n", '', nl2br((string) $this->content)));
         $this->icon->{'popside'} = $this->side;
 
         if (! $this->hover)

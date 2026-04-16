@@ -16,6 +16,9 @@ use Exception;
 /**
  * Database Multisearch Widget
  *
+ * This widget provides a multi-selection search interface integrated with a database model.
+ * It supports filtering, ordering, and multiple selection of values.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage wrapper
@@ -50,15 +53,20 @@ class TDBMultiSearch extends TMultiSearch
     
     /**
      * Class Constructor
-     * @param  $name     widget's name
-     * @param  $database database name
-     * @param  $model    model class name
-     * @param  $key      table field to be used as key in the combo
-     * @param  $value    table field to be listed in the combo
-     * @param  $ordercolumn column to order the fields (optional)
-     * @param  $criteria criteria (TCriteria object) to filter the model (optional)
+     *
+     * Initializes a multi-selection search widget linked to a database.
+     *
+     * @param string       $name       Widget name
+     * @param string       $database   Database connection name
+     * @param string       $model      Model class name
+     * @param string       $key        Column used as the key for selection
+     * @param string       $value      Column displayed in the search results
+     * @param string|null  $orderColumn Column used to order results (optional)
+     * @param TCriteria|null $criteria Filtering criteria (optional)
+     *
+     * @throws Exception If any required parameter is missing
      */
-    public function __construct($name, $database, $model, $key, $value, $orderColumn = NULL, TCriteria $criteria = NULL)
+    public function __construct($name, $database, $model, $key, $value, $orderColumn = NULL, ?TCriteria $criteria = NULL)
     {
         // executes the parent class constructor
         parent::__construct($name);
@@ -120,8 +128,9 @@ class TDBMultiSearch extends TMultiSearch
     }
     
     /**
-     * Define the search service
-     * @param $service Search service
+     * Sets the search service to be used.
+     *
+     * @param string $service Name of the search service
      */
     public function setService($service)
     {
@@ -129,7 +138,7 @@ class TDBMultiSearch extends TMultiSearch
     }
     
     /**
-     * Disable search by id
+     * Disables search by ID, allowing only text-based searches.
      */
     public function disableIdSearch()
     {
@@ -137,7 +146,7 @@ class TDBMultiSearch extends TMultiSearch
     }
     
     /**
-     * Enable Id textual search
+     * Enables ID-based textual search.
      */
     public function enableIdTextualSearch()
     {
@@ -145,8 +154,9 @@ class TDBMultiSearch extends TMultiSearch
     }
     
     /**
-     * Define the search operator
-     * @param $operator Search operator
+     * Sets the search operator used for filtering.
+     *
+     * @param string $operator SQL operator used for search queries
      */
     public function setOperator($operator)
     {
@@ -154,8 +164,9 @@ class TDBMultiSearch extends TMultiSearch
     }
     
     /**
-     * Define the display mask
-     * @param $mask Show mask
+     * Defines the display mask for search results.
+     *
+     * @param string $mask Display format for results
      */
     public function setMask($mask)
     {
@@ -163,8 +174,9 @@ class TDBMultiSearch extends TMultiSearch
     }
 
     /**
-     * Define the filter columns
-     * @param $columns
+     * Defines which columns should be used as filters in the search.
+     *
+     * @param array|string $columns Column names to be used as filters
      */
     public function setFilterColumns($columns)
     {
@@ -177,8 +189,9 @@ class TDBMultiSearch extends TMultiSearch
     }
     
     /**
-     * Define the field's value
-     * @param $values An array the field's values
+     * Sets the field values.
+     *
+     * @param array|string $values Array or string containing selected values
      */
     public function setValue($values)
     {
@@ -205,7 +218,13 @@ class TDBMultiSearch extends TMultiSearch
                 
                 if(is_array($values))
                 {
-                    TTransaction::openFake($this->database);
+                    $close = false;
+                    if (!TTransaction::hasConnection($this->database))
+                    {
+                        TTransaction::openFake($this->database);
+                        $close = true;
+                    }
+                    
                     foreach ($values as $value)
                     {
                         if ($value)
@@ -231,7 +250,11 @@ class TDBMultiSearch extends TMultiSearch
                             }
                         }
                     }
-                    TTransaction::close();
+                    
+                    if ($close)
+                    {
+                        TTransaction::close();
+                    }
                 }
                 
                 parent::addItems( $items );
@@ -241,7 +264,9 @@ class TDBMultiSearch extends TMultiSearch
     }
     
     /**
-     * Return the post data
+     * Retrieves the submitted data from the widget.
+     *
+     * @return array|string Returns an array of selected values or a string if single selection is enabled
      */
     public function getPostData()
     {
@@ -256,7 +281,13 @@ class TDBMultiSearch extends TMultiSearch
                 $return = [];
                 if (is_array($values))
                 {
-                    TTransaction::openFake($this->database);
+                    $close = false;
+                    if (!TTransaction::hasConnection($this->database))
+                    {
+                        TTransaction::openFake($this->database);
+                        $close = true;
+                    }
+                    
                     foreach ($values as $value)
                     {
                         if ($value)
@@ -281,7 +312,11 @@ class TDBMultiSearch extends TMultiSearch
                             }
                         }
                     }
-                    TTransaction::close();
+                    
+                    if ($close)
+                    {
+                        TTransaction::close();
+                    }
                 }
                 return $return;
             }
@@ -304,7 +339,7 @@ class TDBMultiSearch extends TMultiSearch
     }
     
     /**
-     * Shows the widget
+     * Renders the widget and initializes the search functionality.
      */
     public function show()
     {
@@ -373,6 +408,7 @@ class TDBMultiSearch extends TMultiSearch
         }
         
         // shows the component
+        parent::prepareNoResultsActions();
         parent::renderItems( false );
         $this->tag->show();
 

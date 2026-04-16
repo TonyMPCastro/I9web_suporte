@@ -19,7 +19,7 @@ trait BuilderMasterDetailTrait
      * @param $datagrid TDataGrid component
      * @param $transformer Function to be applied over the objects
      */
-    public function storeMasterDetailItems($model, $foreign_key, $prefix, $master_object, $detail_items, $form, $datagrid, Callable $transformer = null, $criteria = null)
+    public function storeMasterDetailItems($model, $foreign_key, $prefix, $master_object, $detail_items, $form, $datagrid, ?Callable $transformer = null, $criteria = null)
     {
         $master_pkey    = $master_object->getPrimaryKey();
         $master_id      = $master_object->$master_pkey;
@@ -104,7 +104,7 @@ trait BuilderMasterDetailTrait
      * @param $datagrid TDataGrid component
      * @param $transformer Function to be applied over the objects
      */
-    public function loadMasterDetailItems($model, $foreign_key, $prefix, $master_object, $form, $datagrid, $criteria = null, Callable $transformer = null)
+    public function loadMasterDetailItems($model, $foreign_key, $prefix, $master_object, $form, $datagrid, $criteria = null, ?Callable $transformer = null)
     {
         $master_pkey  = $master_object->getPrimaryKey();
         $master_id    = $master_object->$master_pkey;

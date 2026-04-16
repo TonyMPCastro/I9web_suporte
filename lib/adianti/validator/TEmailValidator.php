@@ -6,7 +6,9 @@ use Adianti\Core\AdiantiCoreTranslator;
 use Exception;
 
 /**
- * Email validation
+ * Validator for email addresses.
+ *
+ * This class ensures that the provided value is a valid email format.
  *
  * @version    7.5
  * @package    validator
@@ -17,10 +19,13 @@ use Exception;
 class TEmailValidator extends TFieldValidator
 {
     /**
-     * Validate a given value
-     * @param $label Identifies the value to be validated in case of exception
-     * @param $value Value to be validated
-     * @param $parameters aditional parameters for validation
+     * Validates a given email address or an array of email addresses.
+     *
+     * @param string $label The field label used for error messages.
+     * @param string|array $value The email address or an array of email addresses to be validated.
+     * @param mixed|null $parameters Additional parameters for validation (not used).
+     *
+     * @throws Exception If one or more email addresses are invalid.
      */
     public function validate($label, $value, $parameters = NULL)
     {

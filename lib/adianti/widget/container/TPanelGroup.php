@@ -8,7 +8,10 @@ use Adianti\Control\TAction;
 use Adianti\Widget\Util\TActionLink;
 
 /**
- * Bootstrap native panel for Adianti Framework
+ * Bootstrap-based panel container for the Adianti Framework.
+ *
+ * This class provides a Bootstrap-styled panel with support for titles, headers, footers, 
+ * and actions inside a structured container.
  *
  * @version    7.5
  * @package    widget
@@ -26,9 +29,13 @@ class TPanelGroup extends TElement
     private $actionsContainer;
     
     /**
-     * Static creator for panels
-     * @param $title Panel title
-     * @param $element Panel content
+     * Static factory method for creating a panel instance with content.
+     *
+     * @param string      $title   The title of the panel.
+     * @param TElement    $element The main content element of the panel.
+     * @param TElement|null $footer Optional footer element for the panel.
+     *
+     * @return TPanelGroup The newly created panel instance.
      */
     public static function pack($title, $element, $footer = null)
     {
@@ -44,9 +51,12 @@ class TPanelGroup extends TElement
     }
     
     /**
-     * Constructor method
-     * @param $title  Panel Title
-     * @param $footer Panel Footer
+     * Constructor method.
+     *
+     * Initializes the panel with an optional title and background color.
+     *
+     * @param string|null $title      The title to be displayed in the panel header.
+     * @param string|null $background The background color of the header (optional).
      */
     public function __construct($title = NULL, $background = NULL)
     {
@@ -90,7 +100,9 @@ class TPanelGroup extends TElement
     }
     
     /**
-     * Set title
+     * Set the panel title.
+     *
+     * @param string $title The new title to be displayed in the panel header.
      */
     public function setTitle($title)
     {
@@ -99,10 +111,13 @@ class TPanelGroup extends TElement
     }
     
     /**
-     * Add a form header action
-     * @param $label Button label
-     * @param $action Button action
-     * @param $icon Button icon
+     * Add an action link to the panel header.
+     *
+     * @param string  $label  The label of the button.
+     * @param TAction $action The action to be executed when clicking the button.
+     * @param string  $icon   The icon for the button (default: 'fa:save').
+     *
+     * @return TActionLink The created action link.
      */
     public function addHeaderActionLink($label, TAction $action, $icon = 'fa:save')
     {
@@ -119,8 +134,11 @@ class TPanelGroup extends TElement
     }
     
     /**
-     * Add a form header widget
-     * @param $widget Widget
+     * Add a widget to the panel header.
+     *
+     * @param TElement $widget The widget to be added.
+     *
+     * @return TElement The added widget.
      */
     public function addHeaderWidget($widget)
     {
@@ -133,7 +151,13 @@ class TPanelGroup extends TElement
     }
     
     /**
-     * Add the panel content
+     * Add content to the panel body.
+     *
+     * If the content is a BootstrapFormWrapper, its action buttons will be detached and added to the footer.
+     *
+     * @param TElement $content The content element to be added.
+     *
+     * @return TElement The panel body element.
      */
     public function add($content)
     {
@@ -156,7 +180,9 @@ class TPanelGroup extends TElement
     }
     
     /**
-     * Return panel header
+     * Get the panel header element.
+     *
+     * @return TElement The header element of the panel.
      */
     public function getHeader()
     {
@@ -164,7 +190,9 @@ class TPanelGroup extends TElement
     }
     
     /**
-     * Return panel body
+     * Get the panel body element.
+     *
+     * @return TElement The body element of the panel.
      */
     public function getBody()
     {
@@ -172,7 +200,9 @@ class TPanelGroup extends TElement
     }
     
     /**
-     * Return panel footer
+     * Get the panel footer element.
+     *
+     * @return TElement The footer element of the panel.
      */
     public function getFooter()
     {
@@ -180,7 +210,9 @@ class TPanelGroup extends TElement
     }
     
     /**
-     * Add footer
+     * Add content to the panel footer.
+     *
+     * @param TElement $footer The footer content to be added.
      */
     public function addFooter($footer)
     {

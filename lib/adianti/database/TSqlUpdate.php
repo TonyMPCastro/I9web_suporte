@@ -7,6 +7,9 @@ use Adianti\Database\TTransaction;
 /**
  * Provides an Interface to create UPDATE statements
  *
+ * This class extends TSqlStatement and allows setting column values, managing prepared variables,
+ * transforming values for database compatibility, and constructing the final SQL update statement.
+ *
  * @version    7.5
  * @package    database
  * @author     Pablo Dall'Oglio
@@ -20,9 +23,15 @@ class TSqlUpdate extends TSqlStatement
     private $preparedVars;
     
     /**
-     * Assign values to the database columns
-     * @param $column   Name of the database column
-     * @param $value    Value for the database column
+     * Assigns a value to a specified database column.
+     *
+     * This method stores scalar or null values in an internal column value array
+     * to be used in an UPDATE SQL statement.
+     *
+     * @param string $column The name of the database column.
+     * @param mixed $value The value to be assigned to the column. Only scalar or null values are allowed.
+     *
+     * @return void
      */
     public function setRowData($column, $value)
     {
@@ -33,8 +42,13 @@ class TSqlUpdate extends TSqlStatement
     }
     
     /**
-     * Unset row data
-     * @param $column   Name of the database column
+     * Removes a column from the update statement.
+     *
+     * If the specified column exists in the columnValues array, it is removed.
+     *
+     * @param string $column The name of the database column to remove.
+     *
+     * @return void
      */
     public function unsetRowData($column)
     {
@@ -45,11 +59,15 @@ class TSqlUpdate extends TSqlStatement
     }
     
     /**
-     * Transform the value according to its PHP type
-     * before send it to the database
-     * @param $value    Value to be transformed
-     * @param $prepared If the value will be prepared
-     * @return       Transformed Value
+     * Transforms a value according to its PHP type before being used in a SQL statement.
+     *
+     * This method ensures proper formatting and escaping of values depending on their type.
+     * It handles booleans, nulls, strings, and numeric values, and supports prepared statements.
+     *
+     * @param mixed $value The value to be transformed.
+     * @param bool $prepared Indicates whether to use a prepared statement (default: FALSE).
+     *
+     * @return mixed The transformed value, ready for use in a SQL statement.
      */
     private function transform($value, $prepared = FALSE)
     {
@@ -122,7 +140,12 @@ class TSqlUpdate extends TSqlStatement
     }
     
     /**
-     * Return the prepared vars
+     * Retrieves an array of prepared variables used in the SQL statement.
+     *
+     * If a criteria object is set, this method merges column value prepared variables
+     * with the WHERE clause prepared variables.
+     *
+     * @return array An associative array of prepared variables.
      */
     public function getPreparedVars()
     {
@@ -138,8 +161,14 @@ class TSqlUpdate extends TSqlStatement
     }
     
     /**
-     * Returns the UPDATE plain statement
-     * @param $prepared Return a prepared Statement
+     * Generates and returns the SQL UPDATE statement.
+     *
+     * This method constructs an SQL UPDATE statement with column assignments and an optional WHERE clause.
+     * It supports both plain and prepared statement formats.
+     *
+     * @param bool $prepared Whether to return a prepared statement (default: FALSE).
+     *
+     * @return string The SQL UPDATE statement.
      */
     public function getInstruction( $prepared = FALSE)
     {

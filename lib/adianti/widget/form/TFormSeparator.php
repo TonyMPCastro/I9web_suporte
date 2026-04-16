@@ -4,7 +4,11 @@ namespace Adianti\Widget\Form;
 use Adianti\Widget\Base\TElement;
 
 /**
- * Form separator
+ * Represents a visual separator with a title for forms.
+ *
+ * This class creates a separator with a customizable title, font color, 
+ * font size, and separator color. The separator consists of a title 
+ * (`h4` element) and a horizontal rule (`hr` element).
  *
  * @version    7.5
  * @package    widget
@@ -23,7 +27,13 @@ class TFormSeparator extends TElement
     
     /**
      * Class Constructor
-     * @param $text Separator title
+     *
+     * Initializes the form separator with a title and optional style settings.
+     *
+     * @param string $text          Separator title text
+     * @param string $fontColor     Font color of the title (default: "#333333")
+     * @param string $fontSize      Font size of the title in pixels (default: "16")
+     * @param string $separatorColor Separator line color (default: "#eeeeee")
      */
     public function __construct($text, $fontColor = '#333333', $fontSize = '16', $separatorColor = '#eeeeee')
     {
@@ -47,8 +57,9 @@ class TFormSeparator extends TElement
     }
 
     /**
-     * Set font size
-     * @param $size font size
+     * Set the font size of the separator title.
+     *
+     * @param string|int $size Font size in pixels
      */
     public function setFontSize($size)
     {
@@ -57,8 +68,9 @@ class TFormSeparator extends TElement
     }
     
     /**
-     * Set font color
-     * @param $color font color
+     * Set the font color of the separator title.
+     *
+     * @param string $color Font color in any valid CSS color format (e.g., "#000000", "red")
      */
     public function setFontColor($color)
     {
@@ -67,8 +79,9 @@ class TFormSeparator extends TElement
     }
 
     /**
-     * Set separator color
-     * @param $color separator color
+     * Set the color of the separator line.
+     *
+     * @param string $color Separator line color in any valid CSS color format
      */
     public function setSeparatorColor($color)
     {

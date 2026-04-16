@@ -6,6 +6,9 @@ use Adianti\Control\TPage;
 /**
  * Standard page controller for forms
  *
+ * Standard page controller for forms.
+ * This class extends TPage and is used as a base controller for handling forms.
+ *
  * @version    7.5
  * @package    base
  * @author     Pablo Dall'Oglio

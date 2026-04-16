@@ -7,7 +7,11 @@ use Adianti\Widget\Base\TElement;
 use Adianti\Widget\Util\TImage;
 
 /**
- * MenuItem Widget
+ * Represents an item in a menu.
+ * 
+ * This class defines a menu item with a label, action, optional image, and other properties 
+ * like submenu and styling. It extends TElement to generate the appropriate HTML elements 
+ * for rendering the menu item.
  *
  * @version    7.5
  * @package    widget
@@ -31,10 +35,13 @@ class TMenuItem extends TElement
     private $classIcon;
     
     /**
-     * Class constructor
-     * @param $label  The menu label
-     * @param $action The menu action
-     * @param $image  The menu image
+     * Initializes a menu item with label, action, and optional image.
+     *
+     * @param string      $label            The text displayed on the menu item.
+     * @param string|null $action           The action associated with the menu item (e.g., URL or route).
+     * @param string|null $image            The image path for the menu item (optional).
+     * @param int         $level            The menu level (default is 0).
+     * @param callable|null $menu_transformer A callback function to transform the menu item (optional).
      */
     public function __construct($label, $action, $image = NULL, $level = 0, $menu_transformer = null)
     {
@@ -54,7 +61,9 @@ class TMenuItem extends TElement
     }
     
     /**
-     * Returns the action
+     * Retrieves the action associated with the menu item.
+     *
+     * @return string|null The action (URL or route) of the menu item.
      */
     public function getAction()
     {
@@ -62,7 +71,9 @@ class TMenuItem extends TElement
     }
     
     /**
-     * Set the action
+     * Sets the action for the menu item.
+     *
+     * @param string|null $action The new action (URL or route).
      */
     public function setAction($action)
     {
@@ -70,7 +81,9 @@ class TMenuItem extends TElement
     }
     
     /**
-     * Returns the label
+     * Retrieves the label of the menu item.
+     *
+     * @return string The label text.
      */
     public function getLabel()
     {
@@ -78,7 +91,9 @@ class TMenuItem extends TElement
     }
     
     /**
-     * Set the label
+     * Sets the label for the menu item.
+     *
+     * @param string $label The new label text.
      */
     public function setLabel($label)
     {
@@ -86,7 +101,9 @@ class TMenuItem extends TElement
     }
     
     /**
-     * Returns the image
+     * Retrieves the image path of the menu item.
+     *
+     * @return string|null The image path, or null if not set.
      */
     public function getImage()
     {
@@ -94,7 +111,9 @@ class TMenuItem extends TElement
     }
     
     /**
-     * Set the image
+     * Sets the image for the menu item.
+     *
+     * @param string|null $image The image path.
      */
     public function setImage($image)
     {
@@ -102,7 +121,9 @@ class TMenuItem extends TElement
     }
     
     /**
-     * Returns the menu
+     * Retrieves the submenu associated with the menu item.
+     *
+     * @return TMenu|null The submenu object, or null if no submenu is set.
      */
     public function getMenu()
     {
@@ -110,7 +131,9 @@ class TMenuItem extends TElement
     }
     
     /**
-     * Returns the level
+     * Retrieves the menu level of the item.
+     *
+     * @return int The level of the menu item.
      */
     public function getLevel()
     {
@@ -118,7 +141,9 @@ class TMenuItem extends TElement
     }
     
     /**
-     * Returns the link
+     * Retrieves the link element of the menu item.
+     *
+     * @return TElement The link element.
      */
     public function getLink()
     {
@@ -126,7 +151,9 @@ class TMenuItem extends TElement
     }
     
     /**
-     * Set link class
+     * Sets the CSS class for the menu item's link.
+     *
+     * @param string $class The CSS class name.
      */
     public function setLinkClass($class)
     {
@@ -134,8 +161,11 @@ class TMenuItem extends TElement
     }
     
     /**
-     * Define the submenu for the item
-     * @param $menu A TMenu object
+     * Assigns a submenu to the menu item.
+     *
+     * This method also sets the CSS class for a dropdown submenu.
+     *
+     * @param TMenu $menu The submenu object.
      */
     public function setMenu(TMenu $menu)
     {
@@ -144,7 +174,9 @@ class TMenuItem extends TElement
     }
 
     /**
-     * Set link class Item
+     * Sets a custom CSS class for the menu item link.
+     *
+     * @param string $class The CSS class name.
      */
     public function setClassLink($class)
     {
@@ -152,7 +184,9 @@ class TMenuItem extends TElement
     }
 
     /**
-     * Set icon class Item
+     * Sets a custom CSS class for the menu item icon.
+     *
+     * @param string $class The CSS class name.
      */
     public function setClassIcon($class)
     {
@@ -160,7 +194,9 @@ class TMenuItem extends TElement
     }
 
     /**
-     * Set tag label
+     * Sets the HTML tag to be used for the menu item label.
+     *
+     * @param string $tag The HTML tag name (e.g., 'span', 'div').
      */
     public function setTagLabel($tag)
     {
@@ -168,7 +204,10 @@ class TMenuItem extends TElement
     }
     
     /**
-     * Shows the widget at the screen
+     * Renders the menu item as an HTML element.
+     *
+     * This method generates the necessary HTML structure for the menu item,
+     * including the action URL, image, submenu, and styling.
      */
     public function show()
     {

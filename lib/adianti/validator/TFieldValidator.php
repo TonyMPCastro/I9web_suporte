@@ -4,6 +4,8 @@ namespace Adianti\Validator;
 /**
  * TFieldValidator abstract validation class
  *
+ * This class serves as a base for validators that enforce constraints on field values.
+ *
  * @version    7.5
  * @package    validator
  * @author     Pablo Dall'Oglio
@@ -13,10 +15,13 @@ namespace Adianti\Validator;
 abstract class TFieldValidator
 {
     /**
-     * Validate a given value
-     * @param $label Identifies the value to be validated in case of exception
-     * @param $value Value to be validated
-     * @param $parameters aditional parameters for validation
+     * Validates a given value.
+     *
+     * @param string $label The field label used for error messages.
+     * @param mixed $value The value to be validated.
+     * @param mixed|null $parameters Additional parameters for validation.
+     *
+     * @throws Exception If validation fails.
      */
     abstract public function validate($label, $value, $parameters = NULL);
 }

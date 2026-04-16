@@ -8,6 +8,9 @@ use Adianti\Core\AdiantiCoreTranslator;
 /**
  * Template manipulation
  *
+ * Handles template manipulation by replacing placeholders with object properties,
+ * evaluating mathematical expressions, and processing variable attributions.
+ *
  * @version    7.5
  * @package    util
  * @author     Pablo Dall'Oglio
@@ -17,9 +20,16 @@ use Adianti\Core\AdiantiCoreTranslator;
 class AdiantiTemplateHandler
 {
     /**
-     * Replace a string with object properties within {pattern}
-     * @param $content String with pattern
-     * @param $object  Any object
+     * Replaces placeholders within a given string with corresponding object properties.
+     * Supports method invocation and property access, with optional type casting.
+     *
+     * @param string  $content          The string containing placeholders enclosed in `{}`.
+     * @param object  $object           The object whose properties will be used for replacement.
+     * @param string|null $cast         Optional type casting for replaced values (e.g., 'string', 'int', etc.).
+     * @param bool    $replace_methods  Whether to replace method calls (`{method()}`) in the content.
+     *
+     * @return string The processed string with placeholders replaced by actual values.
+     * @throws Exception If attempting to access a non-existent property.
      */
     public static function replace($content, $object, $cast = null, $replace_methods = false)
     {
@@ -81,7 +91,11 @@ class AdiantiTemplateHandler
     }
     
     /**
-     * Evaluate math expression
+     * Evaluates a mathematical expression.
+     *
+     * @param string $expression The mathematical expression to evaluate.
+     *
+     * @return float|int The result of the evaluated expression.
      */
     public static function evaluateExpression($expression)
     {
@@ -108,7 +122,12 @@ class AdiantiTemplateHandler
     }
     
     /**
-     * replace some php functions
+     * Replaces certain PHP functions (date_format, number_format, evaluate) within a string.
+     * Supports evaluating expressions and formatting dates and numbers.
+     *
+     * @param string $content The content containing function placeholders.
+     *
+     * @return string The processed content with functions replaced by computed values.
      */
     public static function replaceFunctions($content)
     {
@@ -189,9 +208,11 @@ class AdiantiTemplateHandler
     }
     
     /**
-     * Process variable attribution
-     * @param $content Template content
-     * @param $replacements Template variable replacements
+     * Processes variable attributions within a template.
+     * Supports arithmetic operations and variable assignments within `{% set variable = value %}` or `{% set variable += value %}`.
+     *
+     * @param string $content          The template content containing variable assignments.
+     * @param array  &$replacements    Reference array to store variable values.
      */
     public static function processAttribution($content, &$replacements)
     {

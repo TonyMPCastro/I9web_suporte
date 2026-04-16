@@ -4,6 +4,9 @@ namespace Adianti\Core;
 /**
  * Application config
  *
+ * This class allows the application to load configuration settings from an array,
+ * apply specific settings that affect environment variables, and export the stored configuration.
+ *
  * @version    7.5
  * @package    core
  * @author     Pablo Dall'Oglio
@@ -15,7 +18,13 @@ class AdiantiApplicationConfig
     private static $config;
     
     /**
-     * Load configuration from array
+     * Loads configuration settings from an array.
+     *
+     * This method sets the application configuration using an associative array.
+     *
+     * @param array $config An associative array containing configuration settings.
+     *
+     * @return void
      */
     public static function load($config)
     {
@@ -26,7 +35,12 @@ class AdiantiApplicationConfig
     }
     
     /**
-     * Apply some configurations that change env vars
+     * Applies configuration settings that modify environment variables.
+     *
+     * If debugging is enabled in the configuration, this method adjusts PHP error display
+     * settings to show detailed error messages.
+     *
+     * @return void
      */
     public static function apply()
     {
@@ -41,7 +55,9 @@ class AdiantiApplicationConfig
     }
     
     /**
-     * Export configuration
+     * Retrieves the currently loaded configuration.
+     *
+     * @return array|null Returns the configuration array if loaded, or null if no configuration has been set.
      */
     public static function get()
     {

@@ -22,6 +22,9 @@ use Traversable;
 /**
  * Base class for Active Records
  *
+ * Provides an object-oriented interface for interacting with database records,
+ * including CRUD operations, relationships, caching, and soft deletion.
+ *
  * @version    7.5
  * @package    database
  * @author     Pablo Dall'Oglio
@@ -30,19 +33,30 @@ use Traversable;
  */
 abstract class TRecord implements IteratorAggregate
 {
-    protected $data;  // array containing the data of the object
+    protected $recordObjectIntartnalData;  // array containing the data of the object
     protected $vdata; // array with virtual data (non-persistant properties)
     protected $attributes; // array of attributes
     protected $trashed;
     protected $managePermissionCallbacks = [];
+    protected static $boot = [];
+    protected static $booted = [];
+    protected static $defaultFilters = [];
     
     /**
-     * Class Constructor
-     * Instantiates the Active Record
-     * @param [$id] Optional Object ID, if passed, load this object
+     * Initializes the Active Record.
+     *
+     * If an ID is provided, attempts to load the corresponding record from the database.
+     * If the object is not found, throws an exception.
+     *
+     * @param mixed|null $id Optional object ID. If provided, loads the object.
+     * @param bool $callObjectLoad Whether to call the `load` method to retrieve the object.
+     *
+     * @throws Exception If the object with the given ID is not found.
      */
     public function __construct($id = NULL, $callObjectLoad = TRUE)
     {
+        static::bootIfNotBoot();
+
         $this->attributes = array();
         $this->trashed = FALSE;
         
@@ -67,14 +81,139 @@ abstract class TRecord implements IteratorAggregate
                 throw new Exception(AdiantiCoreTranslator::translate('Object ^1 not found in ^2', $id, constant(get_class($this).'::TABLENAME')));
             }
         }
+
+        static::bootedIfNotBooted();
+    }
+
+    /**
+     * Ensures the boot method is called only once per class.
+     *
+     * This method checks if the class has already been booted and calls the boot method
+     * if it hasn't been called yet. This is part of the initialization process for Active Record classes.
+     *
+     * @return void
+     */
+    protected static function bootIfNotBoot()
+    {
+        $class = static::class;
+        
+        if (!isset(static::$boot[$class]))
+        {
+            static::$boot[$class] = true;
+            static::boot();
+        }
+    }
+
+    /**
+     * Ensures the booted method is called only once per class.
+     *
+     * This method checks if the class has already been marked as booted and initializes
+     * the default filters array and calls the booted method if it hasn't been called yet.
+     * This completes the initialization process for Active Record classes.
+     *
+     * @return void
+     */
+    protected static function bootedIfNotBooted()
+    {
+        $class = static::class;
+        
+        if (!isset(static::$booted[$class]))
+        {
+            static::$booted[$class] = true;
+            static::$defaultFilters[$class] = [];
+            static::booted();
+        }
     }
     
     /**
-     * Add a permission management callback.
+     * Boot method that can be overridden by child classes.
      *
-     * This method allows you to add a callback function that will be used to manage permissions.
+     * This method is called only once per class during the initialization process.
+     * Child classes can override this method to perform custom initialization logic.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        // Method that child classes can override
+        // This is called only once per class
+    }
+
+    /**
+     * Booted method that can be overridden by child classes.
+     *
+     * This method is called only once per class after the boot process is complete.
+     * Child classes can override this method to perform custom post-initialization logic.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        // Method that child classes can override
+        // This is called only once per class
+    }
+    
+    /**
+     * Adds a global scope filter to the Active Record class.
+     *
+     * Global scopes are filters that are automatically applied to all queries
+     * for this Active Record class unless explicitly removed.
+     *
+     * @param string $name The name identifier for the global scope.
+     * @param TFilter $filter The filter object to be applied as a global scope.
+     *
+     * @return void
+     */
+    public static function addGlobalScope($name, TFilter $filter)
+    {
+        $class = static::class;
+        static::$defaultFilters[$class][$name] = $filter;
+    }
+    
+    /**
+     * Retrieves all global scope filters for the Active Record class.
+     *
+     * This method returns an array of all global scope filters that have been
+     * registered for this Active Record class. It ensures the class is properly
+     * initialized before returning the filters.
+     *
+     * @return array An associative array of global scope filters indexed by their names.
+     */
+    public static function getGlobalScopes()
+    {
+        $class = static::class;
+        
+        // Ensure the class has been initialized
+        static::bootedIfNotBooted();
+        
+        return static::$defaultFilters[$class] ?? [];
+    }
+
+    /**
+     * Creates a repository instance without applying specified global scopes.
+     *
+     * This method allows you to temporarily disable global scopes for a query.
+     * If no scopes are specified, all global scopes will be disabled.
+     *
+     * @param array|string|null $scopes Optional. The names of specific scopes to disable.
+     *                                  If null, all global scopes will be disabled.
+     *                                  Can be a string for a single scope or an array for multiple scopes.
+     *
+     * @return TRepository A repository instance with the specified global scopes disabled.
+     */
+    public static function withoutGlobalScopes($scopes = null)
+    {
+        $repository = new TRepository(get_called_class());
+        return $repository->withoutGlobalScopes($scopes);
+    }
+    
+    /**
+     * Adds a permission management callback.
+     *
+     * The callback function will be used to verify if the user has permission to manage the record.
      *
      * @param callable $callback The callback function to be added.
+     *
      * @return void
      */
     public function addManagePermission(callable $callback)
@@ -83,23 +222,18 @@ abstract class TRecord implements IteratorAggregate
     }
 
     /**
-     * Check if the current user can manage the given object.
+     * Checks if the current user can manage the given object.
      *
-     * This method checks if any of the registered manage permission callbacks permit
-     * the current user to manage the specified object. If an ID is provided, the object
-     * will be loaded from the database using that ID before checking permissions. This
-     * ensures that any changes made to the object by the user without proper permissions
-     * are disregarded, maintaining the integrity of the permission system.
-     *
-     * The permissions are verified against the attributes of the object, such as 
-     * system_unit_id and system_user_id, to determine if the logged-in user has the 
-     * rights to manipulate that specific record.
+     * This method executes all registered permission callbacks to determine if the user
+     * has permission to manage the specified object.
      *
      * @param mixed $object The object to be managed.
-     * @param mixed $id The ID of the object to be loaded (optional).
+     * @param mixed|null $id Optional ID of the object. If provided, the object will be loaded.
+     * @param mixed|null $hook Optional hook to specify the context of the permission check.
+     *
      * @return void
      */
-    private function canManage($object, $id = null)
+    private function canManage($object, $id = null, $hook = null)
     {
         if (!empty($this->managePermissionCallbacks))
         {
@@ -110,22 +244,27 @@ abstract class TRecord implements IteratorAggregate
 
             foreach($this->managePermissionCallbacks as $managePermissionCallback)
             {
-                call_user_func($managePermissionCallback, $object);   
+                call_user_func($managePermissionCallback, $object, $hook);   
             }
         }
     }
     
     /**
-     * Returns iterator
+     * Returns an iterator for the record's internal data.
+     *
+     * @return Traversable An iterator for traversing the record's attributes.
      */
     public function getIterator () : Traversable
     {
-        return new ArrayIterator( $this->data );
+        return new ArrayIterator( $this->recordObjectIntartnalData );
     }
     
     /**
-     * Create a new TRecord and returns the instance
-     * @param $data indexed array
+     * Creates a new Active Record instance and stores it in the database.
+     *
+     * @param array $data Associative array of attributes to be assigned to the new record.
+     *
+     * @return static The newly created Active Record instance.
      */
     public static function create($data)
     {
@@ -136,8 +275,9 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Executed when the programmer clones an Active Record
-     * In this case, we have to clear the ID, to generate a new one
+     * Handles the cloning of an Active Record.
+     *
+     * Ensures that the cloned object does not retain the original object's primary key.
      */
     public function __clone()
     {
@@ -146,9 +286,16 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Executed whenever an unknown method is executed
-     * @param $method Method name
-     * @param $parameter Method parameters
+     * Handles static method calls dynamically.
+     *
+     * This method enables calling repository methods directly on the Active Record class,
+     * as well as handling transactional method calls.
+     *
+     * @param string $method The name of the method being called.
+     * @param array $parameters The parameters passed to the method.
+     *
+     * @return mixed The result of the method call.
+     * @throws Exception If the method is not found.
      */
     public static function __callStatic($method, $parameters)
     {
@@ -159,9 +306,20 @@ abstract class TRecord implements IteratorAggregate
             if (method_exists($class_name, $method))
             {
                 $database = array_shift($parameters);
-                TTransaction::open($database);
+                $open = TTransaction::isOpen($database) ? false : true;
+                
+                if($open)
+                {
+                    TTransaction::open($database);
+                }
+                
                 $content = forward_static_call_array( array($class_name, $method), $parameters);
-                TTransaction::close();
+                
+                if($open)
+                {
+                    TTransaction::close();
+                }
+                
                 return $content;
             }
             else
@@ -182,9 +340,14 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Executed whenever a property is accessed
-     * @param $property Name of the object property
-     * @return          The value of the property
+     * Retrieves a property value dynamically.
+     *
+     * Supports virtual properties and chained object access using "->".
+     *
+     * @param string $property The property name.
+     *
+     * @return mixed The property value.
+     * @throws Exception If the property does not exist.
      */
     public function __get($property)
     {
@@ -217,9 +380,9 @@ abstract class TRecord implements IteratorAggregate
             else
             {
                 // returns the property value
-                if (isset($this->data[$property]))
+                if (isset($this->recordObjectIntartnalData[$property]))
                 {
-                    return $this->data[$property];
+                    return $this->recordObjectIntartnalData[$property];
                 }
                 else if (isset($this->vdata[$property]))
                 {
@@ -230,16 +393,21 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Executed whenever a property is assigned
-     * @param $property Name of the object property
-     * @param $value    Value of the property
+     * Assigns a value to a property dynamically.
+     *
+     * Supports scalar and object properties while maintaining internal data integrity.
+     *
+     * @param string $property The property name.
+     * @param mixed $value The value to be assigned.
+     *
+     * @return void
      */
     public function __set($property, $value)
     {
-        if ($property == 'data')
-        {
-            throw new Exception(AdiantiCoreTranslator::translate('Reserved property name (^1) in class ^2', $property, get_class($this)));
-        }
+        // if ($property == 'data')
+        // {
+        //     throw new Exception(AdiantiCoreTranslator::translate('Reserved property name (^1) in class ^2', $property, get_class($this)));
+        // }
         
         // check if exists a method called set_<property>
         if (method_exists($this, 'set_'.$property))
@@ -251,46 +419,54 @@ abstract class TRecord implements IteratorAggregate
         {
             if ($value === NULL)
             {
-                $this->data[$property] = NULL;
+                $this->recordObjectIntartnalData[$property] = NULL;
             }
             else if (is_scalar($value))
             {
                 // assign the property's value
-                $this->data[$property] = $value;
+                $this->recordObjectIntartnalData[$property] = $value;
                 unset($this->vdata[$property]);
             }
             else
             {
                 // other non-scalar properties that won't be persisted
                 $this->vdata[$property] = $value;
-                unset($this->data[$property]);
+                unset($this->recordObjectIntartnalData[$property]);
             }
         }
     }
     
     /**
-     * Returns if a property is assigned
-     * @param $property Name of the object property
+     * Checks if a property is set.
+     *
+     * @param string $property The property name.
+     *
+     * @return bool True if the property is set, false otherwise.
      */
     public function __isset($property)
     {
-        return isset($this->data[$property]) or
+        return isset($this->recordObjectIntartnalData[$property]) or
                isset($this->vdata[$property]) or
                method_exists($this, 'get_'.$property);
     }
     
     /**
-     * Unset a property
-     * @param $property Name of the object property
+     * Unsets a property dynamically.
+     *
+     * @param string $property The property name.
+     *
+     * @return void
      */
     public function __unset($property)
     {
-        unset($this->data[$property]);
+        unset($this->recordObjectIntartnalData[$property]);
         unset($this->vdata[$property]);
     }
     
     /**
-     * Returns the cache control
+     * Retrieves the cache control mechanism for the Active Record.
+     *
+     * @return mixed The cache control instance or false if caching is disabled.
      */
     public function getCacheControl()
     {
@@ -315,8 +491,9 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Returns the name of database entity
-     * @return A String containing the name of the entity
+     * Retrieves the database table name associated with the Active Record.
+     *
+     * @return string The table name.
      */
     public function getEntity()
     {
@@ -327,8 +504,9 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Returns the the name of the primary key for that Active Record
-     * @return A String containing the primary key name
+     * Retrieves the primary key name for the Active Record.
+     *
+     * @return string The primary key column name.
      */
     public function getPrimaryKey()
     {
@@ -339,8 +517,9 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Returns the the name of the created at column
-     * @return A String containing the created at column
+     * Retrieves the column name that stores the creation timestamp.
+     *
+     * @return string|null The name of the created_at column, or null if not defined.
      */
     public function getCreatedAtColumn()
     {
@@ -355,8 +534,9 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Returns the the name of the updated at column
-     * @return A String containing the updated at column
+     * Retrieves the column name that stores the last update timestamp.
+     *
+     * @return string|null The name of the updated_at column, or null if not defined.
      */
     public function getUpdatedAtColumn()
     {
@@ -371,8 +551,9 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Returns the the name of the deleted at column
-     * @return A String containing the deleted at column
+     * Retrieves the column name that stores the soft-delete timestamp.
+     *
+     * @return string|null The name of the deleted_at column, or null if not defined.
      */
     public static function getDeletedAtColumn()
     {
@@ -388,8 +569,9 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Returns the the name of the created by column
-     * @return A String containing the created by column
+     * Retrieves the column name that stores the user who created the record.
+     *
+     * @return string|null The name of the created_by column, or null if not defined.
      */
     public function getCreatedByColumn()
     {
@@ -404,8 +586,9 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Returns the the name of the updated by column
-     * @return A String containing the updated by column
+     * Retrieves the column name that stores the user who last updated the record.
+     *
+     * @return string|null The name of the updated_by column, or null if not defined.
      */
     public function getUpdatedByColumn()
     {
@@ -420,8 +603,9 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Returns the the name of the deleted by column
-     * @return A String containing the deleted by column
+     * Retrieves the column name that stores the user who deleted the record.
+     *
+     * @return string|null The name of the deleted_by column, or null if not defined.
      */
     public static function getDeletedByColumn()
     {
@@ -437,8 +621,9 @@ abstract class TRecord implements IteratorAggregate
     }
 
     /**
-     * Returns the the name of the deleted by user id column
-     * @return A String containing the deleted by id column
+     * Retrieves the column name that stores the ID of the user who deleted the record.
+     *
+     * @return string|null The name of the deleted_by_user_id column, or null if not defined.
      */
     public static function getDeletedByUserIdColumn()
     {
@@ -454,8 +639,9 @@ abstract class TRecord implements IteratorAggregate
     }
 
     /**
-     * Returns the the name of the deleted at column
-     * @return A String containing the deleted at column
+     * Retrieves the column name that stores the ID of the user who last updated the record.
+     *
+     * @return string|null The name of the updated_by_user_id column, or null if not defined.
      */
     public function getUpdatedByUserIdColumn()
     {
@@ -471,8 +657,9 @@ abstract class TRecord implements IteratorAggregate
     }
 
     /**
-     * Returns the the name of the deleted at column
-     * @return A String containing the deleted at column
+     * Retrieves the column name that stores the ID of the user who created the record.
+     *
+     * @return string|null The name of the created_by_user_id column, or null if not defined.
      */
     public function getCreatedByUserIdColumn()
     {
@@ -488,8 +675,9 @@ abstract class TRecord implements IteratorAggregate
     }
 
     /**
-     * Returns the the name of the created by unit id column
-     * @return A String containing the created by unit id column
+     * Retrieves the column name that stores the unit ID associated with the record creation.
+     *
+     * @return string|null The name of the created_by_unit_id column, or null if not defined.
      */
     public function getCreatedByUnitIdColumn()
     {
@@ -505,8 +693,12 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Returns the the name of the sequence for primary key
-     * @return A String containing the sequence name
+     * Retrieves the name of the sequence used for generating primary key values.
+     *
+     * If a sequence is explicitly defined for the class, it returns that sequence.
+     * Otherwise, it generates a sequence name based on the table and primary key.
+     *
+     * @return string The name of the sequence.
      */
     private function getSequenceName()
     {
@@ -531,21 +723,27 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Fill the Active Record properties from another Active Record
-     * @param $object An Active Record
+     * Merges the attributes of another Active Record into this instance.
+     *
+     * @param TRecord $object The Active Record instance to merge from.
+     *
+     * @return void
      */
     public function mergeObject(TRecord $object)
     {
         $data = $object->toArray();
         foreach ($data as $key => $value)
         {
-            $this->data[$key] = $value;
+            $this->recordObjectIntartnalData[$key] = $value;
         }
     }
     
     /**
-     * Fill the Active Record properties from an indexed array
-     * @param $data An indexed array containing the object properties
+     * Populates the Active Record attributes from an associative array.
+     *
+     * @param array $data An associative array of attribute values.
+     *
+     * @return void
      */
     public function fromArray($data)
     {
@@ -557,7 +755,7 @@ abstract class TRecord implements IteratorAggregate
                 // set just attributes defined by the addAttribute()
                 if ((in_array($key, $this->attributes) AND is_string($key)) OR ($key === $pk))
                 {
-                    $this->data[$key] = $data[$key];
+                    $this->recordObjectIntartnalData[$key] = $data[$key];
                 }
             }
         }
@@ -565,15 +763,17 @@ abstract class TRecord implements IteratorAggregate
         {
             foreach ($data as $key => $value)
             {
-                $this->data[$key] = $data[$key];
+                $this->recordObjectIntartnalData[$key] = $data[$key];
             }
         }
     }
     
     /**
-     * Return the Active Record properties as an indexed array
-     * @param $filter_attributes Array of attributes to be returned.
-     * @return An indexed array containing the object properties
+     * Converts the Active Record into an associative array.
+     *
+     * @param array|null $filter_attributes Optional list of attributes to include.
+     *
+     * @return array The record data as an associative array.
      */
     public function toArray( $filter_attributes = null )
     {
@@ -583,26 +783,28 @@ abstract class TRecord implements IteratorAggregate
         if (count($attributes) > 0)
         {
             $pk = $this->getPrimaryKey();
-            if (!empty($this->data))
+            if (!empty($this->recordObjectIntartnalData))
             {
-                foreach ($this->data as $key => $value)
+                foreach ($this->recordObjectIntartnalData as $key => $value)
                 {
                     if ((in_array($key, $attributes) AND is_string($key)) OR ($key === $pk))
                     {
-                        $data[$key] = $this->data[$key];
+                        $data[$key] = $this->recordObjectIntartnalData[$key];
                     }
                 }
             }
         }
         else
         {
-            $data = $this->data;
+            $data = $this->recordObjectIntartnalData;
         }
         return $data;
     }
     
     /**
-     * Return virtual data (non-persistant properties)
+     * Retrieves virtual (non-persistent) properties of the object.
+     *
+     * @return array An array of virtual data.
      */
     public function getVirtualData()
     {
@@ -610,8 +812,9 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Return the Active Record properties as a json string
-     * @return A JSON String
+     * Converts the Active Record into a JSON string.
+     *
+     * @return string The JSON representation of the record.
      */
     public function toJson()
     {
@@ -619,12 +822,17 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Render variables inside brackets
+     * Replaces placeholders in a string with corresponding object properties.
+     *
+     * @param string $pattern The string pattern with placeholders inside `{}`.
+     * @param string|null $cast Optional type casting for the replaced values.
+     *
+     * @return string The formatted string with variables replaced.
      */
     public function render($pattern, $cast = null)
     {
         $content = $pattern;
-        if (preg_match_all('/\{(.*?)\}/', $pattern, $matches) )
+        if (preg_match_all('/\{(.*?)\}/', (string) $pattern, $matches) )
         {
             foreach ($matches[0] as $match)
             {
@@ -646,7 +854,11 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Evaluate variables inside brackets
+     * Evaluates a mathematical expression containing object properties.
+     *
+     * @param string $pattern The expression pattern with placeholders.
+     *
+     * @return float|int The result of the mathematical evaluation.
      */
     public function evaluate($pattern)
     {
@@ -675,20 +887,26 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Register an persisted attribute
+     * Registers a new persisted attribute for the Active Record.
+     *
+     * @param string $attribute The name of the attribute.
+     *
+     * @return void
      */
     public function addAttribute($attribute)
     {
-        if ($attribute == 'data')
-        {
-            throw new Exception(AdiantiCoreTranslator::translate('Reserved property name (^1) in class ^2', $attribute, get_class($this)));
-        }
+        // if ($attribute == 'data')
+        // {
+        //     throw new Exception(AdiantiCoreTranslator::translate('Reserved property name (^1) in class ^2', $attribute, get_class($this)));
+        // }
         
         $this->attributes[] = $attribute;
     }
     
     /**
-     * Return the persisted attributes
+     * Retrieves the list of attributes that are persisted in the database.
+     *
+     * @return array The list of persisted attributes.
      */
     public function getAttributes()
     {
@@ -696,7 +914,9 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Get attribute list
+     * Retrieves the list of persisted attributes.
+     *
+     * @return string A comma-separated list of attributes, or `*` if no attributes are registered.
      */
     public function getAttributeList()
     {
@@ -711,9 +931,13 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Store the objects into the database
-     * @return      The number of affected rows
-     * @exception   Exception if there's no active transaction opened
+     * Stores the object in the database.
+     *
+     * If the object has no ID, it is inserted. Otherwise, it is updated.
+     * Also handles UUIDs, serial IDs, timestamps, and user tracking.
+     *
+     * @return int The number of affected rows.
+     * @throws Exception If there is no active database transaction.
      */
     public function store()
     {
@@ -742,17 +966,17 @@ abstract class TRecord implements IteratorAggregate
         
         if (method_exists($this, 'onBeforeStore'))
         {
-            $virtual_object = (object) $this->data;
+            $virtual_object = (object) $this->recordObjectIntartnalData;
             $this->onBeforeStore( $virtual_object );
-            $this->data = (array) $virtual_object;
+            $this->recordObjectIntartnalData = (array) $virtual_object;
         }
         
-        $this->canManage($this, $this->$pk);
+        $this->canManage($this, $this->$pk, 'onBeforeStore');
         
-        if (empty($this->data[$pk]) or (!self::exists($this->$pk)))
+        if (empty($this->recordObjectIntartnalData[$pk]) or (!self::exists($this->$pk)))
         {
             // increments the ID
-            if (empty($this->data[$pk]))
+            if (empty($this->recordObjectIntartnalData[$pk]))
             {
                 if ((defined("{$class}::IDPOLICY")) AND (constant("{$class}::IDPOLICY") == 'serial'))
                 {
@@ -777,7 +1001,7 @@ abstract class TRecord implements IteratorAggregate
             $sql = new TSqlInsert;
             $sql->setEntity($this->getEntity());
             // iterate the object data
-            foreach ($this->data as $key => $value)
+            foreach ($this->recordObjectIntartnalData as $key => $value)
             {
                 // check if the field is a calculated one
                 if ( !method_exists($this, 'get_' . $key) OR (count($this->attributes) > 0) )
@@ -788,13 +1012,13 @@ abstract class TRecord implements IteratorAggregate
                         if ((in_array($key, $this->attributes) AND is_string($key)) OR ($key === $pk))
                         {
                             // pass the object data to the SQL
-                            $sql->setRowData($key, $this->data[$key]);
+                            $sql->setRowData($key, $this->recordObjectIntartnalData[$key]);
                         }
                     }
                     else
                     {
                         // pass the object data to the SQL
-                        $sql->setRowData($key, $this->data[$key]);
+                        $sql->setRowData($key, $this->recordObjectIntartnalData[$key]);
                     }
                 }
             }
@@ -829,7 +1053,7 @@ abstract class TRecord implements IteratorAggregate
             $criteria->add(new TFilter($pk, '=', $this->$pk));
             $sql->setCriteria($criteria);
             // interate the object data
-            foreach ($this->data as $key => $value)
+            foreach ($this->recordObjectIntartnalData as $key => $value)
             {
                 if ($key !== $pk) // there's no need to change the ID value
                 {
@@ -842,13 +1066,13 @@ abstract class TRecord implements IteratorAggregate
                             if ((in_array($key, $this->attributes) AND is_string($key)) OR ($key === $pk))
                             {
                                 // pass the object data to the SQL
-                                $sql->setRowData($key, $this->data[$key]);
+                                $sql->setRowData($key, $this->recordObjectIntartnalData[$key]);
                             }
                         }
                         else
                         {
                             // pass the object data to the SQL
-                            $sql->setRowData($key, $this->data[$key]);
+                            $sql->setRowData($key, $this->recordObjectIntartnalData[$key]);
                         }
                     }
                 }
@@ -913,10 +1137,11 @@ abstract class TRecord implements IteratorAggregate
             // execute the query
             $result = $conn-> query($command);
         }
+        TTransaction::logExecutionTime();
         
         if ((defined("{$class}::IDPOLICY")) AND (constant("{$class}::IDPOLICY") == 'serial'))
         {
-            if ( ($sql instanceof TSqlInsert) AND empty($this->data[$pk]) )
+            if ( ($sql instanceof TSqlInsert) AND empty($this->recordObjectIntartnalData[$pk]) )
             {
                 if ($driver == 'firebird')
                 {
@@ -958,9 +1183,12 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Tests if an ID exists
-     * @param $id  The object ID
-     * @exception  Exception if there's no active transaction opened
+     * Checks if a record with the given ID exists in the database.
+     *
+     * @param mixed $id The object ID.
+     *
+     * @return bool True if the record exists, false otherwise.
+     * @throws Exception If there is no active transaction.
      */
     public function exists($id)
     {
@@ -969,7 +1197,6 @@ abstract class TRecord implements IteratorAggregate
             return FALSE;
         }
         
-        $class = get_class($this);     // get the Active Record class name
         $pk = $this->getPrimaryKey();  // discover the primary key name
         
         // creates a SELECT instruction
@@ -980,11 +1207,22 @@ abstract class TRecord implements IteratorAggregate
         // creates a select criteria based on the ID
         $criteria = new TCriteria;
         $criteria->add(new TFilter($pk, '=', $id));
+
+        $deletedat = self::getDeletedAtColumn();
+        if (!$this->trashed && $deletedat)
+        {
+            $criteria->add(new TFilter($deletedat, 'IS', NULL));
+        }
+
+        // define the select criteria
         $sql->setCriteria($criteria);
         
         // get the connection of the active transaction
         if ($conn = TTransaction::get())
         {
+            // register the operation in the LOG file
+            TTransaction::log($sql->getInstruction());
+            
             $dbinfo = TTransaction::getDatabaseInfo(); // get dbinfo
             if (isset($dbinfo['prep']) AND $dbinfo['prep'] == '1') // prepared ON
             {
@@ -996,11 +1234,13 @@ abstract class TRecord implements IteratorAggregate
                 $result = $conn-> query($sql->getInstruction());
             }
             
+            TTransaction::logExecutionTime();
+
             // if there's a result
             if ($result)
             {
                 // returns the data as an object of this class
-                $object = $result-> fetchObject(get_class($this));
+                $object = $result-> fetchObject();
             }
             
             return is_object($object);
@@ -1013,7 +1253,10 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * ReLoad an Active Record Object from the database
+     * Reloads the current Active Record instance from the database.
+     *
+     * @return static|null The refreshed Active Record object or null if not found.
+     * @throws Exception If there is no active transaction.
      */
     public function reload()
     {
@@ -1024,10 +1267,12 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Load an Active Record Object from the database
-     * @param $id  The object ID
-     * @return     The Active Record Object
-     * @exception  Exception if there's no active transaction opened
+     * Loads an Active Record object from the database.
+     *
+     * @param mixed $id The object ID.
+     *
+     * @return static|null The Active Record object or null if not found.
+     * @throws Exception If there is no active transaction.
      */
     public function load($id)
     {
@@ -1057,7 +1302,7 @@ abstract class TRecord implements IteratorAggregate
                     $loaded_object->fromArray($fetched_data);
                 }
                 
-                $this->canManage($loaded_object);
+                $this->canManage($loaded_object, null, 'onAfterLoad');
                 
                 TTransaction::log($record_key . ' loaded from cache');
                 return $loaded_object;
@@ -1099,6 +1344,8 @@ abstract class TRecord implements IteratorAggregate
                 // execute the query
                 $result = $conn-> query($sql->getInstruction());
             }
+
+            TTransaction::logExecutionTime();
             
             // if there's a result
             if ($result)
@@ -1114,7 +1361,7 @@ abstract class TRecord implements IteratorAggregate
                     $object = new $activeClass;
                     $object->fromArray( (array) $fetched_object );
                     
-                    $this->canManage($object);
+                    $this->canManage($object, null, 'onAfterLoad');
                 }
                 else
                 {
@@ -1144,7 +1391,14 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Load trashed records
+     * Loads a soft-deleted record from the database.
+     *
+     * This method allows retrieving a record that has been marked as deleted
+     * using soft deletion (i.e., has a non-null `deleted_at` column).
+     *
+     * @param mixed $id The object ID to be loaded.
+     *
+     * @return static|null The loaded Active Record instance or null if not found.
      */
     public function loadTrashed($id)
     {
@@ -1153,9 +1407,14 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Delete an Active Record object from the database
-     * @param [$id]     The Object ID
-     * @exception       Exception if there's no active transaction opened
+     * Deletes an Active Record object from the database.
+     *
+     * Supports soft deletion if a `deleted_at` column is defined.
+     *
+     * @param mixed|null $id Optional object ID. If not provided, the current object's ID is used.
+     *
+     * @return mixed The result of the delete operation.
+     * @throws Exception If there is no active transaction.
      */
     public function delete($id = NULL)
     {
@@ -1166,7 +1425,7 @@ abstract class TRecord implements IteratorAggregate
             $this->onBeforeDelete( (object) $this->toArray() );
         }
         
-        $this->canManage($this);
+        $this->canManage($this, null, 'onBeforeDelete');
         
         // discover the primary key name
         $pk = $this->getPrimaryKey();
@@ -1234,6 +1493,8 @@ abstract class TRecord implements IteratorAggregate
                 $result = $conn-> query($sql->getInstruction());
             }
             
+            TTransaction::logExecutionTime();
+
             if ( $cache = $this->getCacheControl() )
             {
                 $record_key = $class . '['. $id . ']';
@@ -1248,7 +1509,7 @@ abstract class TRecord implements IteratorAggregate
                 $this->onAfterDelete( (object) $this->toArray() );
             }
             
-            unset($this->data);
+            unset($this->recordObjectIntartnalData);
             
             // return the result of the exec() method
             return $result;
@@ -1260,7 +1521,10 @@ abstract class TRecord implements IteratorAggregate
         }
     }
     /**
-     * Restore soft deleted object
+     * Restores a soft-deleted record.
+     *
+     * @return static The restored Active Record instance.
+     * @throws Exception If soft deletion is not enabled for this entity.
      */
     public function restore()
     {
@@ -1280,9 +1544,10 @@ abstract class TRecord implements IteratorAggregate
     }
 
     /**
-     * Returns the FIRST Object ID from database
-     * @return      An Integer containing the FIRST Object ID from database
-     * @exception   Exception if there's no active transaction opened
+     * Retrieves the first object ID from the database.
+     *
+     * @return int|null The first object ID, or null if no records exist.
+     * @throws Exception If there is no active database transaction.
      */
     public function getFirstID()
     {
@@ -1298,6 +1563,7 @@ abstract class TRecord implements IteratorAggregate
             // register the operation in the LOG file
             TTransaction::log($sql->getInstruction());
             $result= $conn->Query($sql->getInstruction());
+            TTransaction::logExecutionTime();
             // retorna os dados do banco
             $row = $result-> fetch();
             return $row[0];
@@ -1310,9 +1576,10 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Returns the LAST Object ID from database
-     * @return      An Integer containing the LAST Object ID from database
-     * @exception   Exception if there's no active transaction opened
+     * Retrieves the last object ID from the database.
+     *
+     * @return int|null The last object ID, or null if no records exist.
+     * @throws Exception If there is no active database transaction.
      */
     public function getLastID()
     {
@@ -1328,6 +1595,7 @@ abstract class TRecord implements IteratorAggregate
             // register the operation in the LOG file
             TTransaction::log($sql->getInstruction());
             $result= $conn->Query($sql->getInstruction());
+            TTransaction::logExecutionTime();
             // retorna os dados do banco
             $row = $result-> fetch();
             return $row[0];
@@ -1340,10 +1608,13 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Method getObjects
-     * @param $criteria        Optional criteria
-     * @param $callObjectLoad  If load() method from Active Records must be called to load object parts
-     * @return                 An array containing the Active Records
+     * Retrieves multiple Active Record objects based on a criteria.
+     *
+     * @param TCriteria|null $criteria Optional filtering criteria.
+     * @param bool $callObjectLoad Whether to invoke the load method on each object.
+     * @param bool $withTrashed Whether to include soft-deleted records.
+     *
+     * @return array The retrieved objects.
      */
     public static function getObjects($criteria = NULL, $callObjectLoad = TRUE, $withTrashed = FALSE)
     {
@@ -1362,10 +1633,12 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Method countObjects
-     * @param $criteria        Optional criteria
-     * @param $withTrashed
-     * @return                 An array containing the Active Records
+     * Counts the number of records that match the given criteria.
+     *
+     * @param TCriteria|null $criteria Optional filtering criteria.
+     * @param bool $withTrashed Whether to include soft-deleted records in the count.
+     * 
+     * @return int The count of matching records.
      */
     public static function countObjects($criteria = NULL, $withTrashed = FALSE)
     {
@@ -1383,11 +1656,14 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Load composite objects (parts in composition relationship)
-     * @param $composite_class Active Record Class for composite objects
-     * @param $foreign_key Foreign key in composite objects
-     * @param $id Primary key of parent object
-     * @returns Array of Active Records
+     * Loads related records in a composition relationship.
+     *
+     * @param string $composite_class The class name of the related records.
+     * @param string $foreign_key The foreign key column linking the records.
+     * @param mixed|null $id The primary key of the parent object.
+     * @param string|null $order The order clause for the related records.
+     *
+     * @return array An array of related records.
      */
     public function loadComposite($composite_class, $foreign_key, $id = NULL, $order = NULL)
     {
@@ -1399,11 +1675,14 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Load composite objects. Shortcut for loadComposite
-     * @param $composite_class Active Record Class for composite objects
-     * @param $foreign_key Foreign key in composite objects
-     * @param $primary_key Primary key of parent object
-     * @returns Array of Active Records
+     * Shortcut for loading related records in a composition relationship.
+     *
+     * @param string $composite_class The class name of the related records.
+     * @param string|null $foreign_key The foreign key column (optional).
+     * @param string|null $primary_key The primary key of the parent object (optional).
+     * @param string|null $order The order clause (optional).
+     *
+     * @return array An array of related records.
      */
     public function hasMany($composite_class, $foreign_key = NULL, $primary_key = NULL, $order = NULL)
     {
@@ -1413,11 +1692,17 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Create a criteria to load composite objects
-     * @param $composite_class Active Record Class for composite objects
-     * @param $foreign_key Foreign key in composite objects
-     * @param $primary_key Primary key of parent object
-     * @returns TRepository instance
+     * Creates a repository query to filter related records.
+     *
+     * This method is useful for retrieving related records based on a relationship
+     * without immediately loading them into memory.
+     *
+     * @param string $composite_class The class name of the related records.
+     * @param string|null $foreign_key The foreign key column in the related records (optional).
+     * @param string|null $primary_key The primary key of the parent record (optional).
+     * @param string|null $order The order clause for sorting the results (optional).
+     *
+     * @return TRepository The repository instance with the applied filter.
      */
     public function filterMany($composite_class, $foreign_key = NULL, $primary_key = NULL, $order = NULL)
     {
@@ -1431,10 +1716,14 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Delete composite objects (parts in composition relationship)
-     * @param $composite_class Active Record Class for composite objects
-     * @param $foreign_key Foreign key in composite objects
-     * @param $id Primary key of parent object
+     * Deletes related records in a composition relationship.
+     *
+     * @param string $composite_class The class name of the related records.
+     * @param string $foreign_key The foreign key column linking the records.
+     * @param mixed $id The primary key of the parent object.
+     * @param bool $callObjectLoad Whether to call the `load` method before deletion.
+     *
+     * @return mixed The result of the delete operation.
      */
     public function deleteComposite($composite_class, $foreign_key, $id, $callObjectLoad = FALSE)
     {
@@ -1446,11 +1735,15 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Save composite objects (parts in composition relationship)
-     * @param $composite_class Active Record Class for composite objects
-     * @param $foreign_key Foreign key in composite objects
-     * @param $id Primary key of parent object
-     * @param $objects Array of Active Records to be saved
+     * Saves related records in a composition relationship.
+     *
+     * @param string $composite_class The class name of the related records.
+     * @param string $foreign_key The foreign key column linking the records.
+     * @param mixed $id The primary key of the parent object.
+     * @param array $objects The array of related objects to be saved.
+     * @param bool $callObjectLoad Whether to call the `load` method before saving.
+     *
+     * @return void
      */
     public function saveComposite($composite_class, $foreign_key, $id, $objects, $callObjectLoad = FALSE)
     {
@@ -1467,13 +1760,18 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Load aggregated objects (parts in aggregation relationship)
-     * @param $aggregate_class Active Record Class for aggregated objects
-     * @param $join_class Active Record Join Class (Parent / Aggregated)
-     * @param $foreign_key_parent Foreign key in Join Class to parent object
-     * @param $foreign_key_child Foreign key in Join Class to child object
-     * @param $id Primary key of parent object
-     * @returns Array of Active Records
+     * Loads related records in an aggregation relationship.
+     *
+     * Aggregation differs from composition in that the related objects can exist independently
+     * of the parent object. This method retrieves related objects by joining through an intermediate table.
+     *
+     * @param string $aggregate_class The class name of the related objects.
+     * @param string $join_class The class name of the join table.
+     * @param string $foreign_key_parent The foreign key column linking the parent object in the join table.
+     * @param string $foreign_key_child The foreign key column linking the child objects in the join table.
+     * @param mixed|null $id The primary key of the parent object (optional).
+     *
+     * @return array An array of related objects.
      */
     public function loadAggregate($aggregate_class, $join_class, $foreign_key_parent, $foreign_key_child, $id = NULL)
     {
@@ -1500,12 +1798,17 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Load aggregated objects. Shortcut to loadAggregate
-     * @param $aggregate_class Active Record Class for aggregated objects
-     * @param $join_class Active Record Join Class (Parent / Aggregated)
-     * @param $foreign_key_parent Foreign key in Join Class to parent object
-     * @param $foreign_key_child Foreign key in Join Class to child object
-     * @returns Array of Active Records
+     * Loads related records in a many-to-many aggregation relationship.
+     *
+     * This is a shortcut for `loadAggregate` that assumes a conventional join table name
+     * and foreign key column names if they are not explicitly provided.
+     *
+     * @param string $aggregate_class The class name of the related objects.
+     * @param string|null $join_class The class name of the join table (optional).
+     * @param string|null $foreign_key_parent The foreign key column in the join table for the parent object (optional).
+     * @param string|null $foreign_key_child The foreign key column in the join table for the child objects (optional).
+     *
+     * @return array An array of related objects.
      */
     public function belongsToMany($aggregate_class, $join_class = NULL, $foreign_key_parent = NULL, $foreign_key_child = NULL)
     {
@@ -1518,12 +1821,18 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Save aggregated objects (parts in aggregation relationship)
-     * @param $join_class Active Record Join Class (Parent / Aggregated)
-     * @param $foreign_key_parent Foreign key in Join Class to parent object
-     * @param $foreign_key_child Foreign key in Join Class to child object
-     * @param $id Primary key of parent object
-     * @param $objects Array of Active Records to be saved
+     * Saves related records in an aggregation relationship.
+     *
+     * This method ensures that only the specified related records are linked to the
+     * parent object by first deleting any existing relationships and then inserting new ones.
+     *
+     * @param string $join_class The class name of the join table.
+     * @param string $foreign_key_parent The foreign key column linking the parent object in the join table.
+     * @param string $foreign_key_child The foreign key column linking the child objects in the join table.
+     * @param mixed $id The primary key of the parent object.
+     * @param array $objects An array of related Active Record objects to be linked.
+     *
+     * @return void
      */
     public function saveAggregate($join_class, $foreign_key_parent, $foreign_key_child, $id, $objects)
     {
@@ -1542,7 +1851,11 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Returns the first object
+     * Retrieves the first record in the database.
+     *
+     * @param bool $withTrashed Whether to include soft-deleted records.
+     *
+     * @return static|null The first record or null if none found.
      */
     public static function first($withTrashed = FALSE)
     {
@@ -1553,7 +1866,14 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * First record or a new one
+     * Retrieves the first record matching the given criteria or creates a new instance.
+     *
+     * If no record is found, this method returns a new instance with the given attributes.
+     * The new instance is not persisted to the database.
+     *
+     * @param array|null $filters Optional associative array of filter conditions.
+     *
+     * @return static An existing record matching the filters, or a new instance.
      */
     public static function firstOrNew($filters = NULL)
     {
@@ -1577,7 +1897,13 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * First record or persist a new one
+     * Retrieves the first record matching the given criteria or creates and persists a new instance.
+     *
+     * If no record is found, a new instance is created with the given attributes and stored in the database.
+     *
+     * @param array|null $filters Optional associative array of filter conditions.
+     *
+     * @return static An existing record matching the filters, or a newly created and persisted instance.
      */
     public static function firstOrCreate($filters = NULL)
     {
@@ -1587,7 +1913,11 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Returns the last object
+     * Retrieves the last record in the database.
+     *
+     * @param bool $withTrashed Whether to include soft-deleted records.
+     *
+     * @return static|null The last record or null if none found.
      */
     public static function last($withTrashed = FALSE)
     {
@@ -1598,8 +1928,12 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Find a Active Record and returns it
-     * @return The Active Record itself or NULL when not found
+     * Finds and retrieves an Active Record instance by its ID.
+     *
+     * @param mixed $id The object ID.
+     * @param bool $withTrashed Whether to include soft-deleted records.
+     *
+     * @return static|null The found Active Record instance or null if not found.
      */
     public static function find($id, $withTrashed = FALSE)
     {
@@ -1617,7 +1951,12 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Returns all objects
+     * Retrieves all records from the database.
+     *
+     * @param bool $indexed Whether to index the array by the primary key.
+     * @param bool $withTrashed Whether to include soft-deleted records.
+     *
+     * @return array An array of Active Record objects.
      */
     public static function all($indexed = false, $withTrashed = FALSE)
     {
@@ -1639,7 +1978,9 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Save the object
+     * Saves the Active Record instance.
+     *
+     * @return void
      */
     public function save()
     {
@@ -1647,8 +1988,14 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Creates an indexed array
-     * @returns the TRepository object with a filter
+     * Creates an indexed array from the database.
+     *
+     * @param string $indexColumn The column used for array keys.
+     * @param string $valueColumn The column used for array values.
+     * @param TCriteria|null $criteria Optional filtering criteria.
+     * @param bool $withTrashed Whether to include soft-deleted records.
+     *
+     * @return array An indexed array where the key is from `$indexColumn` and the value is from `$valueColumn`.
      */
     public static function getIndexedArray($indexColumn, $valueColumn, $criteria = NULL, $withTrashed = FALSE)
     {
@@ -1683,8 +2030,9 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Creates a Repository with filter
-     * @returns the TRepository object with a filter
+     * Creates a repository query with filters.
+     *
+     * @return TRepository The repository instance.
      */
     public static function select()
     {
@@ -1693,8 +2041,11 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Creates a Repository with group
-     * @returns the TRepository object with a group
+     * Groups the repository query results by a specified column.
+     *
+     * @param string $group The column to group by.
+     *
+     * @return TRepository The repository instance.
      */
     public static function groupBy($group)
     {
@@ -1703,8 +2054,14 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Creates a Repository with filter
-     * @returns the TRepository object with a filter
+     * Filters the repository query results by a condition.
+     *
+     * @param string $variable The column to filter.
+     * @param string $operator The comparison operator (>, <, =, !=, <=, >=, IN, NOT IN, LIKE, IS NULL, IS NOT NULL).
+     * @param mixed $value The value to compare against.
+     * @param string $logicOperator The logical operator (TExpression::AND_OPERATOR, TExpression::OR_OPERATOR).
+     *
+     * @return TRepository The repository instance.
      */
     public static function where($variable, $operator, $value, $logicOperator = TExpression::AND_OPERATOR)
     {
@@ -1713,8 +2070,13 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Creates a Repository with OR filter
-     * @returns the TRepository object with an OR filter
+     * Adds an OR condition to the repository query filter.
+     *
+     * @param string $variable The column to filter.
+     * @param string $operator The comparison operator.
+     * @param mixed $value The value to compare against.
+     *
+     * @return TRepository The repository instance.
      */
     public static function orWhere($variable, $operator, $value)
     {
@@ -1723,10 +2085,12 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Creates an ordered repository
-     * @param  $order = Order column
-     * @param  $direction = Order direction (asc, desc)
-     * @returns the ordered TRepository object
+     * Orders the repository query results by a specified column.
+     *
+     * @param string $order The column to order by.
+     * @param string $direction The sorting direction (asc or desc).
+     *
+     * @return TRepository The repository instance.
      */
     public static function orderBy($order, $direction = 'asc')
     {
@@ -1735,8 +2099,11 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Creates a Repository with limit
-     * @returns the TRepository object
+     * Limits the number of results returned in the query.
+     *
+     * @param int $limit The maximum number of results.
+     *
+     * @return TRepository The repository instance.
      */
     public static function take($limit)
     {
@@ -1745,8 +2112,11 @@ abstract class TRecord implements IteratorAggregate
     }
     
     /**
-     * Creates a Repository with offset
-     * @returns the TRepository object
+     * Skips a number of results in the query.
+     *
+     * @param int $offset The number of records to skip.
+     *
+     * @return TRepository The repository instance.
      */
     public static function skip($offset)
     {
@@ -1754,11 +2124,23 @@ abstract class TRecord implements IteratorAggregate
         return $repository->skip($offset);
     }
 
+    /**
+     * Includes soft-deleted records in the query.
+     *
+     * @return TRepository The repository instance.
+     */
     public static function withTrashed()
     {
         return new TRepository(get_called_class(), TRUE);
     }
 
+    /**
+     * Converts a camelCase string to an underscore_case string.
+     *
+     * @param string $string The camelCase string.
+     *
+     * @return string The converted underscore_case string.
+     */
     private function underscoreFromCamelCase($string)
     {
         return strtolower(preg_replace('/([a-z])([A-Z])/', '$'.'1_$'.'2', $string)); 

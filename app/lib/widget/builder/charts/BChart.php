@@ -9,12 +9,16 @@ use Adianti\Widget\Base\TElement;
 use Adianti\Widget\Template\THtmlRenderer;
 
 /**
- * Chart Widget
+ * Abstract class BChart
  *
- * @version    7.4
+ * This class represents a base chart widget that can be used to generate 
+ * different types of charts using data from a database.
+ *
+ * @version    4.1
  * @package    widget
  * @subpackage builder
  * @author     Lucas Tomasi
+ * @author     Matheus Agnes Dias
  */
 abstract class BChart extends TElement
 {
@@ -33,6 +37,7 @@ abstract class BChart extends TElement
     protected $criteria;
     protected $html;
     protected $title;
+    protected $subtitle;
     protected $legend;
     protected $percentage;
     protected $height;
@@ -49,6 +54,7 @@ abstract class BChart extends TElement
     protected $area;
     protected $customClass;
     protected $transformerValue;
+    protected $transformerLabelValue;
     protected $transformerLegend;
     protected $transformerSubLegend;
     protected $customOptions;
@@ -58,21 +64,29 @@ abstract class BChart extends TElement
     protected $areaRounded;
     protected $orderByValue;
     protected $legendsLimitShow;
+    protected $legendsPosition;
+    protected $abbreviatedValues;
     protected $barStack;
     protected $showMethods;
+    protected $culling;
 
     /**
-     * Class Constructor
-     * @param  $name         widget's name
-     * @param  $database     database name
-     * @param  $model        model class name
-     * @param  $fieldGroup   table fields to be used as group in the chart
-     * @param  $fieldValue   table field to be used as calc total
-     * @param  $joins        array with joins to be used on select
-     * @param  $totalChart   set type total (optional) default sum [sum, max, min, count, avg]
-     * @param  $criteria     criteria (TCriteria object) to filter the model (optional)
+     * BChart constructor.
+     *
+     * Initializes the chart with the necessary configurations and default settings.
+     *
+     * @param string      $name        The name of the chart.
+     * @param string|null $database    The database name used to fetch data.
+     * @param string|null $model       The model class name associated with the chart.
+     * @param array       $fieldGroup  The fields used for grouping data in the chart.
+     * @param string|null $fieldValue  The field used for calculating totals.
+     * @param array       $joins       An array of joins to be used in the query.
+     * @param string      $totalChart  The aggregation type (sum, max, min, count, avg).
+     * @param TCriteria|null $criteria A criteria object to filter the data.
+     *
+     * @throws Exception If an invalid parameter is provided.
      */
-    public function __construct(String $name, String $database = null, String $model = null, array $fieldGroup = [], String $fieldValue = null, array $joins = [], $totalChart = 'sum', TCriteria $criteria = NULL)
+    public function __construct(String $name, ?String $database = null, ?String $model = null, array $fieldGroup = [], ?String $fieldValue = null, array $joins = [], $totalChart = 'sum', ?TCriteria $criteria = NULL)
     {
         parent::__construct('div');
 
@@ -94,18 +108,241 @@ abstract class BChart extends TElement
         $this->setSize('100%', 300);
 
         $this->setDisplayNumeric();
+        $this->culling = true;
 
+        $this->positionLegend = 'bottom';
+        $this->abbreviatedValues = false;
         $this->grid = false;
         $this->area = false;
         $this->areaRounded = false;
         $this->loaded = false;
         $this->zoom = true;
         $this->orderByValue = false;
-        $this->colors = ['#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#34495e', '#f1c40f', '#e67e22', '#e74c3c', '#95a5a6', '#16a085', '#27ae60', '#2980b9', '#8e44ad', '#2c3e50', '#f39c12', '#d35400', '#c0392b', '#7f8c8d', '#6182f7', '#9084c3', '#52812d', '#7af8ba', '#39953d', '#de6a40', '#1876a9', '#ad4316', '#5c1365', '#8b7e65', '#6ef53b', '#aea561', '#8a8fe8', '#b0ab4c', '#a3d22e', '#8b4515', '#5debbf', '#6dca27', '#9a535e', '#2daacc', '#102ac1', '#40d4e9', '#a7e34d', '#2e7888', '#d33da6', '#84f86d', '#fe0de0', '#5a1c46', '#4a98b1', '#2092c4', '#6f921d', '#7a6ea0', '#805d46', '#4669c1', '#63f587', '#325ca0', '#1a782d', '#9a5c25', '#ec7dd8', '#41acc3', '#3abe6c', '#bd65e2', '#eca34c', '#7c0239', '#b38c7e', '#726fa0', '#974bb6', '#54c3ec', '#6bfaa9', '#a9b472', '#953e18', '#fb6524', '#b4f5c1', '#6eaa5d', '#630b47', '#47fc00', '#93277c', '#81fc80', '#f1db20', '#ad6bc0', '#712269', '#36f290', '#e88da8', '#fbadcd', '#9f4923', '#c0bdb4', '#d592d0', '#9f707e', '#8f2d42', '#a5d6e0', '#92866f', '#43395e', '#69c28b', '#b96749', '#7b2bc2', '#ae70ac', '#b9bf26', '#9eb5c3', '#4149d3', '#b4deec', '#a7c4b2', '#58bab3', '#875db2', '#19c2f1', '#19b670', '#5b6aa4', '#78661f', '#830989', '#19898f', '#c3d27b', '#7f4848', '#ceb5fc', '#1f6200', '#4fb154', '#94debe', '#f3e9a3', '#e74431', '#5f635a', '#dfb39e', '#3576a4'];
+        $this->colors = [
+            [
+                'stroke' => '#2563EB', // Azul royal
+                'fill' => '#DBEAFE'    // Azul claro
+            ],
+            [
+                'stroke' => '#16A34A', // Verde corporativo
+                'fill' => '#DCFCE7'    // Verde claro
+            ],
+            [
+                'stroke' => '#EA580C', // Laranja corporativo
+                'fill' => '#FFEDD5'    // Laranja claro
+            ],
+            [
+                'stroke' => '#9333EA', // Roxo empresarial
+                'fill' => '#F3E8FF'    // Roxo claro
+            ],
+            [
+                'stroke' => '#0891B2', // Azul petróleo
+                'fill' => '#CFFAFE'    // Azul turquesa claro
+            ],
+            [
+                'stroke' => '#CC0000', // Vermelho corporativo
+                'fill' => '#FEE2E2'    // Vermelho claro
+            ],
+            [
+                'stroke' => '#0369A1', // Azul marinho
+                'fill' => '#E0F2FE'    // Azul céu claro
+            ],
+            [
+                'stroke' => '#B45309', // Marrom amber
+                'fill' => '#FEF3C7'    // Amarelo claro
+            ],
+            [
+                'stroke' => '#059669', // Verde esmeralda
+                'fill' => '#D1FAE5'    // Verde esmeralda claro
+            ],
+            [
+                'stroke' => '#4F46E5', // Indigo vibrante
+                'fill' => '#E0E7FF'    // Indigo claro
+            ],
+            [
+                'stroke' => '#BE185D', // Magenta escuro
+                'fill' => '#FCE7F3'    // Rosa claro
+            ],
+            [
+                'stroke' => '#0284C7', // Azul cerúleo
+                'fill' => '#BAE6FD'    // Azul cerúleo claro
+            ],
+            [
+                'stroke' => '#7C2D12', // Terracota
+                'fill' => '#FFEDD5'    // Terracota claro
+            ],
+            [
+                'stroke' => '#475569', // Slate moderno
+                'fill' => '#F1F5F9'    // Slate claro
+            ],
+            [
+                'stroke' => '#86198F', // Fúcsia profundo
+                'fill' => '#FAE8FF'    // Fúcsia claro
+            ],
+            [
+                'stroke' => '#155E75', // Teal profundo
+                'fill' => '#ECFEFF'    // Teal claro
+            ],
+            [
+                'stroke' => '#1E40AF', // Azul cobalto
+                'fill' => '#DBEAFE'    // Azul cobalto claro
+            ],
+            [
+                'stroke' => '#65A30D', // Verde oliva
+                'fill' => '#ECFCCB'    // Verde oliva claro
+            ],
+            [
+                'stroke' => '#DC2626', // Vermelho vibrante
+                'fill' => '#FECACA'    // Vermelho vibrante claro
+            ],
+            [
+                'stroke' => '#7C3AED', // Violeta corporativo
+                'fill' => '#EDE9FE'    // Violeta claro
+            ],
+            [
+                'stroke' => '#0F766E', // Verde água profundo
+                'fill' => '#CCFBF1'    // Verde água claro
+            ],
+            [
+                'stroke' => '#C2410C', // Laranja queimado
+                'fill' => '#FED7AA'    // Laranja queimado claro
+            ],
+            [
+                'stroke' => '#1E3A8A', // Azul safira
+                'fill' => '#DBEAFE'    // Azul safira claro
+            ],
+            [
+                'stroke' => '#374151', // Cinza carbono
+                'fill' => '#F9FAFB'    // Cinza carbono claro
+            ],
+            [
+                'stroke' => '#991B1B', // Vermelho bordô
+                'fill' => '#FEE2E2'    // Vermelho bordô claro
+            ],
+            [
+                'stroke' => '#581C87', // Roxo imperial
+                'fill' => '#F3E8FF'    // Roxo imperial claro
+            ],
+            [
+                'stroke' => '#166534', // Verde floresta
+                'fill' => '#DCFCE7'    // Verde floresta claro
+            ],
+            [
+                'stroke' => '#B91C1C', // Carmesim
+                'fill' => '#FECACA'    // Carmesim claro
+            ],
+            [
+                'stroke' => '#1F2937', // Grafite
+                'fill' => '#F3F4F6'    // Grafite claro
+            ],
+            [
+                'stroke' => '#7E22CE', // Púrpura real
+                'fill' => '#F3E8FF'    // Púrpura claro
+            ],
+            [
+                'stroke' => '#0D9488', // Turquesa profundo
+                'fill' => '#CCFBF1'    // Turquesa claro
+            ],
+            [
+                'stroke' => '#DC4A03', // Laranja cobre
+                'fill' => '#FFF7ED'    // Laranja cobre claro
+            ],
+            [
+                'stroke' => '#1D4ED8', // Azul elétrico
+                'fill' => '#E0E7FF'    // Azul elétrico claro
+            ],
+            [
+                'stroke' => '#92400E', // Caramelo
+                'fill' => '#FEF3C7'    // Caramelo claro
+            ],
+            [
+                'stroke' => '#059212', // Verde grama
+                'fill' => '#D1FAE5'    // Verde grama claro
+            ],
+            [
+                'stroke' => '#A21CAF', // Magenta intenso
+                'fill' => '#FAE8FF'    // Magenta claro
+            ],
+            [
+                'stroke' => '#0F4C75', // Azul aço
+                'fill' => '#EFF6FF'    // Azul aço claro
+            ],
+            [
+                'stroke' => '#92400E', // Bronze
+                'fill' => '#FEF3C7'    // Bronze claro
+            ],
+            [
+                'stroke' => '#14532D', // Verde militar
+                'fill' => '#F0FDF4'    // Verde militar claro
+            ],
+            [
+                'stroke' => '#7C2D12', // Mogno
+                'fill' => '#FFEDD5'    // Mogno claro
+            ],
+            [
+                'stroke' => '#4338CA', // Azul rei
+                'fill' => '#E0E7FF'    // Azul rei claro
+            ],
+            [
+                'stroke' => '#0C4A6E', // Azul petroleo escuro
+                'fill' => '#E0F2FE'    // Azul petroleo claro
+            ],
+            [
+                'stroke' => '#B45309', // Âmbar profundo
+                'fill' => '#FFFBEB'    // Âmbar claro
+            ],
+            [
+                'stroke' => '#701A75', // Vinho
+                'fill' => '#FAE8FF'    // Vinho claro
+            ],
+            [
+                'stroke' => '#0F7A0F', // Verde pinho
+                'fill' => '#F0FDF4'    // Verde pinho claro
+            ],
+            [
+                'stroke' => '#DC1C13', // Escarlate
+                'fill' => '#FEE2E2'    // Escarlate claro
+            ],
+            [
+                'stroke' => '#374151', // Aço escovado
+                'fill' => '#F9FAFB'    // Aço claro
+            ],
+            [
+                'stroke' => '#5B21B6', // Ametista
+                'fill' => '#F3E8FF'    // Ametista claro
+            ],
+            [
+                'stroke' => '#047857', // Jade
+                'fill' => '#D1FAE5'    // Jade claro
+            ],
+            [
+                'stroke' => '#EA5A00', // Tangerina
+                'fill' => '#FFEDD5'    // Tangerina claro
+            ],
+            [
+                'stroke' => '#1E293B', // Chumbo
+                'fill' => '#F1F5F9'    // Chumbo claro
+            ],
+            [
+                'stroke' => '#BE123C', // Cereja
+                'fill' => '#FFE4E6'    // Cereja claro
+            ],
+            [
+                'stroke' => '#6366F1', // Íris
+                'fill' => '#E0E7FF'    // Íris claro
+            ]
+        ];
 
         parent::add($this->html);
     }
 
+    /**
+     * Generates and processes multiple charts by handling database transactions.
+     *
+     * @param BChart[] ...$charts A variable-length list of chart instances.
+     *
+     * @throws Exception If an invalid parameter is provided.
+     */
     public static function generate(...$charts)
     {
         $chartsDBs = [];
@@ -117,7 +354,7 @@ abstract class BChart extends TElement
                 continue;
             }
 
-            if (! $chart instanceof BTableChart && ! $chart instanceof BIndicator && ! $chart instanceof BChart)
+            if (! $chart instanceof BTableChart && ! $chart instanceof BIndicator && ! ($chart instanceof BChart || $chart instanceof BMadTable))
             {
                 throw new Exception(AdiantiCoreTranslator::translate('Invalid parameter (^1) in ^2', 'charts', __METHOD__));
             }
@@ -150,11 +387,42 @@ abstract class BChart extends TElement
             TTransaction::close();
         }
     }
+    
+    public function enableAbbreviatedValues()
+    {
+        $this->abbreviatedValues = true;
+
+        $this->setTransformerLabelValue(function($value)
+        {
+            if(!$value)
+            {
+                $value = 0;
+            }
+
+            if(is_numeric($value))
+            {
+                if ($value >= 1_000_000_000) {
+                    $value = round($value / 1_000_000_000,0) . 'B';
+                } elseif ($value >= 1_000_000) {
+                    $value = round($value / 1_000_000,0) . 'M';
+                } elseif ($value >= 1_000) {
+                    $value = round($value/ 1_000,0) . 'K';
+                }
+                return $value;
+            }
+            else
+            {
+                return $value;
+            }
+        });
+    }
 
     /**
-     * Parse a functions
+     * Formats a function name for usage in JavaScript.
      *
-     * @param $nameFunction name of function
+     * @param string $nameFunction The function name.
+     *
+     * @return string The formatted function reference.
      */
     public static function formatFunction($nameFunction)
     {
@@ -162,7 +430,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Validate method is allowed
+     * Checks if the chart is allowed to be displayed.
+     *
+     * @return bool True if the chart can be displayed, false otherwise.
      */
     public function canDisplay()
     {
@@ -174,10 +444,25 @@ abstract class BChart extends TElement
         return true;
     }
 
+    public function setCulling($culling)
+    {
+        $this->culling = $culling;
+    }
+
+    public function enableCulling()
+    {
+        $this->culling = true;
+    }
+
+    public function disableCulling()
+    {
+        $this->culling = false;
+    }
+
     /**
-     * Set display condition
+     * Defines which methods are allowed to display the chart.
      *
-     * @param $methods methods show chart
+     * @param array $methods The list of allowed methods.
      */
     public function setShowMethods($methods = [])
     {
@@ -185,7 +470,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Get tooltip function
+     * Retrieves the tooltip formatting function.
+     *
+     * @return array The tooltip function format.
      */
     private function getTootipFunction()
     {
@@ -198,7 +485,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Get display function
+     * Retrieves the display function for formatting values.
+     *
+     * @return string The function name used for formatting values.
      */
     private function getDisplayFunction()
     {
@@ -211,9 +500,11 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Define type char
+     * Sets the type of the chart.
      *
-     * @param $type Type of the chart [pie, line, bar, donut]
+     * @param string $type The type of chart (pie, line, bar, donut).
+     *
+     * @throws Exception If an invalid type is provided.
      */
     protected function setType($type)
     {
@@ -226,8 +517,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Define order data
+     * Enables ordering of the chart data based on values.
      *
+     * @param string $order The order direction ('asc' or 'desc').
      */
     public function enableOrderByValue($order = 'desc')
     {
@@ -235,8 +527,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Get name
+     * Retrieves the name of the chart.
      *
+     * @return string The chart name.
      */
     public function getName()
     {
@@ -244,9 +537,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Set name
+     * Sets the name of the chart.
      *
-     * @param $name name of chart
+     * @param string $name The chart name.
      */
     public function setName($name)
     {
@@ -254,7 +547,10 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Set count limit display legends
+     * Sets the display limit for legends.
+     *
+     * @param int $x The maximum number of legends on the x-axis.
+     * @param int $y The maximum number of legends on the y-axis.
      */
     public function setLegendsLimitShow($x, $y)
     {
@@ -262,9 +558,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Define transformer values
+     * Sets a transformation function for values.
      *
-     * @param $transformer callable
+     * @param callable $transformer The callable function to transform values.
      */
     public function setTransformerValue(callable $transformer)
     {
@@ -272,9 +568,19 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Define transformer legends
+     * Define transformer values
      *
      * @param $transformer callable
+     */
+    public function setTransformerLabelValue(callable $transformer)
+    {
+        $this->transformerLabelValue = $transformer;
+    }
+
+    /**
+     * Sets a transformation function for legends.
+     *
+     * @param callable $transformer The callable function to transform legends.
      */
     public function setTransformerLegend(callable $transformer)
     {
@@ -282,9 +588,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Define custom css class
+     * Sets a custom CSS class for the chart.
      *
-     * @param $class css class
+     * @param string $class The CSS class name.
      */
     public function setCustomClass($class)
     {
@@ -292,7 +598,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Get database name
+     * Retrieves the database name used by the chart.
+     *
+     * @return string|null The database name or null if not set.
      */
     public function getDatabase()
     {
@@ -300,8 +608,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Set database name
-     * @param  $database database name
+     * Sets the database name for fetching data.
+     *
+     * @param string $database The database name.
      */
     public function setDatabase($database)
     {
@@ -309,8 +618,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Set model name
-     * @param  $model model extends TRecord
+     * Sets the model class for the chart.
+     *
+     * @param string $model The model class name.
      */
     public function setModel($model)
     {
@@ -318,8 +628,11 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Set field used for group
-     * @param  $fieldGroup array field names
+     * Sets the fields used for grouping data in the chart.
+     *
+     * @param array $fieldGroup The array of field names.
+     *
+     * @throws Exception If the parameter is invalid.
      */
     public function setFieldGroup($fieldGroup)
     {
@@ -331,8 +644,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Set field value
-     * @param  $fieldValue field name
+     * Sets the field used for calculating totals.
+     *
+     * @param string $fieldValue The field name.
      */
     public function setFieldValue($fieldValue)
     {
@@ -340,8 +654,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Set field value
-     * @param  $fieldColor field name
+     * Sets the field used for defining chart colors.
+     *
+     * @param string $fieldColor The field name.
      */
     public function setFieldColor($fieldColor)
     {
@@ -349,8 +664,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Set joins
-     * @param  $joins database joins
+     * Sets database joins for the query.
+     *
+     * @param array $joins The array of join conditions.
      */
     public function setJoins($joins)
     {
@@ -358,8 +674,11 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Set total
-     * @param  $totalChart set type total (optional) default sum [sum, max, min, count, avg]
+     * Sets the total calculation method.
+     *
+     * @param string $totalChart The aggregation type (sum, max, min, count, avg).
+     *
+     * @throws Exception If an invalid type is provided.
      */
     public function setTotal($totalChart)
     {
@@ -372,8 +691,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Set criteria for filter
-     * @param  $criteria criteria with filters
+     * Sets the filtering criteria for the chart data.
+     *
+     * @param TCriteria $criteria The filtering criteria.
      */
     public function setCriteria(TCriteria $criteria)
     {
@@ -381,8 +701,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Get title panel
-     * @param $title String title
+     * Sets the title of the chart.
+     *
+     * @param string $title The chart title.
      */
     public function setTitle($title)
     {
@@ -390,7 +711,18 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Show % values
+     * Get subtitle panel
+     * @param $subtitle String subtitle
+     */
+    public function setSubtitle($subtitle)
+    {
+        $this->subtitle = $subtitle;
+    }
+
+    /**
+     * Enables or disables percentage display.
+     *
+     * @param bool $percentage Whether to show percentages.
      */
     public function showPercentage($percentage = true)
     {
@@ -398,7 +730,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Hide panel
+     * Hides or shows the chart panel.
+     *
+     * @param bool $hide Whether to hide the panel.
      */
     public function hidePanel($hide = true)
     {
@@ -406,15 +740,21 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Enable legend chart
+     * Enables or disables the legend display.
+     *
+     * @param bool $legend Whether to show the legend.
      */
-    public function showLegend($legend = true)
+    public function showLegend($legend = true, $positionLegend = 'bottom' | 'right')
     {
         $this->legend = $legend;
+        $this->positionLegend = $positionLegend;
     }
 
     /**
-     * Rotate legend chart
+     * Rotates the legend and sets its height.
+     *
+     * @param int $rotate The rotation angle.
+     * @param int $height The height of the legend.
      */
     public function setRotateLegend($rotate, $height = 100)
     {
@@ -423,7 +763,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Return sizes
+     * Retrieves the chart size.
+     *
+     * @return null
      */
     public function getSize()
     {
@@ -431,9 +773,10 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Set size panel chart
-     * @param $width  size width
-     * @param $height size height
+     * Sets the width and height of the chart.
+     *
+     * @param string|int $width  The width of the chart.
+     * @param string|int $height The height of the chart.
      */
     public function setSize($width, $height)
     {
@@ -445,10 +788,11 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Set tootip function: need 4 params (d, defaultTitleFormat, defaultValueFormat, color)
+     * Sets the tooltip formatting function.
+     *
      * @see https://c3js.org/reference.html#tooltip-contents
      *
-     * @param $function name function js
+     * @param string $function The JavaScript function name.
      */
     public function setTootipFunction($function)
     {
@@ -456,10 +800,11 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Set display function
+     * Sets the display function for formatting values.
+     *
      * @see https://c3js.org/reference.html#data-labels-format
      *
-     * @param $function name function js
+     * @param string $function The JavaScript function name.
      */
     public function setDisplayFunction($function)
     {
@@ -467,13 +812,13 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Set display function with numeric mask
+     * Sets the numeric display format.
      *
-     * @param $precision precision
-     * @param $decimalSeparator decimal separator
-     * @param $thousandSeparator thousand separator
-     * @param $prefix prefix value
-     * @param $sufix sufix value
+     * @param int    $precision         Number of decimal places.
+     * @param string $decimalSeparator  The decimal separator.
+     * @param string $thousandSeparator The thousands separator.
+     * @param string $prefix            A prefix for the values.
+     * @param string $sufix             A suffix for the values.
      */
     public function setDisplayNumeric($precision = 2,  $decimalSeparator = ',',  $thousandSeparator = '.',  $prefix = '',  $sufix = '')
     {
@@ -485,7 +830,12 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Get data
+     * Loads the chart data from the database based on the defined criteria.
+     *
+     * This method constructs the SQL query, applies joins and filters, 
+     * executes the query, and retrieves the dataset required for rendering the chart.
+     *
+     * @throws Exception If required parameters (`database`, `model`, `fieldGroup`, or `fieldValue`) are not set.
      */
     private function loadData()
     {
@@ -616,6 +966,11 @@ abstract class BChart extends TElement
             array_unshift($orders, $totalOrder . $this->orderByValue );
         }
 
+        if ($this->fieldColor)
+        {
+            unset($orders[0]);
+        }
+
         $group = implode(', ', $groups);
         $order = implode(', ', $orders);
 
@@ -626,8 +981,12 @@ abstract class BChart extends TElement
         $sql->setEntity($entities);
         $sql->setCriteria($this->criteria);
 
+        TTransaction::log($sql->getInstruction());
+        
         $stmt = $conn->prepare($sql->getInstruction(TRUE), array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
         $result = $stmt->execute($this->criteria->getPreparedVars());
+        
+        TTransaction::logExecutionTime();
 
         if($result)
         {
@@ -653,6 +1012,11 @@ abstract class BChart extends TElement
                     return array_values($item);
                 }, $items);
             }
+            
+            if (count($this->fieldGroup) == 1 && empty($this->legendsLimitShow))
+            {
+                $this->legendsLimitShow = [round(count($items) * .75,0), 5];
+            }
         }
 
         // close connection
@@ -664,6 +1028,12 @@ abstract class BChart extends TElement
         $this->data = $items;
     }
 
+    /**
+     * Formats the tooltip content for the chart.
+     *
+     * This method defines how tooltips should display values, applying any defined transformations.
+     * It generates JavaScript callback functions for handling tooltip formatting dynamically.
+     */
     private function formatTooltip()
     {
         $simpleCharts = in_array($this->type, ['pie', 'donut']);
@@ -677,11 +1047,13 @@ abstract class BChart extends TElement
         }
 
         $formats = [];
+        $formatsLabels = [];
         $formatsTooltip = new stdClass;
 
         foreach ( $this->options['data']['columns'] as $column)
         {
             $newColumns = [];
+            $newColumnsLabels = [];
 
             foreach($column as $key => $value)
             {
@@ -691,20 +1063,31 @@ abstract class BChart extends TElement
                 }
 
                 $newColumns[] = $this->transformerValue ? call_user_func($this->transformerValue, $value, $column, $this->options['data']['columns']) : $value;
+                
+                if($this->transformerLabelValue)
+                {
+                    $newColumnsLabels[] = call_user_func($this->transformerLabelValue, $value, $column, $this->options['data']['columns']);
+                }
+                else
+                {
+                    $newColumnsLabels[] = $this->transformerValue ? call_user_func($this->transformerValue, $value, $column, $this->options['data']['columns']) : $value;
+                }
             }
 
             $formatsTooltip->{$column[0]} = $newColumns;
 
             $values = json_encode($newColumns);
+            $valuesLabels = json_encode($newColumnsLabels);
 
             $key = $simpleCharts ? '0' : 'i';
 
             $formats[$column[0]] = "::(v, id, i, j, k) => { const values = eval('{$values}'); return values[{$key}]; }::";
+            $formatsLabels[$column[0]] = "::(v, id, i, j, k) => { const values = eval('{$valuesLabels}'); return values[{$key}]; }::";
         }
 
         $this->formatsTooltip = json_encode($formatsTooltip);
 
-        $this->options['data']['labels'] = ['format' => $formats];
+        $this->options['data']['labels'] = ['format' => $formatsLabels];
 
         $return = "tooltipFormats[i][x]";
 
@@ -722,8 +1105,10 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Adjust columns to bar chart
-     * @param $option
+     * Adjusts the configuration for bar charts.
+     *
+     * This method modifies the chart options to properly format the bar chart,
+     * ensuring correct grouping, axis labels, and stacked bar behavior if enabled.
      */
     private function makeOptionsBar()
     {
@@ -789,7 +1174,15 @@ abstract class BChart extends TElement
             
             $data = $values;
 
-            $this->options['axis']['x'] = ['type' => 'category','categories' => $labelsFormatted, 'tick' => ['centered' => true]];
+            $this->options['axis']['x'] = [
+                'type' => 'category',
+                'categories' => $labelsFormatted,
+                'tick' => [
+                    'multiline' => false,
+                    'outer' => false,
+                    'centered' => true
+                ]
+            ];
 
             if ($this->barStack)
             {
@@ -803,9 +1196,16 @@ abstract class BChart extends TElement
             $valueInit = $this->labelValue??$this->fieldGroup[0];
 
             $data = [array_merge([$valueInit], $values)];
-
+            
             $this->options['legend']['show'] = FALSE;
-            $this->options['axis']['x'] = ['type' => 'category', 'categories' => $labelsFormatted, 'tick' => ['centered' => true]];
+            $this->options['axis']['x'] = [
+                'type' => 'category',
+                'categories' => $labelsFormatted,
+                'tick' => [
+                    'centered' => true
+                ]
+            ];
+
             $this->options['data']['color'] = '::changeColor::';
         }
 
@@ -815,8 +1215,10 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Adjust columns to line chart
-     * @param $option
+     * Adjusts the configuration for line charts.
+     *
+     * This method prepares the dataset, applies transformations if necessary, 
+     * and structures the chart options for correct line chart rendering.
      */
     private function makeOptionsline()
     {
@@ -875,7 +1277,10 @@ abstract class BChart extends TElement
 
             $data = $values;
 
-            $this->options['axis']['x'] = ['type' => 'category','categories' => $labelsFormatted];
+            $this->options['axis']['x'] = [
+                'type' => 'category',
+                'categories' => $labelsFormatted,
+            ];
         }
         else
         {
@@ -886,7 +1291,10 @@ abstract class BChart extends TElement
             $data = [array_merge([$valueInit], $values)];
 
             $this->options['legend']['show'] = FALSE;
-            $this->options['axis']['x'] = ['type' => 'category', 'categories' => $labelsFormatted];
+            $this->options['axis']['x'] = [
+                'type' => 'category',
+                'categories' => $labelsFormatted,
+            ];
         }
 
         $this->options['data']['columns'] = $data;
@@ -894,6 +1302,12 @@ abstract class BChart extends TElement
         $this->formatTooltip();
     }
 
+    /**
+     * Adjusts the configuration for pie and donut charts.
+     *
+     * This method modifies the legend and value transformations, ensuring 
+     * that data labels and tooltips are formatted correctly.
+     */
     public function makeOptionsPie()
     {
         $data = $this->options['data']['columns'];
@@ -914,6 +1328,13 @@ abstract class BChart extends TElement
         $this->formatTooltip();
     }
 
+    /**
+     * Generates the final configuration options for the chart.
+     *
+     * This method determines the chart type, applies formatting settings, 
+     * enables zoom, sets colors, and ensures proper rendering configurations 
+     * based on the chart type and user-defined settings.
+     */
     public function makeOptions()
     {
         $displayFunction = $this->getDisplayFunction();
@@ -932,7 +1353,7 @@ abstract class BChart extends TElement
                 'type' => $type
             ],
             'bindto' => "#{$this->name}-container",
-            'legend' => ['show' =>  $this->legend],
+            'legend' => ['show' =>  $this->legend, 'position' => $this->positionLegend],
             'zoom' => ["enabled" => $this->zoom],
             'axis' => []
         ];
@@ -951,7 +1372,9 @@ abstract class BChart extends TElement
             }
             else
             {
-                $this->options['color'] = ['pattern' => $this->colors];
+                $colorField = in_array($this->type, ['bar']) ? 'fill' : 'stroke';
+                $colors = array_column($this->colors, $colorField);
+                $this->options['color'] = ['pattern' => $colors];
             }
         }
 
@@ -985,11 +1408,21 @@ abstract class BChart extends TElement
             $this->options['axis']['x']['height'] = $this->legendHeight;
         }
 
+        if ($this->abbreviatedValues) 
+        {
+            $this->options['axis']['y'] = ['tick' => [ 'format' => "::(v) => abbreviateValues(v)::" ]];
+        }
+        else
+        {
+            $this->options['axis']['y'] = ['tick' => [ 'format' => "::(v) => defaultFormatFunction(v)::" ]];
+        }
+        
         if ($this->legendsLimitShow)
         {
-            if ( empty($this->options['axis']['x']['tick']) )
+            if ( empty($this->options['axis']['x']['tick']) && $this->culling ) 
             {
                 $this->options['axis']['x']['tick'] = [];
+                $this->options['axis']['x']['tick']['culling'] = ['max' => $this->legendsLimitShow[0]];
             }
 
             if ( empty($this->options['axis']['y']['tick']) )
@@ -997,24 +1430,22 @@ abstract class BChart extends TElement
                 $this->options['axis']['y']['tick'] = [];
             }
 
-            $this->options['axis']['x']['tick']['culling'] = ['max' => $this->legendsLimitShow[0]];
             $this->options['axis']['y']['tick']['count'] = $this->legendsLimitShow[1];
         }
     }
 
     /**
-     * Set colors chart
+     * Sets the colors for the chart.
      *
-     * @param $colors array with string colors
+     * @param array $colors An array of color strings.
      */
     public function setColors(array $colors)
     {
-        $this->colors = $colors;
+        $this->colors = array_map(fn ($color) => ['stroke' => $color, 'fill' => $color], $colors);
     }
 
     /**
-     * Set zoom disabled
-     *
+     * Disables zooming on the chart.
      */
     public function disableZoom()
     {
@@ -1022,9 +1453,9 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Merge options with defaults
+     * Merges user-defined custom options with the default chart settings.
      *
-     * @param $options array options
+     * @param array $options An associative array containing custom chart options.
      */
     public function setCustomOptions(array $options)
     {
@@ -1032,7 +1463,7 @@ abstract class BChart extends TElement
     }
 
     /**
-     * Exec chart before show
+     * Loads and prepares the chart data before display.
      */
     public function create()
     {
@@ -1041,8 +1472,10 @@ abstract class BChart extends TElement
     }
 
     /**
-    * Show
-    */
+     * Displays the chart.
+     *
+     * @throws Exception If the chart type is not defined.
+     */
     public function show()
     {
         if (empty($this->type))
@@ -1083,6 +1516,7 @@ abstract class BChart extends TElement
                     'width' => $this->width,
                     'height' => $this->height,
                     'title' => $this->title,
+                    'type' => $this->type,
                     'label' => _t('No records found'),
                 ]
             );
@@ -1095,6 +1529,7 @@ abstract class BChart extends TElement
                     'class' => $this->customClass,
                     'name' => $this->name,
                     'options' => $options,
+                    'type' => $this->type,
                     'width' => $this->width,
                     'precision' => $this->precision,
                     'decimalSeparator' => $this->decimalSeparator,
@@ -1105,12 +1540,17 @@ abstract class BChart extends TElement
                     'tooltipFormats' => $this->formatsTooltip??'0'
                 ]
             );
-    
-            $this->html->enableSection( $this->showPanel ? 'panel' : 'nopanel', ['name' => $this->name]);
+
+            $this->html->enableSection( $this->showPanel ? 'panel' : 'nopanel', ['countFieldGroup' => count($this->fieldGroup), 'type' => $this->type, 'name' => $this->name]);
 
             if ($this->title && $this->showPanel)
             {
                 $this->html->enableSection('header', ['title' => $this->title]);
+            }
+
+            if ($this->subtitle && $this->showPanel)
+            {
+                $this->html->enableSection('subtitle', ['subtitle' => $this->subtitle]);
             }
         }
 

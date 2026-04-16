@@ -8,9 +8,8 @@ use SplQueue;
 use SplStack;
 
 /**
- * Implementation of Shunting-Yard algorithm.
- * Used to translate infix mathematical expressions
- * to RPN mathematical expressions.
+ * Implements the Shunting-Yard algorithm to convert infix mathematical expressions
+ * into Reverse Polish Notation (RPN).
  *
  * @see http://en.wikipedia.org/wiki/Shunting-yard_algorithm
  * @author Adrean Boyadzhiev (netforce) <adrean.boyadzhiev@gmail.com>
@@ -32,12 +31,12 @@ class ShuntingYard implements TranslationStrategyInterface
     private $outputQueue;
 
     /**
-     * Translate array sequence of tokens from infix to 
-     * Reverse Polish notation (RPN) which representing mathematical expression.
-     * 
-     * @param array $tokens Collection of Token intances
-     * @return array Collection of Token intances
-     * @throws InvalidArgumentException
+     * Converts an array of tokens from infix notation to Reverse Polish Notation (RPN).
+     *
+     * @param Token[] $tokens Array of Token instances representing the mathematical expression in infix notation.
+     *
+     * @return Token[] Array of Token instances in RPN order.
+     * @throws InvalidArgumentException If mismatched parentheses or invalid tokens are detected.
      */
     public function translate(array $tokens)
     {
@@ -88,9 +87,9 @@ class ShuntingYard implements TranslationStrategyInterface
     }
 
     /**
-     * Determine if there is operator token in operato stack
-     * 
-     * @return boolean
+     * Checks if the operator stack contains any operator tokens.
+     *
+     * @return bool True if the stack contains an operator token, false otherwise.
      */
     private function hasOperatorInStack()
     {

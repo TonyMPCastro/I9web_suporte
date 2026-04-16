@@ -10,7 +10,7 @@ class BuilderPermissionService{
         }
     }
 
-    public static function canManageRecordByUnit($record)
+    public static function canManageRecordByUnit($record, $hook = null)
     {
         $unit_column_name = $record->getCreatedByUnitIdColumn();
     
@@ -23,5 +23,41 @@ class BuilderPermissionService{
                 throw new Exception(_t('No permission to manage this record!'));
             }
         }
+    }
+
+    public static function verifyHasPermission(TAction $action)
+    {
+        $action = $action->toString();
+        $action = explode('::', $action);
+        $class = null;
+        
+        if(count($action) > 1)
+        {
+            $class = $action[0];
+            $method = $action[1];
+        }
+
+        $programs_actions = TSession::getValue('programs_actions');
+        $programs = TSession::getValue('programs');
+
+        $ini = AdiantiApplicationConfig::get();
+        if(in_array($class, $ini['permission']['public_classes']))
+        {
+            return true;
+        }
+
+        $defaultProgramsPermissions = TApplication::getDefaultPermissions();
+
+        if(!empty($defaultProgramsPermissions[$class]))
+        {
+            return true;
+        }
+
+        if( !isset($programs[$class]) || ($class && $method && isset($programs_actions[$class][$method]) && $programs_actions[$class][$method] == false))
+        {
+            return false;
+        }
+
+        return true;
     }
 }

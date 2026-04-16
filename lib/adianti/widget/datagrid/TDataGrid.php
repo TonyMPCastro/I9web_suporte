@@ -16,7 +16,9 @@ use Math\Parser;
 use Exception;
 
 /**
- * DataGrid Widget: Allows to create datagrids with rows, columns and actions
+ * DataGrid Widget: Allows creating datagrids with rows, columns, and actions.
+ * It supports scrollable tables, grouping, popovers, inline editing, 
+ * column totalizers, and different action placements.
  *
  * @version    7.5
  * @package    widget
@@ -65,9 +67,16 @@ class TDataGrid extends TTable
     protected $hasTotalFunction;
     protected $actionSide;
     protected $mutationAction;
+    protected $propertiesEnabled;
+    protected $propertiesButtonIcon;
+    protected $propertiesButtonClass;
+    protected $propertiesButtonAction;
+    protected $hideColumns;
+    protected $hasHiddenColumns;
     
     /**
-     * Class Constructor
+     * Class constructor.
+     * Initializes default properties and sets up the datagrid structure.
      */
     public function __construct()
     {
@@ -94,6 +103,10 @@ class TDataGrid extends TTable
         $this->hasInlineEditing = false;
         $this->hasTotalFunction = false;
         $this->actionSide = 'left';
+        $this->propertiesEnabled = FALSE;
+        $this->propertiesButtonIcon = 'fa fa-cog';
+        $this->propertiesButtonClass = 'btn-datagrid-properties';
+        $this->propertiesButtonAction = null;
         
         $this->rowcount = 0;
         $this->{'class'} = 'tdatagrid_table';
@@ -101,7 +114,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Set id
+     * Sets the datagrid ID.
+     *
+     * @param string $id The ID to be set for the datagrid.
      */
     public function setId($id)
     {
@@ -109,7 +124,10 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Define mutation action
+     * Defines a mutation action for the datagrid.
+     * This action is triggered when rows are modified.
+     *
+     * @param TAction $action The mutation action to set.
      */
     public function setMutationAction(TAction $action)
     {
@@ -117,7 +135,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Set actions side
+     * Sets the side where actions are displayed in the datagrid.
+     *
+     * @param string $side The side where actions should be placed ('left' or 'right').
      */
     public function setActionSide($side)
     {
@@ -125,7 +145,8 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Generate hidden fields
+     * Enables the generation of hidden fields for the datagrid.
+     * This allows certain field values to be stored in hidden inputs.
      */
     public function generateHiddenFields()
     {
@@ -133,7 +154,8 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Disable htmlspecialchars on output
+     * Disables the automatic conversion of special characters into HTML entities.
+     * This allows raw HTML content to be rendered in the datagrid.
      */
     public function disableHtmlConversion()
     {
@@ -141,7 +163,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Get raw processed output data
+     * Retrieves the processed output data of the datagrid.
+     *
+     * @return array The array containing the processed output data.
      */
     public function getOutputData()
     {
@@ -149,9 +173,12 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Enable popover
-     * @param $title Title
-     * @param $content Content
+     * Enables a popover for each row in the datagrid.
+     *
+     * @param string      $title       The title of the popover.
+     * @param string      $content     The content displayed inside the popover.
+     * @param string|null $popside     The position of the popover (e.g., 'top', 'left').
+     * @param callable|null $popcondition A callable condition to determine whether to show the popover.
      */
     public function enablePopover($title, $content, $popside = null, $popcondition = null)
     {
@@ -163,7 +190,7 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Make the datagrid scrollable
+     * Makes the datagrid scrollable by enabling horizontal or vertical scrolling.
      */
     public function makeScrollable()
     {
@@ -176,7 +203,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Returns if datagrid is scrollable
+     * Checks if the datagrid is scrollable.
+     *
+     * @return bool True if the datagrid is scrollable, false otherwise.
      */
     public function isScrollable()
     {
@@ -184,7 +213,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Returns true if has custom width
+     * Checks if the datagrid has a custom width set.
+     *
+     * @return bool True if a custom width is defined, false otherwise.
      */
     private function hasCustomWidth()
     {
@@ -192,7 +223,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Set the column action width
+     * Sets the width of the action column in the datagrid.
+     *
+     * @param string $width The width value (e.g., '50px').
      */
     public function setActionWidth($width)
     {
@@ -200,7 +233,7 @@ class TDataGrid extends TTable
     }
     
     /**
-     * disable the default click action
+     * Disables the default click action on rows.
      */
     public function disableDefaultClick()
     {
@@ -208,8 +241,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Define the Height
-     * @param $height An integer containing the height
+     * Defines the height of the datagrid.
+     *
+     * @param int|string $height The height value, either as an integer (pixels) or a CSS unit (e.g., '100px').
      */
     public function setHeight($height)
     {
@@ -224,7 +258,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Return datagrid height
+     * Retrieves the height of the datagrid.
+     *
+     * @return string|null The height of the datagrid.
      */
     public function getHeight()
     {
@@ -232,10 +268,15 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Add a Column to the DataGrid
-     * @param $object A TDataGridColumn object
+     * Adds a column to the datagrid.
+     *
+     * @param TDataGridColumn $object The column object to be added.
+     * @param TAction|null    $action An optional action to be associated with the column.
+     *
+     * @return TDataGridColumn The added column.
+     * @throws Exception If the model has already been created.
      */
-    public function addColumn(TDataGridColumn $object, TAction $action = null)
+    public function addColumn(TDataGridColumn $object, ?TAction $action = null)
     {
         if ($this->modelCreated)
         {
@@ -255,7 +296,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Returns an array of TDataGridColumn
+     * Retrieves all columns in the datagrid.
+     *
+     * @return TDataGridColumn[] An array of TDataGridColumn objects.
      */
     public function getColumns()
     {
@@ -263,8 +306,13 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Add an Action to the DataGrid
-     * @param $object A TDataGridAction object
+     * Adds an action to the datagrid.
+     *
+     * @param TDataGridAction $action The action object.
+     * @param string|null     $label  The label of the action.
+     * @param string|null     $image  The image icon associated with the action.
+     *
+     * @throws Exception If the action field is not defined or the model has already been created.
      */
     public function addAction(TDataGridAction $action, $label = null, $image = null)
     {
@@ -279,6 +327,11 @@ class TDataGrid extends TTable
         }
         else
         {
+            if($action->isHidden())
+            {
+                return;
+            }
+            
             $this->actions[] = $action;
             
             if (!empty($label))
@@ -294,8 +347,9 @@ class TDataGrid extends TTable
     }
 
     /**
-     * Set actions to the DataGrid
-     * @param $actions  TDataGridAction objects
+     * Sets multiple actions for the datagrid.
+     *
+     * @param TDataGridAction[] $actions An array of TDataGridAction objects.
      */
     public function setActions($actions)
     {
@@ -311,12 +365,13 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Prepare for printing
+     * Prepares the datagrid for printing by removing actions and resetting the model.
      */
     public function prepareForPrinting()
     {
         parent::clearChildren();
         $this->actions = [];
+        $this->action_groups = [];
         $this->prependRows = 0;
         
         if ($this->columns)
@@ -331,8 +386,11 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Add an Action Group to the DataGrid
-     * @param $object A TDataGridActionGroup object
+     * Adds an action group to the datagrid.
+     *
+     * @param TDataGridActionGroup $object The action group to be added.
+     *
+     * @throws Exception If the model has already been created.
      */
     public function addActionGroup(TDataGridActionGroup $object)
     {
@@ -347,7 +405,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Returns the total columns
+     * Returns the total number of columns including action columns.
+     *
+     * @return int The total number of columns.
      */
     public function getTotalColumns()
     {
@@ -355,7 +415,11 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Set the group column for break
+     * Sets the column used for grouping rows.
+     *
+     * @param string        $column      The column name used for grouping.
+     * @param string        $mask        The format mask for group display.
+     * @param callable|null $transformer A transformer function applied to the group values.
      */
     public function setGroupColumn($column, $mask, $transformer = null)
     {
@@ -365,7 +429,9 @@ class TDataGrid extends TTable
     }
 
     /**
-     * Set the group column for break
+     * Enables or disables the group total feature.
+     *
+     * @param bool|null $groupTotal Whether to enable group total calculations.
      */
     public function useGroupTotal($groupTotal = null)
     {
@@ -373,7 +439,10 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Clear the DataGrid contents
+     * Clears the datagrid contents while optionally preserving the header.
+     *
+     * @param bool $preserveHeader Whether to preserve the header row.
+     * @param int  $rows           The number of rows to keep.
      */
     public function clear( $preserveHeader = TRUE, $rows = 0)
     {
@@ -429,7 +498,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Create header action cells
+     * Creates header cells for action columns in the datagrid.
+     *
+     * @param TElement $row The row element where action header cells will be added.
      */
     private function createHeaderActionCells( $row )
     {
@@ -450,7 +521,26 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Creates the DataGrid Structure
+     * Enables properties panel for the datagrid.
+     * Adds a new header cell with a button at the end of the thead.
+     * 
+     * @param string $buttonIcon  The icon to be displayed in the button (FontAwesome class)
+     * @param string $buttonClass The CSS class for the button
+     * @param TAction $action     The action to be executed when the button is clicked
+     * @return void
+     */
+    public function enableUserProperties($buttonIcon = 'fa fa-cog', $buttonClass = 'btn btn-default', ?TAction $action = null)
+    {
+        $this->propertiesEnabled = TRUE;
+        $this->propertiesButtonIcon = $buttonIcon;
+        $this->propertiesButtonClass = $buttonClass;
+        $this->propertiesButtonAction = $action;
+    }
+    
+    /**
+     * Creates the datagrid structure, including headers and body.
+     *
+     * @param bool $create_header Whether to create the table header.
      */
     public function createModel( $create_header = true )
     {
@@ -490,6 +580,28 @@ class TDataGrid extends TTable
                 {
                     // get the column properties
                     $name  = $column->getName();
+
+                    if(!empty($this->hideColumns[md5($name)]) || $column->isHidden())
+                    {
+                        $this->hasHiddenColumns = true;
+
+                        $label = $column->getLabel();
+
+                        $cell = new TElement('th');
+                        $cell->setProperty('data-column-id', md5($name));
+                        $row->add($cell);
+                        
+                        $cell->setProperty('class', 'tdatagrid_col');
+                        $cell->setProperty('data-start-hide', 'true');
+                        $cell->style .= ";display:none;";
+
+                        $cell->add($label);
+
+                        $output_row[] = $column->getLabel();
+
+                        continue;
+                    }
+
                     $label = $column->getLabel();
                     $align = $column->getAlign();
                     $width = $column->getWidth();
@@ -530,6 +642,7 @@ class TDataGrid extends TTable
                     }
                     // add a cell with the columns label
                     $cell = new TElement('th');
+                    $cell->setProperty('data-column-id', md5($name));
                     $row->add($cell);
                     $cell->add($label);
                     
@@ -572,6 +685,29 @@ class TDataGrid extends TTable
             {
                 $this->createHeaderActionCells($row);
             }
+            
+            // Add properties button at the end of header if enabled
+            if ($this->propertiesEnabled)
+            {
+                $cell = new TElement('th');
+                $row->add($cell);
+                $cell->{'class'} = 'tdatagrid_properties';
+                $cell->{'style'} = 'text-align:right';
+                $cell->{'width'} = $this->actionWidth;
+                
+                $button = new TElement('span');
+                $button->setProperty('class', $this->propertiesButtonClass . ' tdatagrid-property-btn');
+                $button->add('<i class="' . $this->propertiesButtonIcon . '"></i>');
+                
+                if ($this->propertiesButtonAction)
+                {
+                    $url = $this->propertiesButtonAction->serialize();
+                    $url = str_replace('index.php?', '', $url);
+                    $button->{'onclick'} = "tdatagrid_show_properties(this, '{$url}'); return false;";
+                }
+                
+                $cell->add($button);
+            }
         }
         
         // add one row to the DataGrid
@@ -587,7 +723,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Return thead
+     * Retrieves the table header (thead) element of the datagrid.
+     *
+     * @return TElement|null The table header element or null if not created.
      */
     public function getHead()
     {
@@ -595,7 +733,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Return tbody
+     * Retrieves the table body (tbody) element of the datagrid.
+     *
+     * @return TElement|null The table body element or null if not created.
      */
     public function getBody()
     {
@@ -603,7 +743,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Prepend row
+     * Prepends a row to the datagrid body.
+     *
+     * @param TElement $row The row element to be added at the beginning.
      */
     public function prependRow($row)
     {
@@ -613,7 +755,10 @@ class TDataGrid extends TTable
     }
     
     /**
-     * insert content
+     * Inserts content into the datagrid at a specific position.
+     *
+     * @param int      $position The index where the content should be inserted.
+     * @param TElement $content  The content to be inserted.
      */
     public function insert($position, $content)
     {
@@ -621,8 +766,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Add objects to the DataGrid
-     * @param $objects An array of Objects
+     * Adds multiple objects (rows) to the datagrid.
+     *
+     * @param array $objects An array of objects to be added as rows.
      */
     public function addItems($objects)
     {
@@ -636,9 +782,12 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Create item actions
-     * @param $row DOM Row
-     * @param $object Data Object
+     * Creates action cells for a given row based on the available actions.
+     *
+     * @param TElement $row    The row element to which actions will be added.
+     * @param object   $object The data object representing the row.
+     *
+     * @return string|null The first action URL if available, otherwise null.
      */
     private function createItemActions($row, $object)
     {
@@ -705,6 +854,17 @@ class TDataGrid extends TTable
                         $span->add($label);
                         $link->add($span);
                     }
+
+                    if($action->isDisabled())
+                    {
+                        $link->disabled = 'disabled';
+                        $link->href = '#';
+                        unset($link->generator);
+                        if($url == $first_url)
+                        {
+                            $first_url = false;
+                        }
+                    }
                 }
                 else
                 {
@@ -758,6 +918,12 @@ class TDataGrid extends TTable
                         {
                             $url       = $action->serialize();
                             $first_url = isset($first_url) ? $first_url : $url;
+
+                            if($url == $first_url && $action->isDisabled())
+                            {
+                                $first_url = false;
+                            }
+
                             $dropdown->addAction($label, $action, $image);
                         }
                         $last_index = $index;
@@ -775,8 +941,13 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Add an object to the DataGrid
-     * @param $object An Active Record Object
+     * Adds an object (row) to the datagrid.
+     * Handles grouping, styling, inline editing, and action linking.
+     *
+     * @param object $object The object to be added as a row in the datagrid.
+     *
+     * @return TElement The created row element.
+     * @throws Exception If the model has not been created before calling this method.
      */
     public function addItem($object)
     {
@@ -817,6 +988,13 @@ class TDataGrid extends TTable
                 $this->tbody->add($row);
                 $cell = new TElement('td');
                 $cell->colspan = count($this->actions)+count($this->action_groups)+count($this->columns);
+                
+                // Aumenta o colspan quando o properties está habilitado
+                if ($this->propertiesEnabled)
+                {
+                    $cell->colspan++;
+                }
+                
                 $row->add($cell);
 
                 $cell->add($valueGroup);
@@ -869,6 +1047,20 @@ class TDataGrid extends TTable
                     $width    = $column->getWidth();
                     $function = $column->getTransformer();
                     $props    = $column->getDataProperties();
+
+                    $cell = new TElement('td');
+                    
+                    if(!empty($this->hideColumns[md5($name)]) || $column->isHidden())
+                    {
+                        $this->hasHiddenColumns = true;
+
+                        $cell->style .= ";display:none;";
+                        $cell->add('');
+                        $output_row[] = '';
+                        
+                        $row->add($cell);
+                        continue;
+                    }
                     
                     // calculated column
                     if (substr($name,0,1) == '=')
@@ -929,8 +1121,6 @@ class TDataGrid extends TTable
                     {
                         $data = htmlspecialchars($data, ENT_QUOTES | ENT_HTML5, 'UTF-8');   // TAG value
                     }
-                    
-                    $cell = new TElement('td');
                     
                     // verify if there's a transformer function
                     if ($function)
@@ -1005,6 +1195,14 @@ class TDataGrid extends TTable
                 $this->createItemActions( $row, $object );
             }
             
+            // Add properties cell if enabled
+            if ($this->propertiesEnabled)
+            {
+                $cell = new TElement('td');
+                $cell->add('&nbsp;');
+                $row->add($cell);
+            }
+            
             if ($this->popover && (empty($this->popcondition) OR call_user_func($this->popcondition, $object)))
             {
                 $poptitle   = $this->poptitle;
@@ -1051,7 +1249,10 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Append table row via Javascript
+     * Appends a row to the datagrid via JavaScript.
+     *
+     * @param string   $table_id The ID of the datagrid table.
+     * @param TElement $row      The row element to be appended.
      */
     public static function appendRow( $table_id, $row )
     {
@@ -1060,7 +1261,10 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Remove row by id
+     * Removes a row from the datagrid by its ID via JavaScript.
+     *
+     * @param string $table_id The ID of the datagrid table.
+     * @param string $id       The ID of the row to be removed.
      */
     public static function removeRowById( $table_id, $id)
     {
@@ -1068,7 +1272,11 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Replace row by id
+     * Replaces an existing row in the datagrid by its ID via JavaScript.
+     *
+     * @param string   $table_id The ID of the datagrid table.
+     * @param string   $id       The ID of the row to be replaced.
+     * @param TElement $row      The new row element to replace the old one.
      */
     public static function replaceRowById( $table_id, $id, $row)
     {
@@ -1077,13 +1285,20 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Return datagrid items
+     * Retrieves the objects added to the datagrid.
+     *
+     * @return array The list of objects in the datagrid.
      */
     public function getItems()
     {
         return $this->objects;
     }
     
+    /**
+     * Processes and adds group total rows to the datagrid when grouping is enabled.
+     *
+     * @param string $valueGroup The current group value used to compute totals.
+     */
     private function processGroupTotals($valueGroup)
     {  
         $row = new TElement('tr');
@@ -1132,6 +1347,7 @@ class TDataGrid extends TTable
                 $align         = $column->getAlign();
                 $width         = $column->getWidth();
                 $props         = $column->getDataProperties();
+                $totalFormField = $column->getTotalFormField();
                 $cell->{'style'} = "text-align:$align";
                 
                 if ($width)
@@ -1168,9 +1384,17 @@ class TDataGrid extends TTable
                         $cell->{'data-column-name'}    = $name;
                         $cell->{'data-total-mask'}     = $totalMask;
                         $cell->{'data-value'}          = $raw_content;
+
+                        if($totalFormField)
+                        {
+                            $cell->{'data-total-form-field'} = $totalFormField;
+                        }
                     }
                     
-                    $cell->add($content);
+                    if(count($this->objectsGroup[$valueGroup]) > 0)
+                    {
+                        $cell->add($content);
+                    }
                 }
                 else
                 {
@@ -1178,12 +1402,21 @@ class TDataGrid extends TTable
                 }
             }
         }
+        
+        // Adiciona célula vazia para a coluna de propriedades
+        if ($this->propertiesEnabled)
+        {
+            $cell = new TElement('td');
+            $row->add($cell);
+            $cell->add('&nbsp;');
+        }
 
         $this->tbody->add($row);
     }
 
     /**
-     * Process column totals
+     * Processes and adds total rows at the bottom of the datagrid.
+     * Computes column totals if total functions are defined.
      */
     private function processTotals()
     {
@@ -1239,6 +1472,20 @@ class TDataGrid extends TTable
             foreach ($this->columns as $column)
             {
                 $cell = new TElement('td');
+                $name = $column->getName();
+
+                if(!empty($this->hideColumns[md5($name)]) || $column->isHidden())
+                {
+                    $this->hasHiddenColumns = true;
+
+                    $cell->style .= ";display:none;";
+                    $cell->add('');
+                    $output_row[] = '';
+
+                    $row->add($cell);
+                    continue;
+                }
+
                 $row->add($cell);
                 
                 // get the column total function
@@ -1246,10 +1493,11 @@ class TDataGrid extends TTable
                 $totalMask     = $column->getTotalMask();
                 $totalCallback = $column->getTotalCallback();
                 $transformer   = $column->getTransformer();
-                $name          = $column->getName();
                 $align         = $column->getAlign();
                 $width         = $column->getWidth();
                 $props         = $column->getDataProperties();
+                $totalFormField = $column->getTotalFormField();
+
                 $cell->{'style'} = "text-align:$align";
                 
                 if ($width)
@@ -1267,7 +1515,7 @@ class TDataGrid extends TTable
                     $raw_content = 0;
                     $content     = 0;
                     
-                    if (count($this->objects) > 0)
+                    if (count($this->objects) > 0 && isset($this->columnValues[$name]))
                     {
                         $raw_content = $totalCallback($this->columnValues[$name], $this->objects);
                         $content     = $raw_content;
@@ -1286,14 +1534,30 @@ class TDataGrid extends TTable
                         $cell->{'data-column-name'}    = $name;
                         $cell->{'data-total-mask'}     = $totalMask;
                         $cell->{'data-value'}          = $raw_content;
+
+                        if($totalFormField)
+                        {
+                            $cell->{'data-total-form-field'} = $totalFormField;
+                        }
                     }
-                    $cell->add($content);
+                    if(count($this->objects))
+                    {
+                        $cell->add($content);
+                    }
                 }
                 else
                 {
                     $cell->add('&nbsp;');
                 }
             }
+        }
+        
+        // Adiciona célula vazia para a coluna de propriedades no footer
+        if ($this->propertiesEnabled)
+        {
+            $cell = new TElement('td');
+            $row->add($cell);
+            $cell->add('&nbsp;');
         }
         
         if ($this->hasTotalFunction)
@@ -1303,9 +1567,12 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Find the row index by object attribute
-     * @param $attribute Object attribute
-     * @param $value Object value
+     * Finds the index of a row by an object attribute.
+     *
+     * @param string $attribute The object attribute to search for.
+     * @param mixed  $value     The value to match.
+     *
+     * @return int|null The index of the row or null if not found.
      */
     public function getRowIndex($attribute, $value)
     {
@@ -1320,8 +1587,11 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Return the row by position
-     * @param $position Row position
+     * Retrieves a row by its position in the datagrid.
+     *
+     * @param int $position The index of the row.
+     *
+     * @return mixed The row element.
      */
     public function getRow($position)
     {
@@ -1329,8 +1599,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Returns the DataGrid's width
-     * @return An integer containing the DataGrid's width
+     * Calculates the total width of the datagrid based on its columns and actions.
+     *
+     * @return int The total width in pixels.
      */
     public function getWidth()
     {
@@ -1355,12 +1626,20 @@ class TDataGrid extends TTable
                 }
             }
         }
+        
+        // Adiciona a largura da coluna de propriedades, se habilitada
+        if ($this->propertiesEnabled)
+        {
+            $width += 22;
+        }
+        
         return $width;
     }
     
     /**
-     * Assign a PageNavigation object
-     * @param $pageNavigation object
+     * Assigns a PageNavigation object to the datagrid.
+     *
+     * @param mixed $pageNavigation The PageNavigation object.
      */
     public function setPageNavigation($pageNavigation)
     {
@@ -1368,8 +1647,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Return the assigned PageNavigation object
-     * @return $pageNavigation object
+     * Retrieves the assigned PageNavigation object.
+     *
+     * @return mixed The PageNavigation object.
      */
     public function getPageNavigation()
     {
@@ -1377,7 +1657,9 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Set serach attributes
+     * Defines the attributes used for search within the datagrid.
+     *
+     * @param array $attributes An array of attribute names to be used in search.
      */
     public function setSearchAttributes($attributes)
     {
@@ -1385,9 +1667,12 @@ class TDataGrid extends TTable
     }
     
     /**
-     * Enable fuse search
-     * @param $input Field input for search
-     * @param $attribute Attribute name
+     * Enables a search input for filtering rows in the datagrid.
+     *
+     * @param TField $input      The input field used for search.
+     * @param string $attributes The attributes to search in.
+     *
+     * @throws Exception If search is enabled after adding items.
      */
     public function enableSearch(TField $input, $attributes) 
     {
@@ -1414,9 +1699,30 @@ class TDataGrid extends TTable
             TScript::create("__adianti_input_fuse_search('#{$input_id}', '{$dom_att_string}', '#{$datagrid_id} tr')");
         }
     }
+
+    public function setHideColumns($hideColumns)
+    {
+        $this->hideColumns = $hideColumns;
+    }
+
+    public function unhideColumns()
+    {
+        if($this->columns)
+        {
+            foreach($this->columns as $column)
+            {
+                $column->unhide();
+            }
+        }
+    }
+
+    public function initPopoverHeaderFilters()
+    {
+        TScript::create("tdatagrid_init_header_popover_filters('{$this->id}');");
+    }
     
     /**
-     * Shows the DataGrid
+     * Displays the datagrid and processes totals, groups, and inline editing.
      */
     public function show()
     {
@@ -1456,6 +1762,11 @@ class TDataGrid extends TTable
         {
             $url = $this->mutationAction->serialize(false);
             TScript::create(" tdatagrid_mutation_action('#{$this->{'id'}}', '$url');");
+        }
+
+        if(!empty($this->hideColumns) || $this->hasHiddenColumns)
+        {
+            TScript::create(" tdatagrid_start_hide_columns('#{$this->id}');");
         }
     }
 }

@@ -3,7 +3,9 @@
 namespace Math;
 
 /**
- * Value object representing one token of mathematical expression.
+ * Represents a single token in a mathematical expression.
+ *
+ * Tokens can be operands, operators, or brackets, and they store a value and type.
  *
  * @author Adrean Boyadzhiev (netforce) <adrean.boyadzhiev@gmail.com>
  */
@@ -30,11 +32,12 @@ class Token
     protected $type;
 
     /**
-     * Create new "Value object" which represent one token
-     * 
-     * @param integer|string $value
-     * @param integer $type
-     * @throws \InvalidArgumentException
+     * Creates a new token instance.
+     *
+     * @param string|int $value The value of the token.
+     * @param int $type The type of token (T_OPERATOR, T_OPERAND, T_LEFT_BRACKET, or T_RIGHT_BRACKET).
+     *
+     * @throws \InvalidArgumentException If an invalid token type is provided.
      */
     public function __construct($value, $type)
     {
@@ -53,9 +56,9 @@ class Token
     }
 
     /**
-     * Return token value
-     * 
-     * @return string|integer
+     * Gets the value of the token.
+     *
+     * @return string|int The value of the token.
      */
     public function getValue()
     {
@@ -63,9 +66,9 @@ class Token
     }
 
     /**
-     * Return token type
+     * Gets the type of the token.
      *
-     * return integer
+     * @return int The type of the token (one of the T_* constants).
      */
     public function getType()
     {
@@ -73,9 +76,9 @@ class Token
     }
 
     /**
-     * Return string representation of this token.
-     * 
-     * @return string
+     * Gets the string representation of the token.
+     *
+     * @return string The token value as a string.
      */
     public function __toString()
     {

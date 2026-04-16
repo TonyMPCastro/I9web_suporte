@@ -435,15 +435,23 @@ window.Builder = ( function() {
 
     const checkAll = function(element)
     {
-        $(element).closest('table').find('tbody tr td input[type=checkbox]').each(function(k, checkbox){
-            
-            if (!element.checked && checkbox.checked ) {
+        const checkboxes = $(element).closest('table').find('tbody tr td input[type=checkbox]').get();
+        let index = 0;
+        function processNext() {
+            if (index >= checkboxes.length) {
+                return;
+            }
+            const checkbox = checkboxes[index];
+            index++;
+            if ((!element.checked && checkbox.checked) || 
+                (element.checked && !checkbox.checked)) {
                 $(checkbox).click();
             }
-            else if (element.checked && !checkbox.checked ) {
-                $(checkbox).click();
-            }
-        });
+            // Avança para o próximo checkbox após um intervalo fixo
+            setTimeout(processNext, 120);
+        }
+        // Inicia o processamento sequencial
+        processNext();
         
     }
 
@@ -576,7 +584,18 @@ window.Builder = ( function() {
         $('#row_'+key+'_'+controller+'_itens').closest('tr').toggle();
     }
 
+    const translate = function(message)
+    {
+        return Application.translation[Adianti.language][message] ?? message;
+    }
+
+    const enableDebugConsole = function()
+    {
+        __adianti_load_page('engine.php?class=BuilderService&method=enableDebugConsole&static=1');
+    }
+
     return {
+        enableDebugConsole: enableDebugConsole,
         toggleDetailRow: toggleDetailRow,
         autofocusField: autofocusField,
         resizeBuilderMenu: resizeBuilderMenu,
@@ -605,7 +624,8 @@ window.Builder = ( function() {
         toogleButtonExecutar: toogleButtonExecutar,
         checkAll: checkAll,
         checkActionsTableDiff: checkActionsTableDiff,
-        refreshPageDatagrid: refreshPageDatagrid
+        refreshPageDatagrid: refreshPageDatagrid,
+        translate: translate
     };
 
 })();

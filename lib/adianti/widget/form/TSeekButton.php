@@ -15,7 +15,10 @@ use Exception;
 use ReflectionClass;
 
 /**
- * Record Lookup Widget: Creates a lookup field used to search values from associated entities
+ * Record Lookup Widget
+ *
+ * TSeekButton is a lookup field used to search values from associated entities.
+ * It extends TEntry and includes a search button with customizable actions.
  *
  * @version    7.5
  * @package    widget
@@ -39,7 +42,9 @@ class TSeekButton extends TEntry implements AdiantiWidgetInterface
     
     /**
      * Class Constructor
-     * @param  $name name of the field
+     *
+     * @param string      $name Name of the field
+     * @param string|null $icon Icon for the lookup button (optional)
      */
     public function __construct($name, $icon = NULL)
     {
@@ -53,7 +58,12 @@ class TSeekButton extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Create seek button object
+     * Creates a seek button element.
+     *
+     * @param string      $name Name of the associated field
+     * @param string|null $icon Icon for the button (default is a search icon)
+     *
+     * @return TElement The created button element
      */
     public static function createButton($name, $icon)
     {
@@ -71,8 +81,11 @@ class TSeekButton extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Returns a property value
-     * @param $name     Property Name
+     * Magic method to retrieve properties.
+     *
+     * @param string $name Property name
+     *
+     * @return mixed The requested property value
      */
     public function __get($name)
     {
@@ -87,8 +100,10 @@ class TSeekButton extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the Field's width
-     * @param $width Field's width in pixels
+     * Defines the field's width.
+     *
+     * @param string|int      $width  Width of the field (in pixels or percentage)
+     * @param string|int|null $height Height of the field (optional)
      */
     public function setSize($width, $height = NULL)
     {
@@ -103,7 +118,9 @@ class TSeekButton extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Define it the out event will be fired
+     * Defines whether the out event should be fired.
+     *
+     * @param bool $bool True to enable the out event, false to disable it
      */
     public function setUseOutEvent($bool)
     {
@@ -111,9 +128,9 @@ class TSeekButton extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Define the action for the SeekButton
-     * @param $action Action taken when the user
-     * clicks over the Seek Button (A TAction object)
+     * Sets the action for the seek button.
+     *
+     * @param TAction $action Action triggered when clicking the seek button
      */
     public function setAction(TAction $action)
     {
@@ -121,7 +138,9 @@ class TSeekButton extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Return the action
+     * Returns the action associated with the seek button.
+     *
+     * @return TAction|null The configured action or null if none is set
      */
     public function getAction()
     {
@@ -129,8 +148,9 @@ class TSeekButton extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Define an auxiliar field
-     * @param $object any TField object
+     * Sets an auxiliary field.
+     *
+     * @param TField $object Auxiliary field object
      */
     public function setAuxiliar($object)
     {
@@ -149,7 +169,9 @@ class TSeekButton extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Returns if has auxiliar field
+     * Checks if an auxiliary field is set.
+     *
+     * @return bool True if an auxiliary field exists, false otherwise
      */
     public function hasAuxiliar()
     {
@@ -157,7 +179,9 @@ class TSeekButton extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Set extra size
+     * Sets the extra size for the input field.
+     *
+     * @param int $extra_size Additional size in pixels
      */
     public function setExtraSize($extra_size)
     {
@@ -165,7 +189,9 @@ class TSeekButton extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Returns extra size
+     * Retrieves the extra size of the input field.
+     *
+     * @return int Extra size in pixels
      */
     public function getExtraSize()
     {
@@ -173,9 +199,10 @@ class TSeekButton extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Enables a field in the specified form.
+     *
+     * @param string $form_name Name of the form
+     * @param string $field     Name of the field to be enabled
      */
     public static function enableField($form_name, $field)
     {
@@ -183,9 +210,10 @@ class TSeekButton extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Disables a field in the specified form.
+     *
+     * @param string $form_name Name of the form
+     * @param string $field     Name of the field to be disabled
      */
     public static function disableField($form_name, $field)
     {
@@ -193,7 +221,9 @@ class TSeekButton extends TEntry implements AdiantiWidgetInterface
     }
     
     /**
-     * Show the widget
+     * Displays the widget.
+     *
+     * @throws Exception If the form name is not set in TForm::setFields()
      */
     public function show()
     {

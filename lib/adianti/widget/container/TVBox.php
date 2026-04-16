@@ -4,7 +4,7 @@ namespace Adianti\Widget\Container;
 use Adianti\Widget\Base\TElement;
 
 /**
- * Vertical Box
+ * Vertical Box: represents a vertical box container.
  *
  * @version    7.5
  * @package    widget
@@ -16,7 +16,9 @@ use Adianti\Widget\Base\TElement;
 class TVBox extends TElement
 {
     /**
-     * Class Constructor
+     * Class constructor.
+     *
+     * Initializes a vertical box container with inline-block display.
      */
     public function __construct()
     {
@@ -25,8 +27,11 @@ class TVBox extends TElement
     }
     
     /**
-     * Add an child element
-     * @param $child Any object that implements the show() method
+     * Adds a child element to the vertical box.
+     *
+     * @param mixed $child Any object that implements the show() method.
+     *
+     * @return TElement The wrapper element containing the child.
      */
     public function add($child)
     {
@@ -38,8 +43,9 @@ class TVBox extends TElement
     }
     
     /**
-     * Add a new col with many cells
-     * @param $cells Each argument is a row cell
+     * Adds multiple elements as columns inside the vertical box.
+     *
+     * @param mixed ...$cells Each argument represents a column element.
      */
     public function addColSet()
     {
@@ -54,8 +60,11 @@ class TVBox extends TElement
     }
     
     /**
-     * Static method for pack content
-     * @param $cells Each argument is a cell
+     * Creates a new vertical box and adds multiple elements to it.
+     *
+     * @param mixed ...$cells Each argument represents an element to be added to the box.
+     *
+     * @return TVBox The created vertical box containing the provided elements.
      */
     public static function pack()
     {

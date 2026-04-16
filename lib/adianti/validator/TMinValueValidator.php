@@ -8,6 +8,8 @@ use Exception;
 /**
  * Minimum value validation
  *
+ * Validates that a given value meets a specified minimum value.
+ *
  * @version    7.5
  * @package    validator
  * @author     Pablo Dall'Oglio
@@ -17,10 +19,13 @@ use Exception;
 class TMinValueValidator extends TFieldValidator
 {
     /**
-     * Validate a given value
-     * @param $label Identifies the value to be validated in case of exception
-     * @param $value Value to be validated
-     * @param $parameters aditional parameters for validation (min value)
+     * Validates if the given value meets the specified minimum value.
+     *
+     * @param string $label The label identifying the value to be validated.
+     * @param float|int $value The numeric value to be validated.
+     * @param array|null $parameters An array containing the minimum required value as the first element.
+     *
+     * @throws Exception If the value is less than the minimum required.
      */
     public function validate($label, $value, $parameters = NULL)
     {

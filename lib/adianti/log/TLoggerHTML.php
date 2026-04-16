@@ -6,6 +6,9 @@ use Adianti\Log\TLogger;
 /**
  * Register LOG in HTML files
  *
+ * Logger that registers log messages in an HTML file.
+ * Messages are formatted as HTML paragraphs and appended to the file.
+ *
  * @version    7.5
  * @package    log
  * @author     Pablo Dall'Oglio
@@ -15,8 +18,10 @@ use Adianti\Log\TLogger;
 class TLoggerHTML extends TLogger
 {
     /**
-     * Writes an message in the LOG file
-     * @param  $message Message to be written
+     * Writes a log message to the HTML log file.
+     * Each log entry is stored as a formatted HTML paragraph.
+     *
+     * @param string $message The message to be written in the log.
      */
     public function write($message)
     {

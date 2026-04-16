@@ -1,6 +1,10 @@
 <?php
 
 /**
+ * Class BElement
+ *
+ * This class extends TElement and provides additional methods for defining
+ * size, height, and properties of an HTML element.
  *
  * @version    1.0
  * @package    widget
@@ -16,8 +20,11 @@ class BElement extends TElement
     protected $height;
     
     /**
-     * Class Constructor
-     * @param $tagname  tag name
+     * BElement constructor.
+     *
+     * Initializes an HTML element with a given tag name.
+     *
+     * @param string $tagname The name of the HTML tag.
      */
     public function __construct($tagname)
     {
@@ -25,9 +32,10 @@ class BElement extends TElement
     }
     
     /**
-     * Define the widget's size
-     * @param  $width   Widget's width
-     * @param  $height  Widget's height
+     * Sets the width and optional height of the element.
+     *
+     * @param string      $width  The width of the element (e.g., "100px", "50%").
+     * @param string|null $height The height of the element (optional).
      */
     public function setSize($width, $height = NULL)
     {
@@ -54,8 +62,9 @@ class BElement extends TElement
     }
     
     /**
-     * Returns the size
-     * @return array(width, height)
+     * Retrieves the size of the element.
+     *
+     * @return array An array containing the width and height of the element.
      */
     public function getSize()
     {
@@ -63,9 +72,11 @@ class BElement extends TElement
     }
 
     /**
-     * Define a field property
-     * @param $name  Property Name
-     * @param $value Property Value
+     * Sets an attribute (property) of the HTML element.
+     *
+     * @param string  $name    The name of the property.
+     * @param mixed   $value   The value of the property.
+     * @param bool    $replace Whether to replace the existing property value (default: true).
      */
     public function setProperty($name, $value, $replace = TRUE)
     {

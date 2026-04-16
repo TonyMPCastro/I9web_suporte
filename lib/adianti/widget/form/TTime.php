@@ -12,6 +12,9 @@ use Exception;
 /**
  * TimePicker Widget
  *
+ * This class represents a time picker field, extending the standard input field with additional
+ * functionalities for handling time format, validation, and event-driven actions.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage form
@@ -32,7 +35,10 @@ class TTime extends TEntry implements AdiantiWidgetInterface
 
     /**
      * Class Constructor
-     * @param $name Name of the widget
+     *
+     * Initializes the time picker widget, setting default mask, ID, and options.
+     *
+     * @param string $name The name of the widget
      */
     public function __construct($name)
     {
@@ -55,8 +61,12 @@ class TTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the field's mask
-     * @param $mask  Mask for the field (dd-mm-yyyy)
+     * Defines the mask for the field
+     *
+     * Sets the time format mask for the input field and updates the mask in the parent class.
+     *
+     * @param string $mask The format mask (e.g., 'hh:ii')
+     * @param bool $replaceOnPost Whether to replace the mask when submitting the form (default: false)
      */
     public function setMask($mask, $replaceOnPost = FALSE)
     {
@@ -72,8 +82,14 @@ class TTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Set extra datepicker options
+     * Sets an extra option for the date/time picker
+     *
+     * Configures additional settings for the date/time picker component.
+     *
      * @link https://www.malot.fr/bootstrap-datetimepicker/
+     *
+     * @param string $option The name of the option
+     * @param mixed $value The value to be set for the option
      */
     public function setOption($option, $value)
     {
@@ -81,8 +97,11 @@ class TTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the action to be executed when the user changes the field
-     * @param $action TAction object
+     * Defines an action to be executed when the field loses focus
+     *
+     * This is a convenience method that internally calls `setChangeAction()`.
+     *
+     * @param TAction $action The action object to be executed
      */
     public function setExitAction(TAction $action)
     {
@@ -90,8 +109,13 @@ class TTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Define the action to be executed when the user changes the field
-     * @param $action TAction object
+     * Defines an action to be executed when the user changes the field value
+     *
+     * The action must be static to be used in this context.
+     *
+     * @param TAction $action The action object to be executed
+     *
+     * @throws Exception If the action is not static
      */
     public function setChangeAction(TAction $action)
     {
@@ -107,7 +131,11 @@ class TTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Set change function
+     * Sets a custom JavaScript function to be executed when the field value changes
+     *
+     * This allows defining a client-side callback function.
+     *
+     * @param string $function The JavaScript function name or inline function code
      */
     public function setChangeFunction($function)
     {
@@ -115,9 +143,12 @@ class TTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Enable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Enables the field in a form
+     *
+     * Uses JavaScript to enable the time picker field dynamically.
+     *
+     * @param string $form_name The name of the form containing the field
+     * @param string $field The name of the field to be enabled
      */
     public static function enableField($form_name, $field)
     {
@@ -125,9 +156,12 @@ class TTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Disable the field
-     * @param $form_name Form name
-     * @param $field Field name
+     * Disables the field in a form
+     *
+     * Uses JavaScript to disable the time picker field dynamically.
+     *
+     * @param string $form_name The name of the form containing the field
+     * @param string $field The name of the field to be disabled
      */
     public static function disableField($form_name, $field)
     {
@@ -135,7 +169,11 @@ class TTime extends TEntry implements AdiantiWidgetInterface
     }
 
     /**
-     * Shows the widget at the screen
+     * Displays the widget
+     *
+     * Renders the time picker on the screen, applying the defined options and event handlers.
+     *
+     * @throws Exception If the associated form is not properly set
      */
     public function show()
     {

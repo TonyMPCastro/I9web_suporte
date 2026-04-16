@@ -9,7 +9,11 @@ use DomDocument;
 use DomElement;
 
 /**
- * Menu Parser
+ * Parses an XML menu file and provides access to menu paths and modules.
+ *
+ * This class reads an XML file containing menu definitions and extracts 
+ * paths, labels, and actions, allowing indexed access to program paths 
+ * and checking module existence.
  *
  * @version    7.5
  * @package    widget
@@ -24,8 +28,11 @@ class TMenuParser
     private $path;
     
     /**
-     * Parse a menu XML file
-     * @param $xml_file file path
+     * Initializes the menu parser by loading and processing an XML menu file.
+     *
+     * @param string $xml_file Path to the XML menu file.
+     *
+     * @throws Exception If the file does not exist.
      */
     public function __construct($xml_file)
     {
@@ -64,8 +71,10 @@ class TMenuParser
     }
     
     /**
-     * Parse a XMLElement reading menu entries
-     * @param $xml A SimpleXMLElement Object
+     * Recursively parses a SimpleXMLElement structure, extracting menu entries.
+     *
+     * @param SimpleXMLElement $xml  The XML structure to parse.
+     * @param array            $path The hierarchical path of the current menu item.
      */
     private function parse($xml, $path)
     {
@@ -104,7 +113,10 @@ class TMenuParser
     }
     
     /**
-     * Return an indexed array of programs
+     * Retrieves an indexed array of programs with their last menu label.
+     *
+     * @return array Associative array where keys are program actions 
+     *               and values are the corresponding menu labels.
      */
     public function getIndexedPrograms()
     {
@@ -117,7 +129,11 @@ class TMenuParser
     }
     
     /**
-     * Return the controller path
+     * Retrieves the hierarchical path of a given controller.
+     *
+     * @param string $controller The controller name.
+     *
+     * @return array|null The hierarchical path of the controller, or null if not found.
      */
     public function getPath($controller)
     {
@@ -125,7 +141,11 @@ class TMenuParser
     }
     
     /**
-     * Check if a module exists
+     * Checks whether a specific module exists in the menu XML.
+     *
+     * @param string $module The name of the module to check.
+     *
+     * @return bool True if the module exists, false otherwise.
      */
     public function moduleExists($module)
     {
@@ -152,7 +172,9 @@ class TMenuParser
     }
     
     /**
-     * Get Modules
+     * Retrieves an array of all top-level modules defined in the menu XML.
+     *
+     * @return array Associative array where keys and values are module labels.
      */
     public function getModules()
     {

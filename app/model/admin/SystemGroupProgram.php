@@ -23,5 +23,6 @@ class SystemGroupProgram extends TRecord
         parent::__construct($id);
         parent::addAttribute('system_group_id');
         parent::addAttribute('system_program_id');
+        parent::addAttribute('actions');
     }
 }

@@ -9,6 +9,8 @@ use Exception;
 /**
  * Database Select Widget
  *
+ * This widget extends TSelect and allows the selection of values retrieved from a database table.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage wrapper
@@ -24,15 +26,20 @@ class TDBSelect extends TSelect
     
     /**
      * Class Constructor
-     * @param  $name     widget's name
-     * @param  $database database name
-     * @param  $model    model class name
-     * @param  $key      table field to be used as key in the combo
-     * @param  $value    table field to be listed in the combo
-     * @param  $ordercolumn column to order the fields (optional)
-     * @param  $criteria criteria (TCriteria object) to filter the model (optional)
+     *
+     * Initializes the database-driven select widget.
+     *
+     * @param string     $name        Widget's name
+     * @param string     $database    Database connection name
+     * @param string     $model       Model class name
+     * @param string     $key         Table field to be used as the key in the select options
+     * @param string     $value       Table field to be displayed in the select options
+     * @param string|null $ordercolumn Column name to order the values (optional)
+     * @param TCriteria|null $criteria Criteria object to filter the model records (optional)
+     *
+     * @throws Exception If any error occurs during instantiation
      */
-    public function __construct($name, $database, $model, $key, $value, $ordercolumn = NULL, TCriteria $criteria = NULL)
+    public function __construct($name, $database, $model, $key, $value, $ordercolumn = NULL, ?TCriteria $criteria = NULL)
     {
         // executes the parent class constructor
         parent::__construct($name);

@@ -5,8 +5,11 @@ use Adianti\Widget\Base\TElement;
 use Adianti\Widget\Base\TScript;
 
 /**
- * TreeView
- * 
+  * TreeView widget
+ *
+ * This class represents a hierarchical tree view that can be populated with nodes,
+ * allowing customization of icons, actions, and transformations for both items and folders.
+ *
  * @version    7.5
  * @package    widget
  * @subpackage util
@@ -24,6 +27,9 @@ class TTreeView extends TElement
     
     /**
      * Class Constructor
+     *
+     * Initializes the tree view as an unordered list (`ul` element),
+     * assigns a unique identifier, and sets default properties.
      */
     public function __construct()
     {
@@ -34,7 +40,9 @@ class TTreeView extends TElement
     }
     
     /**
-     * Set node transformer
+     * Sets a callback function to transform node elements.
+     *
+     * @param callable $callback A function to process and modify tree nodes.
      */
     public function setTransformer($callback)
     {
@@ -42,7 +50,9 @@ class TTreeView extends TElement
     }
     
     /**
-     * Set node transformer
+     * Sets a callback function to transform folder elements.
+     *
+     * @param callable $callback A function to process and modify tree folders.
      */
     public function setFolderTransformer($callback)
     {
@@ -50,8 +60,9 @@ class TTreeView extends TElement
     }
     
     /**
-     * Set size
-     * @param $size width
+     * Sets the width of the tree view.
+     *
+     * @param int $width The width in pixels.
      */
     public function setSize($width)
     {
@@ -59,8 +70,9 @@ class TTreeView extends TElement
     }
     
     /**
-     * Set item icon
-     * @param $icon icon location
+     * Sets the width of the tree view.
+     *
+     * @param int $width The width in pixels.
      */
     public function setItemIcon($icon)
     {
@@ -68,8 +80,9 @@ class TTreeView extends TElement
     }
     
     /**
-     * Set item action
-     * @param $action icon action
+     * Sets the action for tree items when clicked.
+     *
+     * @param TAction $action The action to be executed when an item is clicked.
      */
     public function setItemAction($action)
     {
@@ -77,7 +90,7 @@ class TTreeView extends TElement
     } 
     
     /**
-     * Collapse the Tree
+     * Collapses all tree nodes.
      */
     public function collapse()
     {
@@ -85,8 +98,9 @@ class TTreeView extends TElement
     }
     
     /**
-     * Expand to Tree Node
-     * @param $key Node key
+     * Expands the tree to a specific node.
+     *
+     * @param string $key The key of the node to expand to.
      */
     public function expandTo($key)
     {
@@ -99,8 +113,9 @@ class TTreeView extends TElement
     }
     
     /**
-     * Fill treeview from an multi-dimensional array
-     * @param multi-dimensional array
+     * Populates the tree view from a multi-dimensional array.
+     *
+     * @param array $array The multi-dimensional array containing tree data.
      */
     public function fromArray($array)
     {
@@ -153,9 +168,12 @@ class TTreeView extends TElement
     }
     
     /**
-     * Fill one level of the treeview
-     * @param $options array of options
-     * @ignore-autocomplete on
+     * Fills a level of the tree view with given options.
+     *
+     * @param array       $options An array of options representing child nodes.
+     * @param string|null $parent  The parent node key (optional).
+     *
+     * @return TElement The unordered list (`ul`) element containing the generated tree structure.
      */
     private function fromOptions($options, $parent = null)
     {
@@ -251,7 +269,9 @@ class TTreeView extends TElement
     }
     
     /**
-     * Shows the tag
+     * Displays the tree view.
+     *
+     * This method initializes the tree view script and renders the tree.
      */
     public function show()
     {

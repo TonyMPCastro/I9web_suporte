@@ -17,6 +17,10 @@ use Closure;
 /**
  * Database Task manager
  *
+ * This class includes static methods for handling various database operations,
+ * such as creating and dropping tables, inserting and updating data, copying data between tables,
+ * and importing/exporting data to and from CSV files.
+ *
  * @version    7.5
  * @package    database
  * @author     Pablo Dall'Oglio
@@ -26,11 +30,14 @@ use Closure;
 class TDatabase
 {
     /**
-     * Drop table
-     * 
-     * @param $conn     Connection
-     * @param $table    Table name
-     * @param $ifexists Drop only if exists
+     * Drops a table from the database.
+     *
+     * @param PDO    $conn     The database connection.
+     * @param string $table    The name of the table to drop.
+     * @param bool   $ifexists Whether to drop the table only if it exists (default: false).
+     *
+     * @return mixed The result of the query execution.
+     * @throws Exception If an error occurs during the operation.
      */
     public static function dropTable($conn, $table, $ifexists = false)
     {
@@ -72,11 +79,14 @@ class TDatabase
     }
     
     /**
-     * Create table
-     * 
-     * @param $conn     Connection 
-     * @param $table    Table name
-     * @param $columns  Array of columns
+     * Creates a table in the database.
+     *
+     * @param PDO    $conn    The database connection.
+     * @param string $table   The name of the table to create.
+     * @param array  $columns An associative array where keys are column names and values are their types.
+     *
+     * @return mixed The result of the query execution.
+     * @throws Exception If an error occurs during the operation.
      */
     public static function createTable($conn, $table, $columns)
     {
@@ -93,11 +103,14 @@ class TDatabase
     }
     
     /**
-     * Drop column
-     * 
-     * @param $conn     Connection
-     * @param $table    Table name
-     * @param $column   Column name
+     * Drops a column from a table.
+     *
+     * @param PDO    $conn   The database connection.
+     * @param string $table  The name of the table.
+     * @param string $column The name of the column to drop.
+     *
+     * @return mixed The result of the query execution.
+     * @throws Exception If an error occurs during the operation.
      */
     public static function dropColumn($conn, $table, $column)
     {
@@ -107,13 +120,16 @@ class TDatabase
     }
     
     /**
-     * Add column
+     * Adds a new column to a table.
      *
-     * @param $conn     Connection 
-     * @param $table    Table name
-     * @param $column   Column name
-     * @param $type     Column type
-     * @param $options  Column options
+     * @param PDO    $conn    The database connection.
+     * @param string $table   The name of the table.
+     * @param string $column  The name of the column to add.
+     * @param string $type    The data type of the new column.
+     * @param string $options Additional options for the column definition.
+     *
+     * @return mixed The result of the query execution.
+     * @throws Exception If an error occurs during the operation.
      */
     public static function addColumn($conn, $table, $column, $type, $options)
     {
@@ -123,12 +139,15 @@ class TDatabase
     }
     
     /**
-     * Insert data
-     * 
-     * @param $conn           Connection
-     * @param $table          Table name
-     * @param $values         Array of values
-     * @param $avoid_criteria Criteria to avoid insertion
+     * Inserts data into a table.
+     *
+     * @param PDO        $conn           The database connection.
+     * @param string     $table          The name of the table.
+     * @param array      $values         An associative array of column names and values to insert.
+     * @param TCriteria|null $avoid_criteria A criteria object to check if data should be inserted.
+     *
+     * @return mixed The result of the query execution.
+     * @throws Exception If an error occurs during the operation.
      */
     public static function insertData($conn, $table, $values, $avoid_criteria = null)
     {
@@ -167,12 +186,15 @@ class TDatabase
 
 
     /**
-     * Update data
-     * 
-     * @param $conn           Connection
-     * @param $table          Table name
-     * @param $values         Array of values
-     * @param $avoid_criteria Criteria to avoid insertion
+     * Updates data in a table.
+     *
+     * @param PDO        $conn    The database connection.
+     * @param string     $table   The name of the table.
+     * @param array      $values  An associative array of column names and new values.
+     * @param TCriteria|null $criteria A criteria object defining which rows to update.
+     *
+     * @return mixed The result of the query execution.
+     * @throws Exception If an error occurs during the operation.
      */
     public static function updateData($conn, $table, $values, $criteria = null)
     {
@@ -207,11 +229,14 @@ class TDatabase
     }
     
     /**
-     * Clear table data
-     * 
-     * @param $conn     Connection
-     * @param $table    Table name
-     * @param $criteria Filter criteria
+     * Deletes data from a table based on criteria.
+     *
+     * @param PDO        $conn     The database connection.
+     * @param string     $table    The name of the table.
+     * @param TCriteria|null $criteria A criteria object defining which rows to delete.
+     *
+     * @return mixed The result of the query execution.
+     * @throws Exception If an error occurs during the operation.
      */
     public static function clearData($conn, $table, $criteria = null)
     {
@@ -227,10 +252,13 @@ class TDatabase
     }
     
     /**
-     * Execute SQL
-     * 
-     * @param $conn  Connection
-     * @param $query SQL
+     * Executes a raw SQL query.
+     *
+     * @param PDO    $conn  The database connection.
+     * @param string $query The SQL query to execute.
+     *
+     * @return mixed The result of the query execution.
+     * @throws Exception If an error occurs during execution.
      */
     public static function execute($conn, $query)
     {
@@ -239,12 +267,16 @@ class TDatabase
     }
     
     /**
-     * Get RAW Data
-     * 
-     * @param $conn            Connection
-     * @param $query           SQL
-     * @param $mapping         Mapping between fields
-     * @param $prepared_values Parameters for SQL Query
+     * Retrieves data from a SQL query.
+     *
+     * @param PDO         $conn            The database connection.
+     * @param string      $query           The SQL query to execute.
+     * @param array|null  $mapping         An array defining field mappings.
+     * @param array|null  $prepared_values An array of parameters for prepared statements.
+     * @param Closure|null $action         A closure function to process each row.
+     *
+     * @return array|null An array of retrieved data, or null if a closure function is used.
+     * @throws Exception If an error occurs during execution.
      */
     public static function getData($conn, $query, $mapping = null, $prepared_values = null, Closure $action = null)
     {
@@ -286,11 +318,14 @@ class TDatabase
     }
     
     /**
-     * Get a row from the table
-     * 
-     * @param $conn     PDO source connection
-     * @param $table    Source table
-     * @param $criteria Filter criteria
+     * Retrieves a single row of data from a table.
+     *
+     * @param PDO         $conn     The database connection.
+     * @param string      $table    The name of the table.
+     * @param TCriteria|null $criteria A criteria object defining the conditions for selection.
+     *
+     * @return array|null The retrieved row as an associative array, or null if not found.
+     * @throws Exception If an error occurs during execution.
      */
     public static function getRowData(PDO $conn, $table, $criteria = null)
     {
@@ -330,11 +365,14 @@ class TDatabase
     }
     
     /**
-     * Count data from table
-     * 
-     * @param $conn     PDO source connection
-     * @param $table    Source table
-     * @param $criteria Filter criteria
+     * Counts the number of rows matching a given criteria in a table.
+     *
+     * @param PDO         $conn     The database connection.
+     * @param string      $table    The name of the table.
+     * @param TCriteria|null $criteria A criteria object defining the conditions for counting.
+     *
+     * @return int The number of rows matching the criteria.
+     * @throws Exception If an error occurs during execution.
      */
     public static function countData(PDO $conn, $table, $criteria = null)
     {
@@ -371,16 +409,18 @@ class TDatabase
     }
     
     /**
-     * Copy data from table to table
-     * 
-     * @param $source_conn     PDO source connection
-     * @param $target_conn     PDO target connection
-     * @param $source_table    Source table
-     * @param $target_table    Target table
-     * @param $mapping         Mapping between fields
-     * @param $criteria        Filter criteria
-     * @param $bulk_inserts    Inserts per time
-     * @param $auto_commit     Auto commit after x inserts
+     * Copies data from one table to another.
+     *
+     * @param PDO         $source_conn  The source database connection.
+     * @param PDO         $target_conn  The target database connection.
+     * @param string      $source_table The source table.
+     * @param string      $target_table The target table.
+     * @param array       $mapping      An array defining field mappings.
+     * @param TCriteria|null $criteria  A criteria object defining data filtering conditions.
+     * @param int         $bulk_inserts Number of records to insert per batch.
+     * @param bool        $auto_commit  Whether to commit after a certain number of inserts.
+     *
+     * @throws Exception If an error occurs during execution.
      */
     public static function copyData(PDO $source_conn, PDO $target_conn, $source_table, $target_table, $mapping, $criteria = null, $bulk_inserts = 1, $auto_commit = false)
     {
@@ -462,16 +502,18 @@ class TDatabase
     }
     
     /**
-     * Copy data from query to table
-     * 
-     * @param $source_conn     PDO source connection
-     * @param $target_conn     PDO target connection
-     * @param $query           SQL Query
-     * @param $target_table    Target table
-     * @param $mapping         Mapping between fields
-     * @param $prepared_values Parameters for SQL Query
-     * @param $bulk_inserts    Inserts per time
-     * @param $auto_commit     Auto commit after x inserts
+     * Copies data from a SQL query to a table.
+     *
+     * @param PDO         $source_conn     The source database connection.
+     * @param PDO         $target_conn     The target database connection.
+     * @param string      $query           The SQL query to fetch data.
+     * @param string      $target_table    The target table for insertion.
+     * @param array       $mapping         An array defining field mappings.
+     * @param array|null  $prepared_values Parameters for the prepared statement.
+     * @param int         $bulk_inserts    Number of records to insert per batch.
+     * @param bool        $auto_commit     Whether to commit after a certain number of inserts.
+     *
+     * @throws Exception If an error occurs during execution.
      */
     public static function copyQuery(PDO $source_conn, PDO $target_conn, $query, $target_table, $mapping, $prepared_values = null, $bulk_inserts = 1, $auto_commit = false)
     {
@@ -537,12 +579,16 @@ class TDatabase
     }
     
     /**
-     * Import data from CSV file
-     * @param $filename        CSV File to import
-     * @param $target_conn     Target connection
-     * @param $target_table    Target table
-     * @param $mapping         Mapping between fields
-     * @param $separator       Columns separator [,]
+     * Imports data from a CSV file into a table.
+     *
+     * @param string $filename     The path to the CSV file.
+     * @param PDO    $target_conn  The target database connection.
+     * @param string $target_table The target table for insertion.
+     * @param array  $mapping      An array defining field mappings.
+     * @param string $separator    The CSV column separator (default: ',').
+     * @param int    $bulk_inserts Number of records to insert per batch.
+     *
+     * @throws Exception If the file cannot be read or written.
      */
     public static function importFromFile($filename, $target_conn, $target_table, $mapping, $separator = ',', $bulk_inserts = 1)
     {
@@ -605,13 +651,16 @@ class TDatabase
     }
     
     /**
-     * Export data to CSV file
-     * @param $source_conn     Source connection
-     * @param $source_table    Target table
-     * @param $filename        CSV File to import
-     * @param $mapping         Mapping between fields
-     * @param $criteria        Select criteria
-     * @param $separator       Columns separator [,]
+     * Exports data from a table to a CSV file.
+     *
+     * @param PDO         $source_conn  The source database connection.
+     * @param string      $source_table The source table.
+     * @param string      $filename     The path to the output CSV file.
+     * @param array       $mapping      An array defining field mappings.
+     * @param TCriteria|null $criteria  A criteria object defining data filtering conditions.
+     * @param string      $separator    The CSV column separator (default: ',').
+     *
+     * @throws Exception If the file cannot be written.
      */
     public static function exportToFile($source_conn, $source_table, $filename, $mapping, $criteria = null, $separator = ',')
     {
@@ -665,9 +714,12 @@ class TDatabase
     }
     
     /**
-     * Transform value according to mapping rules
-     * @param $row Row values
-     * @param $map Array with mapping instruction
+     * Transforms a row value according to mapping rules.
+     *
+     * @param array $row The row data.
+     * @param array $map An array containing mapping instructions.
+     *
+     * @return mixed The transformed value.
      */
     private static function transform($row, $map)
     {

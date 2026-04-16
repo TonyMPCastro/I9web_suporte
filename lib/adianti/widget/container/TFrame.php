@@ -6,7 +6,9 @@ use Adianti\Widget\Container\TNotebook;
 use Adianti\Widget\Form\TLabel;
 
 /**
- * Frame Widget: creates a bordered area with a title located at its top-left corner
+ * Frame Widget
+ *
+ * Creates a bordered area with a title positioned at its top-left corner.
  *
  * @version    7.5
  * @package    widget
@@ -23,7 +25,11 @@ class TFrame extends TElement
     
     /**
      * Class Constructor
-     * @param  $value text label
+     *
+     * Initializes the frame with optional width and height.
+     *
+     * @param string|null $width  The frame width (e.g., '100%', '500px').
+     * @param string|null $height The frame height (e.g., '300px', '50%').
      */
     public function __construct($width = NULL, $height = NULL)
     {
@@ -47,7 +53,8 @@ class TFrame extends TElement
     
     /**
      * Returns the frame size
-     * @return array(width, height)
+     *
+     * @return array An array containing the width and height of the frame.
      */
     public function getSize()
     {
@@ -55,8 +62,11 @@ class TFrame extends TElement
     }
     
     /**
-     * Set Legend
-     * @param  $legend frame legend
+     * Set the legend
+     *
+     * Defines the title (legend) for the frame.
+     *
+     * @param string $legend The frame legend text.
      */
     public function setLegend($legend)
     {
@@ -67,7 +77,11 @@ class TFrame extends TElement
     }
     
     /**
-     * Returns the inner legend
+     * Get the legend
+     *
+     * Retrieves the text of the frame legend.
+     *
+     * @return string|null The legend text or null if not set.
      */
     public function getLegend()
     {
@@ -75,8 +89,11 @@ class TFrame extends TElement
     }
     
     /**
-     * Return the Frame ID
-     * @ignore-autocomplete on
+     * Get the Frame ID
+     *
+     * Retrieves the unique identifier of the frame.
+     *
+     * @return string The frame ID.
      */
     public function getId()
     {
